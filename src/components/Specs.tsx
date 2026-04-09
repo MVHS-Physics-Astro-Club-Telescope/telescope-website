@@ -15,7 +15,7 @@ const stats = [
 const bentoItems = [
   {
     title: "Primary Mirror",
-    desc: '10" f/4.48 parabolic mirror \u2014 the optical heart of the system',
+    desc: '10" f/4.48 parabolic mirror — the optical heart of the system',
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
@@ -74,7 +74,7 @@ const bentoItems = [
   },
   {
     title: "Portable Design",
-    desc: "Breaks down into two sections \u2014 fits in a car trunk for field trips",
+    desc: "Breaks down into two sections — fits in a car trunk for field trips",
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="1" y="3" width="15" height="13" rx="2" />
@@ -85,7 +85,7 @@ const bentoItems = [
   },
   {
     title: "Weight Target",
-    desc: "Under 50 lbs total \u2014 manageable by a single student",
+    desc: "Under 50 lbs total — manageable by a single student",
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M6.5 6.5h11l1 12H5.5z" />
@@ -118,7 +118,7 @@ export default function Specs() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
           title="Technical Specifications"
-          subtitle="Engineered for performance \u2014 every component carefully selected and tested."
+          subtitle="Engineered for performance — every component carefully selected and tested."
         />
 
         {/* Stats Row */}
@@ -143,7 +143,7 @@ export default function Specs() {
           {bentoItems.map((item, i) => (
             <div
               key={item.title}
-              className={`group relative p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm transition-all duration-700 hover:bg-white/[0.04] hover:border-white/[0.12] hover:-translate-y-0.5 ${
+              className={`group relative p-6 lg:p-8 rounded-2xl bg-[#0a0f1a] border border-white/[0.08] transition-all duration-700 hover:bg-[#0d1220] hover:border-white/[0.14] hover:-translate-y-0.5 ${
                 item.span
               } ${
                 bentoVisible

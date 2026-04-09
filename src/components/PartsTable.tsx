@@ -61,24 +61,24 @@ export default function PartsTable() {
     <div>
       {/* Budget Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm">
+        <div className="p-5 rounded-2xl bg-[#0a0f1a] border border-white/[0.08]">
           <p className="text-sm text-slate-500 mb-1">Total Parts</p>
           <p className="text-2xl font-bold text-white font-mono">{totalParts}</p>
         </div>
-        <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm">
+        <div className="p-5 rounded-2xl bg-[#0a0f1a] border border-white/[0.08]">
           <p className="text-sm text-slate-500 mb-1">Estimated Budget</p>
-          <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400 font-mono">
-            ${budget.low.toLocaleString()}\u2013${budget.high.toLocaleString()}
+          <p className="text-2xl font-bold text-blue-400 font-mono">
+            ${budget.low.toLocaleString()}–${budget.high.toLocaleString()}
           </p>
         </div>
-        <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm">
+        <div className="p-5 rounded-2xl bg-[#0a0f1a] border border-white/[0.08]">
           <p className="text-sm text-slate-500 mb-1">Donated</p>
           <p className="text-2xl font-bold text-emerald-400 font-mono">
             {statusCounts.Donated}
             <span className="text-sm text-slate-600 ml-1">/ {totalParts}</span>
           </p>
         </div>
-        <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm">
+        <div className="p-5 rounded-2xl bg-[#0a0f1a] border border-white/[0.08]">
           <p className="text-sm text-slate-500 mb-1">Still Needed</p>
           <p className="text-2xl font-bold text-amber-400 font-mono">
             {statusCounts.Needed}
@@ -118,7 +118,7 @@ export default function PartsTable() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.01]">
+      <div className="hidden md:block overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0a0f1a]">
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.06] bg-white/[0.02]">
@@ -139,6 +139,9 @@ export default function PartsTable() {
               </th>
               <th className="text-center px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Status
+              </th>
+              <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Donated By
               </th>
             </tr>
           </thead>
@@ -173,6 +176,9 @@ export default function PartsTable() {
                 <td className="px-6 py-4 text-center">
                   <StatusBadge status={part.status} />
                 </td>
+                <td className="px-6 py-4 text-sm text-slate-400">
+                  {part.donatedBy || "\u2014"}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -184,7 +190,7 @@ export default function PartsTable() {
         {filteredParts.map((part) => (
           <div
             key={part.name}
-            className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm"
+            className="p-4 rounded-xl bg-[#0a0f1a] border border-white/[0.08]"
           >
             <div className="flex items-start justify-between gap-3 mb-3">
               <div>
@@ -206,8 +212,16 @@ export default function PartsTable() {
                 {part.estimatedCost}
               </span>
             </div>
+            {part.donatedBy && (
+              <div className="flex items-center gap-1.5 text-xs text-emerald-400/80 mt-2 pt-2 border-t border-white/5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+                Donated by {part.donatedBy}
+              </div>
+            )}
             {part.notes && (
-              <p className="text-xs text-slate-600 mt-2 pt-2 border-t border-white/5">
+              <p className={`text-xs text-slate-600 mt-2 ${!part.donatedBy ? "pt-2 border-t border-white/5" : ""}`}>
                 {part.notes}
               </p>
             )}

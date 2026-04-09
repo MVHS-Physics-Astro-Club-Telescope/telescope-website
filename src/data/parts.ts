@@ -16,10 +16,11 @@ export interface Part {
   estimatedCost: string;
   status: PartStatus;
   notes?: string;
+  donatedBy?: string;
 }
 
 export const parts: Part[] = [
-  // ── Optics ──────────────────────────────────────────────────
+  // ── Optics ──────────────────────────────────────────
   {
     name: "Primary Mirror",
     category: "Optics",
@@ -27,14 +28,15 @@ export const parts: Part[] = [
     quantity: 1,
     estimatedCost: "Donated",
     status: "Donated",
-    notes: "Generously donated \u2014 the heart of our telescope",
+    notes: "Generously donated — the heart of our telescope",
+    donatedBy: "Anonymous",
   },
   {
     name: "Secondary Mirror",
     category: "Optics",
     specification: "70mm minor axis elliptical flat",
     quantity: 1,
-    estimatedCost: "$35\u201355",
+    estimatedCost: "$35–55",
     status: "Needed",
   },
   {
@@ -42,7 +44,7 @@ export const parts: Part[] = [
     category: "Optics",
     specification: "4-vane spider with adjustable holder",
     quantity: 1,
-    estimatedCost: "$25\u201340",
+    estimatedCost: "$25–40",
     status: "Needed",
   },
   {
@@ -50,7 +52,7 @@ export const parts: Part[] = [
     category: "Optics",
     specification: '1.25" Crayford-style dual-speed',
     quantity: 1,
-    estimatedCost: "$80\u2013120",
+    estimatedCost: "$80–120",
     status: "Needed",
   },
   {
@@ -58,18 +60,18 @@ export const parts: Part[] = [
     category: "Optics",
     specification: "Self-adhesive black velour",
     quantity: 1,
-    estimatedCost: "$15\u201325",
+    estimatedCost: "$15–25",
     status: "Needed",
     notes: "Lines the upper tube assembly to reduce stray light",
   },
 
-  // ── Structure ───────────────────────────────────────────────
+  // ── Structure ───────────────────────────────────────
   {
     name: "Cabinet-Grade Plywood",
     category: "Structure",
     specification: '3/4" Baltic birch plywood sheets',
     quantity: 1,
-    estimatedCost: "$40\u201355",
+    estimatedCost: "$40–55",
     status: "Needed",
     notes: "Mirror box, rocker box, and ground board",
   },
@@ -78,15 +80,15 @@ export const parts: Part[] = [
     category: "Structure",
     specification: '3/4" plywood, 20" diameter',
     quantity: 1,
-    estimatedCost: "$10\u201315",
+    estimatedCost: "$10–15",
     status: "Needed",
   },
   {
     name: "Aluminum Tubes",
     category: "Structure",
-    specification: '1" OD \u00d7 0.058" wall truss poles',
+    specification: '1" OD × 0.058" wall truss poles',
     quantity: 8,
-    estimatedCost: "$30\u201345",
+    estimatedCost: "$30–45",
     status: "Needed",
     notes: "Upper tube assembly truss structure",
   },
@@ -95,7 +97,7 @@ export const parts: Part[] = [
     category: "Structure",
     specification: "CNC aluminum clamp blocks",
     quantity: 16,
-    estimatedCost: "$25\u201335",
+    estimatedCost: "$25–35",
     status: "Needed",
   },
   {
@@ -103,7 +105,7 @@ export const parts: Part[] = [
     category: "Structure",
     specification: "1/4-20 pronged T-nuts",
     quantity: 16,
-    estimatedCost: "$5\u20138",
+    estimatedCost: "$5–8",
     status: "Needed",
   },
   {
@@ -111,7 +113,7 @@ export const parts: Part[] = [
     category: "Structure",
     specification: '3/8" steel alignment pins',
     quantity: 16,
-    estimatedCost: "$3\u20135",
+    estimatedCost: "$3–5",
     status: "Needed",
   },
   {
@@ -119,7 +121,7 @@ export const parts: Part[] = [
     category: "Structure",
     specification: "Assorted bolts, nuts, washers",
     quantity: 1,
-    estimatedCost: "$15\u201320",
+    estimatedCost: "$15–20",
     status: "Needed",
   },
   {
@@ -127,7 +129,7 @@ export const parts: Part[] = [
     category: "Structure",
     specification: "Titebond III + polyurethane",
     quantity: 1,
-    estimatedCost: "$15\u201320",
+    estimatedCost: "$15–20",
     status: "Needed",
   },
   {
@@ -135,26 +137,26 @@ export const parts: Part[] = [
     category: "Structure",
     specification: "Flat black interior, satin exterior",
     quantity: 1,
-    estimatedCost: "$8\u201312",
+    estimatedCost: "$8–12",
     status: "Needed",
   },
 
-  // ── Bearings ────────────────────────────────────────────────
+  // ── Bearings ────────────────────────────────────────
   {
     name: "PTFE Altitude Pads",
     category: "Bearings",
-    specification: '1" \u00d7 2" virgin PTFE',
+    specification: '1" × 2" virgin PTFE',
     quantity: 4,
-    estimatedCost: "$8\u201312",
+    estimatedCost: "$8–12",
     status: "Needed",
     notes: "Smooth altitude motion on side bearings",
   },
   {
     name: "PTFE Azimuth Pads",
     category: "Bearings",
-    specification: '1.5" \u00d7 2" virgin PTFE',
+    specification: '1.5" × 2" virgin PTFE',
     quantity: 3,
-    estimatedCost: "$5\u20138",
+    estimatedCost: "$5–8",
     status: "Needed",
   },
   {
@@ -162,34 +164,34 @@ export const parts: Part[] = [
     category: "Bearings",
     specification: "Wilsonart Ebony Star surface",
     quantity: 1,
-    estimatedCost: "$10\u201315",
+    estimatedCost: "$10–15",
     status: "Needed",
     notes: "Low-friction bearing surface",
   },
   {
     name: "Pivot Bolt",
     category: "Bearings",
-    specification: '3/8"-16 \u00d7 3" stainless steel',
+    specification: '3/8"-16 × 3" stainless steel',
     quantity: 1,
-    estimatedCost: "$3\u20135",
+    estimatedCost: "$3–5",
     status: "Needed",
   },
 
-  // ── Mirror Cell ─────────────────────────────────────────────
+  // ── Mirror Cell ─────────────────────────────────────
   {
     name: "Aluminum Angle Stock",
     category: "Mirror Cell",
-    specification: '1" \u00d7 1" \u00d7 1/8" 6061 aluminum',
+    specification: '1" × 1" × 1/8" 6061 aluminum',
     quantity: 1,
-    estimatedCost: "$10\u201315",
+    estimatedCost: "$10–15",
     status: "Needed",
   },
   {
     name: "Collimation Bolts",
     category: "Mirror Cell",
-    specification: '1/4"-20 \u00d7 4" with knobs',
+    specification: '1/4"-20 × 4" with knobs',
     quantity: 3,
-    estimatedCost: "$5\u20138",
+    estimatedCost: "$5–8",
     status: "Needed",
   },
   {
@@ -197,7 +199,7 @@ export const parts: Part[] = [
     category: "Mirror Cell",
     specification: "CNC aluminum 9-point flotation",
     quantity: 3,
-    estimatedCost: "$10\u201315",
+    estimatedCost: "$10–15",
     status: "Needed",
     notes: "Supports mirror without distortion",
   },
@@ -206,7 +208,7 @@ export const parts: Part[] = [
     category: "Mirror Cell",
     specification: "Spring-loaded retaining clips",
     quantity: 3,
-    estimatedCost: "$5\u20138",
+    estimatedCost: "$5–8",
     status: "Needed",
   },
   {
@@ -214,7 +216,7 @@ export const parts: Part[] = [
     category: "Mirror Cell",
     specification: "GE Silicone II clear",
     quantity: 1,
-    estimatedCost: "$5\u20138",
+    estimatedCost: "$5–8",
     status: "Needed",
   },
   {
@@ -222,7 +224,7 @@ export const parts: Part[] = [
     category: "Mirror Cell",
     specification: "80mm 12V DC brushless",
     quantity: 1,
-    estimatedCost: "$8\u201312",
+    estimatedCost: "$8–12",
     status: "Needed",
     notes: "Accelerates mirror thermal equilibrium",
   },
@@ -231,26 +233,26 @@ export const parts: Part[] = [
     category: "Mirror Cell",
     specification: "60mm 12V DC brushless",
     quantity: 1,
-    estimatedCost: "$10\u201315",
+    estimatedCost: "$10–15",
     status: "Needed",
   },
 
-  // ── Electronics ─────────────────────────────────────────────
+  // ── Electronics ─────────────────────────────────────
   {
     name: "Raspberry Pi 4",
     category: "Electronics",
     specification: "Model B 4GB RAM",
     quantity: 1,
-    estimatedCost: "$55\u201375",
+    estimatedCost: "$55–75",
     status: "Needed",
-    notes: "Main computer \u2014 runs tracking, imaging, and web server",
+    notes: "Main computer — runs tracking, imaging, and web server",
   },
   {
     name: "MicroSD Card",
     category: "Electronics",
     specification: "64GB Class 10 A2",
     quantity: 1,
-    estimatedCost: "$8\u201312",
+    estimatedCost: "$8–12",
     status: "Needed",
   },
   {
@@ -258,31 +260,31 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "USB-C 5V 3A official PSU",
     quantity: 1,
-    estimatedCost: "$10\u201315",
+    estimatedCost: "$10–15",
     status: "Needed",
   },
   {
     name: "NEMA 23 Stepper (Altitude)",
     category: "Electronics",
-    specification: "1.8\u00b0 1.2 N\u00b7m bipolar",
+    specification: "1.8° 1.2 N·m bipolar",
     quantity: 1,
-    estimatedCost: "$25\u201340",
+    estimatedCost: "$25–40",
     status: "Needed",
   },
   {
     name: "NEMA 23 Stepper (Azimuth)",
     category: "Electronics",
-    specification: "1.8\u00b0 1.2 N\u00b7m bipolar",
+    specification: "1.8° 1.2 N·m bipolar",
     quantity: 1,
-    estimatedCost: "$25\u201340",
+    estimatedCost: "$25–40",
     status: "Needed",
   },
   {
     name: "NEMA 17 Stepper (Focus)",
     category: "Electronics",
-    specification: "1.8\u00b0 0.4 N\u00b7m bipolar",
+    specification: "1.8° 0.4 N·m bipolar",
     quantity: 1,
-    estimatedCost: "$12\u201318",
+    estimatedCost: "$12–18",
     status: "Needed",
   },
   {
@@ -290,7 +292,7 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "Silent stepper drivers",
     quantity: 3,
-    estimatedCost: "$15\u201324",
+    estimatedCost: "$15–24",
     status: "Needed",
     notes: "Ultra-quiet StealthChop for vibration-free tracking",
   },
@@ -299,7 +301,7 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "6mm GT2 belt + 20T/60T pulleys",
     quantity: 2,
-    estimatedCost: "$25\u201340",
+    estimatedCost: "$25–40",
     status: "Needed",
   },
   {
@@ -307,15 +309,15 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "12V 10A switching PSU",
     quantity: 1,
-    estimatedCost: "$20\u201330",
+    estimatedCost: "$20–30",
     status: "Needed",
   },
   {
     name: "Buck Converter",
     category: "Electronics",
-    specification: "12V \u2192 5V 3A DC-DC",
+    specification: "12V → 5V 3A DC-DC",
     quantity: 1,
-    estimatedCost: "$8\u201312",
+    estimatedCost: "$8–12",
     status: "Needed",
   },
   {
@@ -323,7 +325,7 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "15A blade fuse holder",
     quantity: 1,
-    estimatedCost: "$5\u20138",
+    estimatedCost: "$5–8",
     status: "Needed",
   },
   {
@@ -331,15 +333,15 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "12-position barrier strip",
     quantity: 1,
-    estimatedCost: "$5\u20138",
+    estimatedCost: "$5–8",
     status: "Needed",
   },
   {
     name: "Bulk Capacitors",
     category: "Electronics",
-    specification: "100\u00b5F 25V electrolytic",
+    specification: "100µF 25V electrolytic",
     quantity: 3,
-    estimatedCost: "$3\u20135",
+    estimatedCost: "$3–5",
     status: "Needed",
   },
   {
@@ -347,7 +349,7 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "15V bidirectional TVS",
     quantity: 2,
-    estimatedCost: "$2\u20134",
+    estimatedCost: "$2–4",
     status: "Needed",
   },
   {
@@ -355,7 +357,7 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "22AWG silicone wire assortment",
     quantity: 1,
-    estimatedCost: "$10\u201315",
+    estimatedCost: "$10–15",
     status: "Needed",
   },
   {
@@ -363,7 +365,7 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "Micro limit switch with lever",
     quantity: 4,
-    estimatedCost: "$5\u20138",
+    estimatedCost: "$5–8",
     status: "Needed",
   },
   {
@@ -371,16 +373,16 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "IRLZ44N logic-level N-channel",
     quantity: 2,
-    estimatedCost: "$3\u20135",
+    estimatedCost: "$3–5",
     status: "Needed",
     notes: "PWM fan speed control",
   },
   {
     name: "Pull-up Resistors",
     category: "Electronics",
-    specification: "10k\u2126 1/4W",
+    specification: "10kΩ 1/4W",
     quantity: 4,
-    estimatedCost: "$1\u20132",
+    estimatedCost: "$1–2",
     status: "Needed",
   },
   {
@@ -388,7 +390,7 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "100nF ceramic",
     quantity: 4,
-    estimatedCost: "$1\u20132",
+    estimatedCost: "$1–2",
     status: "Needed",
   },
   {
@@ -396,17 +398,17 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "1N4007 rectifier",
     quantity: 2,
-    estimatedCost: "$1\u20132",
+    estimatedCost: "$1–2",
     status: "Needed",
   },
 
-  // ── Camera ──────────────────────────────────────────────────
+  // ── Camera ──────────────────────────────────────────
   {
     name: "ZWO ASI120MC-S",
     category: "Camera",
     specification: "1.2MP color CMOS, USB 3.0",
     quantity: 1,
-    estimatedCost: "$100\u2013150",
+    estimatedCost: "$100–150",
     status: "Needed",
     notes: "High-sensitivity planetary and deep-sky imaging",
   },
@@ -415,7 +417,7 @@ export const parts: Part[] = [
     category: "Camera",
     specification: 'M42 to 1.25" nosepiece',
     quantity: 1,
-    estimatedCost: "$15\u201320",
+    estimatedCost: "$15–20",
     status: "Needed",
   },
   {
@@ -423,26 +425,26 @@ export const parts: Part[] = [
     category: "Camera",
     specification: "Active 5m USB 3.0 extension",
     quantity: 1,
-    estimatedCost: "$10\u201315",
+    estimatedCost: "$10–15",
     status: "Needed",
   },
 
-  // ── Accessories ─────────────────────────────────────────────
+  // ── Accessories ─────────────────────────────────────
   {
     name: "Eyepiece",
     category: "Accessories",
-    specification: '25mm Pl\u00f6ssl 1.25"',
+    specification: '25mm Plössl 1.25"',
     quantity: 1,
-    estimatedCost: "$20\u201350",
+    estimatedCost: "$20–50",
     status: "Needed",
     notes: "Visual observing at star parties",
   },
   {
     name: "Finder Scope",
     category: "Accessories",
-    specification: "Red-dot or 6\u00d730 optical",
+    specification: "Red-dot or 6×30 optical",
     quantity: 1,
-    estimatedCost: "$20\u201340",
+    estimatedCost: "$20–40",
     status: "Needed",
   },
   {
@@ -450,7 +452,7 @@ export const parts: Part[] = [
     category: "Accessories",
     specification: "Nylon ripstop fabric tube",
     quantity: 1,
-    estimatedCost: "$15\u201325",
+    estimatedCost: "$15–25",
     status: "Needed",
     notes: "Blocks stray light between UTA and mirror box",
   },
@@ -459,7 +461,7 @@ export const parts: Part[] = [
     category: "Accessories",
     specification: "Cheshire + sight tube combo",
     quantity: 1,
-    estimatedCost: "$15\u201330",
+    estimatedCost: "$15–30",
     status: "Needed",
   },
   {
@@ -467,16 +469,16 @@ export const parts: Part[] = [
     category: "Accessories",
     specification: "Flexible resistive heater",
     quantity: 1,
-    estimatedCost: "$15\u201320",
+    estimatedCost: "$15–20",
     status: "Needed",
     notes: "Prevents dew on secondary mirror",
   },
   {
     name: "Shaft Coupler",
     category: "Accessories",
-    specification: "5mm to 8mm flexible coupler",
+    specification: '5mm to 8mm flexible coupler',
     quantity: 1,
-    estimatedCost: "$5\u20138",
+    estimatedCost: "$5–8",
     status: "Needed",
   },
 ];
@@ -496,7 +498,7 @@ export function getBudgetRange(): { low: number; high: number } {
   let high = 0;
   for (const part of parts) {
     if (part.status === "Donated") continue;
-    const match = part.estimatedCost.match(/\$(\d+)[\u2013-](\d+)/);
+    const match = part.estimatedCost.match(/\$(\d+)[–-](\d+)/);
     if (match) {
       low += parseInt(match[1], 10) * part.quantity;
       high += parseInt(match[2], 10) * part.quantity;

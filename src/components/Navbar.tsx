@@ -89,7 +89,7 @@ export default function Navbar() {
               </svg>
             </div>
             <span className="text-white font-semibold text-lg tracking-tight">
-              MVHS <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400">Astronomy</span>
+              MVHS <span className="text-slate-300">Astronomy</span>
             </span>
           </Link>
 

@@ -26,7 +26,7 @@ export default function Team() {
           {team.map((member, i) => (
             <div
               key={member.name}
-              className={`group relative p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm text-center transition-all duration-700 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-1 ${
+              className={`group relative p-6 rounded-2xl bg-[#0d1220] border border-white/[0.08] text-center transition-all duration-700 hover:bg-[#111827] hover:border-white/[0.14] hover:-translate-y-1 ${
                 isInView
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-12"
@@ -40,15 +40,28 @@ export default function Team() {
               />
 
               {/* Avatar */}
-              <div
-                className="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center text-2xl font-bold text-white mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
-                style={{
-                  background: `linear-gradient(135deg, ${member.color}30, ${member.color}10)`,
-                  border: `1px solid ${member.color}40`,
-                }}
-              >
-                {member.initials}
-              </div>
+              {member.image ? (
+                <div
+                  className="w-20 h-20 mx-auto rounded-2xl overflow-hidden mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+                  style={{ border: `1px solid ${member.color}40` }}
+                >
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div
+                  className="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center text-2xl font-bold text-white mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+                  style={{
+                    background: `linear-gradient(135deg, ${member.color}30, ${member.color}10)`,
+                    border: `1px solid ${member.color}40`,
+                  }}
+                >
+                  {member.initials}
+                </div>
+              )}
 
               <h3 className="text-lg font-semibold text-white mb-1">
                 {member.name}

@@ -7,6 +7,7 @@
   --font-mono: var(--font-jetbrains);
 }
 
+/* ─── Base ─────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
   color-scheme: dark;
@@ -20,51 +21,122 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #030712; }
-::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #334155; }
-
-::selection { background: rgba(59, 130, 246, 0.3); color: white; }
-
-@keyframes twinkle {
-  0%, 100% { opacity: var(--star-opacity, 0.3); transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.3); }
+/* ─── Scrollbar ────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
 }
+::-webkit-scrollbar-track {
+  background: #030712;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* ─── Selection ────────────────────────────────────── */
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: white;
+}
+
+/* ─── Star Twinkle Animation ───────────────────────── */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: var(--star-opacity, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
 .star {
   --star-opacity: 0.3;
   animation: twinkle var(--twinkle-duration, 3s) ease-in-out infinite;
   animation-delay: var(--twinkle-delay, 0s);
 }
 
+/* ─── Fade In Up Animation ─────────────────────────── */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
-.animation-delay-200 { animation-delay: 200ms; }
-.animation-delay-400 { animation-delay: 400ms; }
-.animation-delay-600 { animation-delay: 600ms; }
-.animation-delay-800 { animation-delay: 800ms; }
 
+.fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+
+.animation-delay-600 {
+  animation-delay: 600ms;
+}
+
+.animation-delay-800 {
+  animation-delay: 800ms;
+}
+
+/* ─── Pulse Glow ───────────────────────────────────── */
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); }
-  50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.2); }
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
+  }
 }
-.pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
 
+.pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* ─── Gradient Text Shimmer ────────────────────────── */
 @keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
-.gradient-shimmer { background-size: 200% auto; animation: shimmer 8s linear infinite; }
 
+.gradient-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 8s linear infinite;
+}
+
+/* ─── Float Animation ──────────────────────────────── */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
-.animate-float { animation: float 6s ease-in-out infinite; }
 
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ─── Grid Pattern (used in About) ─────────────────── */
 .grid-pattern {
   background-image:
     linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
@@ -72,6 +144,7 @@ body {
   background-size: 64px 64px;
 }
 
+/* ─── Font Mono Override ───────────────────────────── */
 .font-mono {
   font-family: var(--font-jetbrains), ui-monospace, SFMono-Regular, "SF Mono",
     Menlo, Consolas, "Liberation Mono", monospace;
