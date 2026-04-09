@@ -1,5 +1,1 @@
-# MVHS Physics & Astronomy Club — Telescope Website
-
-Official website for the MVHS Physics & Astronomy Club autonomous telescope project.
-
-Built with Next.js 15, TypeScript, and Tailwind CSS.
+MVHS Physics & Astronomy Club — Telescope Project Website. Built with Next.js, React 19, and Tailwind CSS 4. Showcases the club's project to build a 10-inch f/4.48 Truss-Tube Dobsonian telescope with autonomous tracking.

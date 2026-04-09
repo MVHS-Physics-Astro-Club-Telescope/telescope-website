@@ -25,17 +25,23 @@ export default function AnimatedCounter({
 
   useEffect(() => {
     if (!isInView) return;
+
     let startTime: number | null = null;
     let animationFrame: number;
+
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
+
+      // Ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(eased * end);
+
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
       }
     };
+
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
   }, [isInView, end, duration]);
@@ -46,8 +52,10 @@ export default function AnimatedCounter({
 
   return (
     <div ref={ref} className="text-center group">
-      <div className="text-3xl sm:text-4xl lg:text-5xl font-bold font-mono bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent transition-transform duration-300 group-hover:scale-110">
-        {prefix}{displayValue}{suffix}
+      <div className="text-3xl sm:text-4xl lg:text-5xl font-bold font-mono text-white transition-transform duration-300 group-hover:scale-110">
+        {prefix}
+        {displayValue}
+        {suffix}
       </div>
       <div className="mt-2 text-sm sm:text-base text-slate-400 uppercase tracking-wider">
         {label}

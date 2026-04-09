@@ -9,6 +9,7 @@ interface SectionHeadingProps {
 
 export default function SectionHeading({ title, subtitle }: SectionHeadingProps) {
   const { ref, isInView } = useInView();
+
   return (
     <div
       ref={ref}
@@ -21,7 +22,9 @@ export default function SectionHeading({ title, subtitle }: SectionHeadingProps)
       </h2>
       <div className="mx-auto w-24 h-1 rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-500" />
       {subtitle && (
-        <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">{subtitle}</p>
+        <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
+          {subtitle}
+        </p>
       )}
     </div>
   );

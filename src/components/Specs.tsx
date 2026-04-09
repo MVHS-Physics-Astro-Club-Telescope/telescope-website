@@ -143,7 +143,7 @@ export default function Specs() {
           {bentoItems.map((item, i) => (
             <div
               key={item.title}
-              className={`group relative p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm transition-all duration-700 hover:bg-white/[0.04] hover:border-white/[0.12] hover:-translate-y-0.5 ${
+              className={`group relative p-6 lg:p-8 rounded-2xl bg-[#0a0f1a] border border-white/[0.08] transition-all duration-700 hover:bg-[#0d1220] hover:border-white/[0.14] hover:-translate-y-0.5 ${
                 item.span
               } ${
                 bentoVisible

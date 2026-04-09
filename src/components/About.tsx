@@ -7,24 +7,12 @@ const features = [
   {
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
       </svg>
     ),
-    title: "STEM Education",
-    description: "Hands-on experience in mechanical engineering, optics, electronics, and software development \u2014 learning by building.",
-  },
-  {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
-    title: "Community Outreach",
-    description: "Free public star parties for the Bay Area community. No tickets, no fees \u2014 just curiosity and a love for the cosmos.",
+    title: "Hands-On Engineering",
+    description:
+      "We're building a 10-inch reflecting telescope from raw materials \u2014 plywood, aluminum, optics, and electronics, designed and assembled by students.",
   },
   {
     icon: (
@@ -32,8 +20,20 @@ const features = [
         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
       </svg>
     ),
-    title: "Inspiring Youth",
-    description: "Showing the next generation of students that they can design, engineer, and build anything they set their minds to.",
+    title: "Free Star Parties",
+    description:
+      "Open community observation nights for families across the Bay Area. No tickets, no fees \u2014 just curiosity and clear skies.",
+  },
+  {
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="16 18 22 12 16 6" />
+        <polyline points="8 6 2 12 8 18" />
+      </svg>
+    ),
+    title: "Student-Led Software",
+    description:
+      "6,800+ lines of Python powering autonomous tracking, plate-solving, and auto-alignment \u2014 written and tested entirely by our team.",
   },
 ];
 
@@ -42,6 +42,7 @@ export default function About() {
 
   return (
     <section id="about" className="relative py-24 sm:py-32 bg-[#030712]">
+      {/* Subtle grid pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,8 +51,9 @@ export default function About() {
           subtitle="Building a research-grade telescope from scratch \u2014 designed, engineered, and assembled entirely by high school students."
         />
 
+        {/* Mission Statement */}
         <div className="max-w-3xl mx-auto mb-20">
-          <div className="relative p-8 sm:p-10 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm">
+          <div className="relative p-8 sm:p-10 rounded-2xl bg-[#0a0f1a] border border-white/[0.08]">
             <div className="absolute -top-px left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
             <p className="text-slate-300 text-lg leading-relaxed">
               The <span className="text-white font-semibold">MVHS Physics &amp; Astronomy Club</span> is a
@@ -65,21 +67,32 @@ export default function About() {
           </div>
         </div>
 
+        {/* Feature Cards */}
         <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {features.map((feature, i) => (
             <div
               key={feature.title}
-              className={`group relative p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm transition-all duration-700 hover:bg-white/[0.04] hover:border-white/[0.12] hover:-translate-y-1 ${
-                cardsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+              className={`group relative p-8 rounded-2xl bg-[#0a0f1a] border border-white/[0.08] transition-all duration-700 hover:bg-[#0d1220] hover:border-white/[0.14] hover:-translate-y-1 ${
+                cardsVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-12"
               }`}
               style={{ transitionDelay: `${i * 150}ms` }}
             >
+              {/* Top glow line */}
               <div className="absolute -top-px left-8 right-8 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+              {/* Icon */}
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/10 to-violet-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform duration-300">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-              <p className="text-slate-400 leading-relaxed">{feature.description}</p>
+
+              <h3 className="text-xl font-semibold text-white mb-3">
+                {feature.title}
+              </h3>
+              <p className="text-slate-400 leading-relaxed">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>

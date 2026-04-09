@@ -16,10 +16,11 @@ export interface Part {
   estimatedCost: string;
   status: PartStatus;
   notes?: string;
+  donatedBy?: string;
 }
 
 export const parts: Part[] = [
-  // ── Optics ──────────────────────────────────────────────────
+  // \u2500\u2500 Optics \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   {
     name: "Primary Mirror",
     category: "Optics",
@@ -28,6 +29,7 @@ export const parts: Part[] = [
     estimatedCost: "Donated",
     status: "Donated",
     notes: "Generously donated \u2014 the heart of our telescope",
+    donatedBy: "Anonymous",
   },
   {
     name: "Secondary Mirror",
@@ -63,7 +65,7 @@ export const parts: Part[] = [
     notes: "Lines the upper tube assembly to reduce stray light",
   },
 
-  // ── Structure ───────────────────────────────────────────────
+  // \u2500\u2500 Structure \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   {
     name: "Cabinet-Grade Plywood",
     category: "Structure",
@@ -139,7 +141,7 @@ export const parts: Part[] = [
     status: "Needed",
   },
 
-  // ── Bearings ────────────────────────────────────────────────
+  // \u2500\u2500 Bearings \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   {
     name: "PTFE Altitude Pads",
     category: "Bearings",
@@ -175,7 +177,7 @@ export const parts: Part[] = [
     status: "Needed",
   },
 
-  // ── Mirror Cell ─────────────────────────────────────────────
+  // \u2500\u2500 Mirror Cell \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   {
     name: "Aluminum Angle Stock",
     category: "Mirror Cell",
@@ -235,7 +237,7 @@ export const parts: Part[] = [
     status: "Needed",
   },
 
-  // ── Electronics ─────────────────────────────────────────────
+  // \u2500\u2500 Electronics \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   {
     name: "Raspberry Pi 4",
     category: "Electronics",
@@ -378,7 +380,7 @@ export const parts: Part[] = [
   {
     name: "Pull-up Resistors",
     category: "Electronics",
-    specification: "10k\u2126 1/4W",
+    specification: "10k\u03a9 1/4W",
     quantity: 4,
     estimatedCost: "$1\u20132",
     status: "Needed",
@@ -400,7 +402,7 @@ export const parts: Part[] = [
     status: "Needed",
   },
 
-  // ── Camera ──────────────────────────────────────────────────
+  // \u2500\u2500 Camera \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   {
     name: "ZWO ASI120MC-S",
     category: "Camera",
@@ -427,7 +429,7 @@ export const parts: Part[] = [
     status: "Needed",
   },
 
-  // ── Accessories ─────────────────────────────────────────────
+  // \u2500\u2500 Accessories \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   {
     name: "Eyepiece",
     category: "Accessories",
@@ -474,7 +476,7 @@ export const parts: Part[] = [
   {
     name: "Shaft Coupler",
     category: "Accessories",
-    specification: "5mm to 8mm flexible coupler",
+    specification: '5mm to 8mm flexible coupler',
     quantity: 1,
     estimatedCost: "$5\u20138",
     status: "Needed",
