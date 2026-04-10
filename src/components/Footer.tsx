@@ -43,6 +43,7 @@ const footerLinks = [
   { label: "Specs", href: "/#specs" },
   { label: "Timeline", href: "/#timeline" },
   { label: "Support", href: "/#support" },
+  { label: "Sponsors", href: "/sponsors" },
   { label: "Parts", href: "/parts" },
 ];
 
