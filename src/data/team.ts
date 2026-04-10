@@ -47,6 +47,7 @@ export const team: TeamMember[] = [
     role: "Outreach",
     initials: "TS",
     color: "#ec4899",
+    image: "/team/tristan.jpg",
   },
   {
     name: "Ishaan Sakariya",
