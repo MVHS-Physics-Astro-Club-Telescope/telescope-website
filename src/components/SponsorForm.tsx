@@ -67,22 +67,22 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}
-      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
     >
-      <div className="w-full max-w-lg rounded-2xl bg-[#0a0f1a] border border-white/10 shadow-2xl shadow-black/50">
+      <div className="w-full max-w-lg rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-2xl shadow-black/50 p-8">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="font-heading text-xl font-semibold text-[rgba(240,240,250,1)]">
               Sponsor Inquiry
             </h2>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-[rgba(240,240,250,0.6)] mt-1">
               We&apos;d love to hear from you
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+            className="p-2 text-[rgba(240,240,250,0.4)] hover:text-[rgba(240,240,250,0.8)] transition-colors"
             aria-label="Close"
           >
             <svg
@@ -102,13 +102,13 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="sponsor-name"
-              className="block text-sm font-medium text-slate-300 mb-1.5"
+              className="block text-sm font-medium text-[rgba(240,240,250,0.7)] mb-1.5"
             >
-              Name <span className="text-red-400">*</span>
+              Name <span className="text-[rgba(240,240,250,0.4)]">*</span>
             </label>
             <input
               id="sponsor-name"
@@ -117,16 +117,16 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25 transition-colors"
+              className="w-full bg-[#121A25] border border-white/[0.08] rounded-xl px-4 py-3 text-[rgba(240,240,250,1)] placeholder:text-[rgba(240,240,250,0.3)] text-sm focus:border-white/[0.2] focus:outline-none focus:ring-1 focus:ring-white/[0.06] transition-colors"
             />
           </div>
 
           <div>
             <label
               htmlFor="sponsor-email"
-              className="block text-sm font-medium text-slate-300 mb-1.5"
+              className="block text-sm font-medium text-[rgba(240,240,250,0.7)] mb-1.5"
             >
-              Email <span className="text-red-400">*</span>
+              Email <span className="text-[rgba(240,240,250,0.4)]">*</span>
             </label>
             <input
               id="sponsor-email"
@@ -135,17 +135,17 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25 transition-colors"
+              className="w-full bg-[#121A25] border border-white/[0.08] rounded-xl px-4 py-3 text-[rgba(240,240,250,1)] placeholder:text-[rgba(240,240,250,0.3)] text-sm focus:border-white/[0.2] focus:outline-none focus:ring-1 focus:ring-white/[0.06] transition-colors"
             />
           </div>
 
           <div>
             <label
               htmlFor="sponsor-org"
-              className="block text-sm font-medium text-slate-300 mb-1.5"
+              className="block text-sm font-medium text-[rgba(240,240,250,0.7)] mb-1.5"
             >
               Organization{" "}
-              <span className="text-slate-500 font-normal">(optional)</span>
+              <span className="text-[rgba(240,240,250,0.4)] font-normal">(optional)</span>
             </label>
             <input
               id="sponsor-org"
@@ -153,14 +153,14 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
               value={organization}
               onChange={(e) => setOrganization(e.target.value)}
               placeholder="Company or organization"
-              className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25 transition-colors"
+              className="w-full bg-[#121A25] border border-white/[0.08] rounded-xl px-4 py-3 text-[rgba(240,240,250,1)] placeholder:text-[rgba(240,240,250,0.3)] text-sm focus:border-white/[0.2] focus:outline-none focus:ring-1 focus:ring-white/[0.06] transition-colors"
             />
           </div>
 
           <div>
             <label
               htmlFor="sponsor-message"
-              className="block text-sm font-medium text-slate-300 mb-1.5"
+              className="block text-sm font-medium text-[rgba(240,240,250,0.7)] mb-1.5"
             >
               Message
             </label>
@@ -169,27 +169,40 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
               rows={4}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25 transition-colors resize-none"
+              className="w-full bg-[#121A25] border border-white/[0.08] rounded-xl px-4 py-3 text-[rgba(240,240,250,1)] placeholder:text-[rgba(240,240,250,0.3)] text-sm focus:border-white/[0.2] focus:outline-none focus:ring-1 focus:ring-white/[0.06] transition-colors resize-none"
             />
           </div>
 
           <div className="flex items-center gap-3 pt-2">
+            {/* Cancel — dark titanium */}
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-300 border border-white/10 rounded-lg hover:bg-white/5 hover:text-white transition-colors"
+              style={{
+                background: 'linear-gradient(180deg, #A3A29C 0%, #878684 40%, #6b6b6b 100%)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                textShadow: '0 1px 2px rgba(0,0,0,0.4)',
+              }}
+              className="flex-1 px-4 py-3 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full hover:brightness-110 transition-all"
             >
               Cancel
             </button>
+            {/* Submit — light titanium */}
             <button
               type="submit"
-              className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-violet-600 rounded-lg hover:from-blue-500 hover:to-violet-500 transition-all duration-200 shadow-lg shadow-blue-500/20"
+              style={{
+                background: 'linear-gradient(180deg, #e8e8ed 0%, #d1d1d6 50%, #BAB9B3 100%)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.15)',
+                border: '1px solid rgba(255,255,255,0.3)',
+              }}
+              className="flex-1 px-4 py-3 text-sm font-medium text-[#1a1a1f] rounded-full hover:brightness-105 transition-all"
             >
               Open in Email
             </button>
           </div>
 
-          <p className="text-xs text-slate-500 text-center pt-1">
+          <p className="text-xs text-[rgba(240,240,250,0.4)] text-center pt-1">
             This will open your default email client with the message pre-filled.
           </p>
         </form>

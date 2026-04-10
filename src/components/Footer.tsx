@@ -3,8 +3,8 @@ import Link from "next/link";
 function InstagramIcon() {
   return (
     <svg
-      width="20"
-      height="20"
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -22,8 +22,8 @@ function InstagramIcon() {
 function MailIcon() {
   return (
     <svg
-      width="20"
-      height="20"
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -48,23 +48,17 @@ const footerLinks = [
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[#030712] border-t border-white/5">
+    <footer className="relative bg-[#080B12] border-t border-white/[0.06]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Brand */}
           <div>
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                </svg>
-              </div>
-              <span className="text-white font-semibold text-lg">
+            <Link href="/" className="inline-block mb-4">
+              <span className="font-heading text-[rgba(240,240,250,1)] font-semibold text-lg tracking-tight">
                 MVHS Astronomy
               </span>
             </Link>
-            <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
+            <p className="text-[rgba(240,240,250,0.5)] text-sm leading-relaxed max-w-xs">
               A student-run physics and astronomy club at Mountain View High
               School, building an autonomous telescope for community star
               parties.
@@ -73,7 +67,7 @@ export default function Footer() {
 
           {/* Links */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+            <h4 className="text-sm font-medium text-[rgba(240,240,250,0.5)] uppercase tracking-wider mb-4 font-heading">
               Quick Links
             </h4>
             <ul className="space-y-2">
@@ -81,7 +75,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-slate-500 hover:text-white transition-colors duration-200 text-sm"
+                    className="text-[rgba(240,240,250,0.5)] hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200 text-sm"
                   >
                     {link.label}
                   </Link>
@@ -92,13 +86,13 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+            <h4 className="text-sm font-medium text-[rgba(240,240,250,0.5)] uppercase tracking-wider mb-4 font-heading">
               Connect
             </h4>
             <div className="space-y-3">
               <a
                 href="mailto:mvhsphysicsastroclub@gmail.com"
-                className="flex items-center gap-3 text-slate-500 hover:text-white transition-colors duration-200 text-sm"
+                className="flex items-center gap-3 text-[rgba(240,240,250,0.5)] hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200 text-sm"
               >
                 <MailIcon />
                 mvhsphysicsastroclub@gmail.com
@@ -107,7 +101,7 @@ export default function Footer() {
                 href="https://instagram.com/mvhs_physics_astro_club"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-slate-500 hover:text-white transition-colors duration-200 text-sm"
+                className="flex items-center gap-3 text-[rgba(240,240,250,0.5)] hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200 text-sm"
               >
                 <InstagramIcon />
                 @mvhs_physics_astro_club
@@ -117,12 +111,12 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-slate-600 text-sm">
+        <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-[rgba(240,240,250,0.3)] text-sm">
             &copy; {new Date().getFullYear()} MVHS Physics &amp; Astronomy Club. All
             rights reserved.
           </p>
-          <p className="text-slate-700 text-xs">
+          <p className="text-[rgba(240,240,250,0.25)] text-xs">
             Mountain View High School &middot; Mountain View, CA
           </p>
         </div>

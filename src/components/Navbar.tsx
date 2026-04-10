@@ -16,8 +16,8 @@ const navLinks = [
 function InstagramIcon() {
   return (
     <svg
-      width="20"
-      height="20"
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -34,17 +34,17 @@ function InstagramIcon() {
 
 function MenuIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="12" x2="21" y2="12" />
-      <line x1="3" y1="18" x2="21" y2="18" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" y1="7" x2="20" y2="7" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="17" x2="20" y2="17" />
     </svg>
   );
 }
 
 function CloseIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
@@ -62,7 +62,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
@@ -71,25 +70,16 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#030712]/80 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20"
+          ? "bg-[#080B12]/80 backdrop-blur-xl border-b border-white/[0.06]"
           : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 group"
-          >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold transition-transform duration-300 group-hover:scale-110">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-              </svg>
-            </div>
-            <span className="text-white font-semibold text-lg tracking-tight">
-              MVHS <span className="text-slate-300">Astronomy</span>
+          <Link href="/" className="flex items-center gap-2 group">
+            <span className="font-heading text-[rgba(240,240,250,1)] font-semibold text-lg tracking-tight">
+              MVHS Astronomy
             </span>
           </Link>
 
@@ -99,7 +89,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="px-3 py-2 text-sm text-slate-300 hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/5"
+                className="px-3 py-2 text-sm text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -112,14 +102,14 @@ export default function Navbar() {
               href="https://instagram.com/mvhs_physics_astro_club"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-slate-400 hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/5"
+              className="p-2 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
               aria-label="Instagram"
             >
               <InstagramIcon />
             </a>
             <a
               href="mailto:mvhsphysicsastroclub@gmail.com"
-              className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-violet-600 rounded-lg hover:from-blue-500 hover:to-violet-500 transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5"
+              className="btn-titanium-dark px-7 py-2.5 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
             >
               Contact Us
             </a>
@@ -128,7 +118,7 @@ export default function Navbar() {
           {/* Mobile Toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 text-slate-400 hover:text-white transition-colors"
+            className="lg:hidden p-2 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <CloseIcon /> : <MenuIcon />}
@@ -142,30 +132,30 @@ export default function Navbar() {
           mobileOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="bg-[#030712]/95 backdrop-blur-xl border-t border-white/5 px-4 py-4 space-y-1">
+        <div className="bg-[#080B12]/95 backdrop-blur-xl border-t border-white/[0.06] px-4 py-4 space-y-1">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors duration-200"
+              className="block px-4 py-3 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
             >
               {link.label}
             </Link>
           ))}
-          <div className="flex items-center gap-3 px-4 pt-4 border-t border-white/5 mt-2">
+          <div className="flex items-center gap-3 px-4 pt-4 border-t border-white/[0.06] mt-2">
             <a
               href="https://instagram.com/mvhs_physics_astro_club"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-slate-400 hover:text-white transition-colors"
+              className="p-2 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors"
               aria-label="Instagram"
             >
               <InstagramIcon />
             </a>
             <a
               href="mailto:mvhsphysicsastroclub@gmail.com"
-              className="flex-1 text-center px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-violet-600 rounded-lg hover:from-blue-500 hover:to-violet-500 transition-all duration-200"
+              className="flex-1 text-center btn-titanium-dark px-7 py-2.5 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
             >
               Contact Us
             </a>

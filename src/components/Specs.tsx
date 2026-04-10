@@ -5,7 +5,7 @@ import AnimatedCounter from "./AnimatedCounter";
 import SectionHeading from "./SectionHeading";
 
 const stats = [
-  { end: 10, suffix: '"', label: "Mirror Diameter", prefix: "" },
+  { end: 10, suffix: '"', label: "Mirror Diameter", prefix: "", highlight: true },
   { end: 1138, suffix: "mm", label: "Focal Length", prefix: "" },
   { end: 4.48, suffix: "", label: "Focal Ratio", prefix: "f/", decimals: 2 },
   { end: 6800, suffix: "+", label: "Lines of Code", prefix: "" },
@@ -17,7 +17,7 @@ const bentoItems = [
     title: "Primary Mirror",
     desc: '10" f/4.48 parabolic mirror — the optical heart of the system',
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
         <circle cx="12" cy="12" r="6" />
         <circle cx="12" cy="12" r="2" />
@@ -29,7 +29,7 @@ const bentoItems = [
     title: "Star Tracking",
     desc: "INDI-compatible GoTo with plate-solving and auto-alignment",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
         <line x1="22" y1="12" x2="18" y2="12" />
         <line x1="6" y1="12" x2="2" y2="12" />
@@ -43,7 +43,7 @@ const bentoItems = [
     title: "Stepper Motors",
     desc: "NEMA 23 altitude/azimuth + NEMA 17 focus with TMC2209 silent drivers",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="3" />
         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
       </svg>
@@ -54,7 +54,7 @@ const bentoItems = [
     title: "Software Stack",
     desc: "Python + TypeScript control system with web dashboard, ASCOM/INDI drivers",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="16 18 22 12 16 6" />
         <polyline points="8 6 2 12 8 18" />
       </svg>
@@ -65,7 +65,7 @@ const bentoItems = [
     title: "Dobsonian Build",
     desc: "Truss-tube Dobsonian design for optimal portability and rigidity",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="6" width="20" height="12" rx="2" />
         <path d="M12 6V2M7 6V4M17 6V4" />
       </svg>
@@ -76,7 +76,7 @@ const bentoItems = [
     title: "Portable Design",
     desc: "Breaks down into two sections — fits in a car trunk for field trips",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="1" y="3" width="15" height="13" rx="2" />
         <path d="M16 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2" />
       </svg>
@@ -87,7 +87,7 @@ const bentoItems = [
     title: "Weight Target",
     desc: "Under 50 lbs total — manageable by a single student",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M6.5 6.5h11l1 12H5.5z" />
         <path d="M9 6.5V4a3 3 0 0 1 6 0v2.5" />
       </svg>
@@ -98,7 +98,7 @@ const bentoItems = [
     title: "Imaging Camera",
     desc: "ZWO ASI120MC-S for planetary and deep-sky astrophotography",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
         <circle cx="12" cy="13" r="4" />
       </svg>
@@ -111,11 +111,8 @@ export default function Specs() {
   const { ref: bentoRef, isInView: bentoVisible } = useInView();
 
   return (
-    <section id="specs" className="relative py-24 sm:py-32 bg-[#030712]">
-      {/* Background gradient */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="specs" className="relative py-24 sm:py-32 bg-[#080B12]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
           title="Technical Specifications"
           subtitle="Engineered for performance — every component carefully selected and tested."
@@ -131,6 +128,7 @@ export default function Specs() {
               suffix={stat.suffix}
               label={stat.label}
               decimals={stat.decimals}
+              highlight={stat.highlight}
             />
           ))}
         </div>
@@ -143,7 +141,7 @@ export default function Specs() {
           {bentoItems.map((item, i) => (
             <div
               key={item.title}
-              className={`group relative p-6 lg:p-8 rounded-2xl bg-[#0a0f1a] border border-white/[0.08] transition-all duration-700 hover:bg-[#0d1220] hover:border-white/[0.14] hover:-translate-y-0.5 ${
+              className={`group p-6 lg:p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-700 hover:bg-[#111922] hover:border-white/[0.12] ${
                 item.span
               } ${
                 bentoVisible
@@ -152,13 +150,13 @@ export default function Specs() {
               }`}
               style={{ transitionDelay: `${i * 80}ms` }}
             >
-              <div className="text-blue-400 mb-4 group-hover:text-violet-400 transition-colors duration-300">
+              <div className="w-10 h-10 rounded-xl bg-[#121A25] border border-white/[0.06] flex items-center justify-center text-white/90 mb-4">
                 {item.icon}
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">
+              <h3 className="font-heading text-base font-semibold text-[rgba(240,240,250,0.95)] mb-2">
                 {item.title}
               </h3>
-              <p className="text-sm text-slate-400 leading-relaxed">
+              <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
                 {item.desc}
               </p>
             </div>

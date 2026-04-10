@@ -17,12 +17,12 @@ export default function SectionHeading({ title, subtitle }: SectionHeadingProps)
         isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
     >
-      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+      <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mb-6" />
+      <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)]">
         {title}
       </h2>
-      <div className="mx-auto w-24 h-1 rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-500" />
       {subtitle && (
-        <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
+        <p className="text-[rgba(240,240,250,0.6)] text-lg mt-4 max-w-2xl mx-auto">
           {subtitle}
         </p>
       )}

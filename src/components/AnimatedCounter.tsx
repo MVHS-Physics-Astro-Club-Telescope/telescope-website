@@ -10,6 +10,7 @@ interface AnimatedCounterProps {
   suffix?: string;
   label: string;
   decimals?: number;
+  highlight?: boolean;
 }
 
 export default function AnimatedCounter({
@@ -19,6 +20,7 @@ export default function AnimatedCounter({
   suffix = "",
   label,
   decimals = 0,
+  highlight = false,
 }: AnimatedCounterProps) {
   const { ref, isInView } = useInView({ threshold: 0.3 });
   const [count, setCount] = useState(0);
@@ -51,13 +53,19 @@ export default function AnimatedCounter({
     : Math.round(count).toLocaleString();
 
   return (
-    <div ref={ref} className="text-center group">
-      <div className="text-3xl sm:text-4xl lg:text-5xl font-bold font-mono text-white transition-transform duration-300 group-hover:scale-110">
-        {prefix}
-        {displayValue}
-        {suffix}
+    <div ref={ref} className="text-center">
+      <div
+        className={`font-heading text-4xl font-bold ${
+          highlight
+            ? "text-[#0A84FF]"
+            : "text-[rgba(240,240,250,1)]"
+        }`}
+      >
+        <span>{prefix}</span>
+        <span>{displayValue}</span>
+        <span className="text-[rgba(240,240,250,0.4)]">{suffix}</span>
       </div>
-      <div className="mt-2 text-sm sm:text-base text-slate-400 uppercase tracking-wider">
+      <div className="mt-2 text-xs uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
         {label}
       </div>
     </div>
