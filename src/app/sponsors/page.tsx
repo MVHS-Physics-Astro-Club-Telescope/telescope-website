@@ -20,7 +20,7 @@ const sponsors = [
   {
     name: "Pacific Holographics",
     logo: "/sponsors/pacific-holographics.png",
-    url: "https://pacholo.com",
+    url: "http://pacholo.com",
     description:
       "Pacific Holographics specializes in precision holographic optical elements. Their support is helping us achieve the optical precision our telescope demands.",
   },
