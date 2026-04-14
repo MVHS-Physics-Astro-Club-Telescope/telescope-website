@@ -17,6 +17,13 @@ const sponsors = [
     description:
       "Online laser cutting, waterjet cutting, and metal fabrication services. SendCutSend is helping us manufacture precision telescope components.",
   },
+  {
+    name: "Pacific Holographics",
+    logo: "/sponsors/pacific-holographics.png",
+    url: "https://pacholo.com",
+    description:
+      "Pacific Holographics specializes in precision holographic optical elements. Their support is helping us achieve the optical precision our telescope demands.",
+  },
 ];
 
 export default function SponsorsPage() {

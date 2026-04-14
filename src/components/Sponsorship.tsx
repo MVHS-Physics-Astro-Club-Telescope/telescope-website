@@ -35,7 +35,7 @@ export default function Sponsorship() {
           {/* Left: Budget Info */}
           <div>
             <h3 className="font-heading text-3xl font-bold text-[rgba(240,240,250,1)] mb-2">
-              $850&ndash;$1,300
+              $1,706&ndash;$2,593
             </h3>
             <p className="text-sm font-heading uppercase tracking-[0.15em] text-[rgba(240,240,250,0.4)] mb-6">
               Estimated Budget

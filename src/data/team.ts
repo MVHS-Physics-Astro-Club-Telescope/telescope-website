@@ -8,18 +8,18 @@ export interface TeamMember {
 
 export const team: TeamMember[] = [
   {
-    name: "Eeshan Khandelwal",
-    role: "Software & Electronics Lead",
-    initials: "EK",
-    color: "#3b82f6",
-    image: "/team/eeshan.jpg",
-  },
-  {
     name: "Aryan Khanna",
     role: "Club President",
     initials: "AK",
     color: "#7c3aed",
     image: "/team/aryan_khanna.jpg",
+  },
+  {
+    name: "Eeshan Khandelwal",
+    role: "Software & Electronics Lead",
+    initials: "EK",
+    color: "#3b82f6",
+    image: "/team/eeshan.jpg",
   },
   {
     name: "Vidu Senadheera",
