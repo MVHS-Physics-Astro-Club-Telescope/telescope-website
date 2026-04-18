@@ -42,6 +42,22 @@ export default function PartsTable() {
 
   return (
     <div>
+      {/* Disclaimer Banner */}
+      <div className="mb-8 p-4 rounded-2xl bg-[#0D1219] border border-[#FF9F0A]/20 shadow-[inset_0_1px_0_rgba(255,159,10,0.06)]">
+        <div className="flex items-start gap-3">
+          <svg className="w-5 h-5 text-[#FF9F0A] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <p className="text-sm text-[rgba(240,240,250,0.7)] leading-relaxed">
+            Product links are provided as reference only. <span className="text-[rgba(240,240,250,0.9)] font-medium">Before purchasing any part, please contact us at{" "}
+            <a href="mailto:mvhsphysicsastroclub@gmail.com" className="text-[#0A84FF] hover:underline">mvhsphysicsastroclub@gmail.com</a></span>{" "}
+            to confirm specifications and compatibility with our build. Prices and availability may change.
+          </p>
+        </div>
+      </div>
+
       {/* Budget Summary Cards — titanium card pattern */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <div className="p-5 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300">
@@ -155,7 +171,23 @@ export default function PartsTable() {
               >
                 <td className="px-6 py-4">
                   <div className="text-sm font-medium text-[rgba(240,240,250,0.95)]">
-                    {part.name}
+                    {part.purchaseUrl ? (
+                      <a
+                        href={part.purchaseUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#0A84FF] hover:text-[#409CFF] hover:underline transition-colors inline-flex items-center gap-1"
+                      >
+                        {part.name}
+                        <svg className="w-3 h-3 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </a>
+                    ) : (
+                      part.name
+                    )}
                   </div>
                   {part.notes && (
                     <div className="text-xs text-[rgba(240,240,250,0.4)] mt-0.5">
@@ -211,7 +243,23 @@ export default function PartsTable() {
             <div className="flex items-start justify-between gap-3 mb-3">
               <div>
                 <h3 className="text-sm font-semibold text-[rgba(240,240,250,0.95)]">
-                  {part.name}
+                  {part.purchaseUrl ? (
+                    <a
+                      href={part.purchaseUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#0A84FF] hover:text-[#409CFF] hover:underline transition-colors inline-flex items-center gap-1"
+                    >
+                      {part.name}
+                      <svg className="w-3 h-3 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                      </svg>
+                    </a>
+                  ) : (
+                    part.name
+                  )}
                 </h3>
                 <p className="text-xs text-[rgba(240,240,250,0.4)] mt-0.5">{part.category}</p>
               </div>
