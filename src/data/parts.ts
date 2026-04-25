@@ -563,10 +563,22 @@ export function getBudgetRange(): { low: number; high: number } {
   let high = 0;
   for (const part of parts) {
     if (part.status === "Donated") continue;
-    const match = part.estimatedCost.match(/\$(\d+)[–-](\d+)/);
-    if (match) {
-      low += parseInt(match[1], 10) * part.quantity;
-      high += parseInt(match[2], 10) * part.quantity;
+    // estimatedCost is the LINE-ITEM TOTAL (a single tube of glue, a 50-pack
+    // of T-nuts, the kit that contains all 4 PTFE pads, etc.), not per-unit
+    // pricing. Quantity is informational — what we need on the build, not
+    // how many separate purchases. Keep this aligned with the engineering
+    // PDF's published budget of $1,706–$2,593.
+    const range = part.estimatedCost.match(/\$(\d+)[–-](\d+)/);
+    if (range) {
+      low += parseInt(range[1], 10);
+      high += parseInt(range[2], 10);
+      continue;
+    }
+    const single = part.estimatedCost.match(/\$(\d+)/);
+    if (single) {
+      const v = parseInt(single[1], 10);
+      low += v;
+      high += v;
     }
   }
   return { low, high };

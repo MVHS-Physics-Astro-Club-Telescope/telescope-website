@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import SponsorButton from "@/components/SponsorButton";
+import { sponsors, getTotalRaised, getCashSponsorCount, getInKindSponsorCount } from "@/data/sponsors";
 
 export const metadata: Metadata = {
   title: "Our Sponsors — MVHS Astronomy Telescope Project",
@@ -9,24 +10,86 @@ export const metadata: Metadata = {
     "Thank you to the organizations supporting our student-built autonomous telescope. Interested in sponsoring? Get in touch.",
 };
 
-const sponsors = [
-  {
-    name: "SendCutSend",
-    logo: "/sponsors/sendcutsend.svg",
-    url: "https://sendcutsend.com",
-    description:
-      "Online laser cutting, waterjet cutting, and metal fabrication services. SendCutSend is helping us manufacture precision telescope components.",
-  },
-  {
-    name: "Pacific Holographics",
-    logo: "/sponsors/pacific-holographics.png",
-    url: "http://pacholo.com",
-    description:
-      "Pacific Holographics specializes in precision holographic optical elements. Their support is helping us achieve the optical precision our telescope demands.",
-  },
-];
+const TYPE_LABELS = {
+  Cash: "Cash sponsor",
+  Equipment: "Equipment donor",
+  Service: "Service partner",
+  Materials: "Materials partner",
+} as const;
+
+const TYPE_ACCENT = {
+  Cash: "text-[#30D158]",
+  Equipment: "text-[#0A84FF]",
+  Service: "text-[#5AC8FA]",
+  Materials: "text-[#FF9F0A]",
+} as const;
+
+function SponsorCard({ sponsor }: { sponsor: (typeof sponsors)[number] }) {
+  const cardClasses =
+    "group p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300 flex flex-col items-center text-center h-full";
+
+  const inner = (
+    <>
+      {sponsor.logo ? (
+        <div className="w-full h-20 flex items-center justify-center mb-6">
+          <Image
+            src={sponsor.logo}
+            alt={`${sponsor.name} logo`}
+            width={200}
+            height={60}
+            className="max-h-16 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+          />
+        </div>
+      ) : (
+        <div className="w-full h-20 flex items-center justify-center mb-6">
+          <div className="font-heading text-2xl font-bold text-[rgba(240,240,250,0.85)] tracking-tight px-4 text-center">
+            {sponsor.name}
+          </div>
+        </div>
+      )}
+      <span
+        className={`text-[10px] uppercase tracking-[0.2em] font-medium mb-2 ${TYPE_ACCENT[sponsor.type]}`}
+      >
+        {TYPE_LABELS[sponsor.type]}
+      </span>
+      <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mb-1">
+        {sponsor.name}
+      </h3>
+      <p className="text-xs font-medium text-[rgba(240,240,250,0.6)] mb-3 tabular-nums">
+        {sponsor.contribution}
+      </p>
+      <p className="text-sm text-[rgba(240,240,250,0.5)] leading-relaxed flex-1">
+        {sponsor.description}
+      </p>
+      {sponsor.url && (
+        <span className="mt-4 text-xs text-[rgba(240,240,250,0.4)] group-hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200">
+          Visit website &rarr;
+        </span>
+      )}
+    </>
+  );
+
+  if (sponsor.url) {
+    return (
+      <a
+        href={sponsor.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Visit ${sponsor.name} website`}
+        className={cardClasses}
+      >
+        {inner}
+      </a>
+    );
+  }
+  return <div className={cardClasses}>{inner}</div>;
+}
 
 export default function SponsorsPage() {
+  const totalRaised = getTotalRaised();
+  const cashCount = getCashSponsorCount();
+  const inKindCount = getInKindSponsorCount();
+
   return (
     <section className="relative min-h-screen bg-[#080B12] pt-28 sm:pt-32 pb-20">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,36 +118,38 @@ export default function SponsorsPage() {
           </p>
         </div>
 
+        {/* Quick stats strip */}
+        <div className="grid grid-cols-3 gap-4 sm:gap-8 mb-16 p-6 sm:p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+          <div className="text-center">
+            <div className="font-heading text-3xl sm:text-4xl font-bold text-[#30D158] tabular-nums">
+              ${totalRaised.toLocaleString()}
+            </div>
+            <div className="mt-2 text-xs uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
+              Cash raised
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="font-heading text-3xl sm:text-4xl font-bold text-[rgba(240,240,250,1)] tabular-nums">
+              {cashCount}
+            </div>
+            <div className="mt-2 text-xs uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
+              Cash sponsors
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="font-heading text-3xl sm:text-4xl font-bold text-[rgba(240,240,250,1)] tabular-nums">
+              {inKindCount}
+            </div>
+            <div className="mt-2 text-xs uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
+              In-kind sponsors
+            </div>
+          </div>
+        </div>
+
         {/* Sponsors Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-24">
           {sponsors.map((sponsor) => (
-            <a
-              key={sponsor.name}
-              href={sponsor.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Visit ${sponsor.name} website`}
-              className="group p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300 flex flex-col items-center text-center"
-            >
-              <div className="w-full h-20 flex items-center justify-center mb-6">
-                <Image
-                  src={sponsor.logo}
-                  alt={`${sponsor.name} logo`}
-                  width={200}
-                  height={60}
-                  className="max-h-16 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300"
-                />
-              </div>
-              <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mb-2">
-                {sponsor.name}
-              </h3>
-              <p className="text-sm text-[rgba(240,240,250,0.5)] leading-relaxed">
-                {sponsor.description}
-              </p>
-              <span className="mt-4 text-xs text-[rgba(240,240,250,0.4)] group-hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200">
-                Visit website &rarr;
-              </span>
-            </a>
+            <SponsorCard key={sponsor.name} sponsor={sponsor} />
           ))}
         </div>
 
@@ -104,10 +169,10 @@ export default function SponsorsPage() {
               Get in Touch
             </SponsorButton>
             <Link
-              href="/#support"
+              href="/#fundraising"
               className="btn-titanium-dark px-8 py-3 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
             >
-              Learn More
+              See progress
             </Link>
           </div>
         </div>
