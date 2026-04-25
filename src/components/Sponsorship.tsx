@@ -3,6 +3,7 @@
 import { useInView } from "@/hooks/useInView";
 import SectionHeading from "./SectionHeading";
 import SponsorButton from "./SponsorButton";
+import { getBudgetRange } from "@/data/parts";
 
 const benefits = [
   "Your name engraved on our 10-inch Dobsonian telescope",
@@ -14,6 +15,7 @@ const benefits = [
 
 export default function Sponsorship() {
   const { ref, isInView } = useInView();
+  const { low, high } = getBudgetRange();
 
   return (
     <section id="support" className="relative py-24 sm:py-32 bg-[#080B12]">
@@ -34,8 +36,8 @@ export default function Sponsorship() {
         >
           {/* Left: Budget Info */}
           <div>
-            <h3 className="font-heading text-3xl font-bold text-[rgba(240,240,250,1)] mb-2">
-              $1,706&ndash;$2,593
+            <h3 className="font-heading text-3xl font-bold text-[rgba(240,240,250,1)] mb-2 tabular-nums">
+              ${low.toLocaleString()}&ndash;${high.toLocaleString()}
             </h3>
             <p className="text-sm font-heading uppercase tracking-[0.15em] text-[rgba(240,240,250,0.4)] mb-6">
               Estimated Budget
