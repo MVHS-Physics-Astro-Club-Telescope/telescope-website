@@ -11,21 +11,32 @@ permissions:
   contents: read
   pull-requests: write
   issues: write
+  id-token: write  # required by claude-code-action for OIDC auth
 
 jobs:
   claude-review:
     name: Claude Code Review
     runs-on: ubuntu-latest
+    # Only run when the OAuth token has been provisioned (set repo variable
+    # CLAUDE_REVIEW_ENABLED=true after configuring CLAUDE_CODE_OAUTH_TOKEN).
+    # Until then, the check is skipped (status: success) instead of failing
+    # with an unhelpful OIDC error.
     if: >
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'issue_comment' &&
-       contains(github.event.comment.body, '@claude') &&
-       github.event.issue.pull_request)
+      (github.event_name == 'pull_request' ||
+       (github.event_name == 'issue_comment' &&
+        contains(github.event.comment.body, '@claude') &&
+        github.event.issue.pull_request)) &&
+      vars.CLAUDE_REVIEW_ENABLED == 'true'
     steps:
       - uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          model: claude-sonnet-4-6
+          # Authenticate via Claude Max OAuth token (NOT an API key).
+          # Setup: run `claude /install-github-app` in Claude Code, OR run
+          # `claude auth token` locally and add the result as the repo
+          # secret CLAUDE_CODE_OAUTH_TOKEN. Then set repo variable
+          # CLAUDE_REVIEW_ENABLED=true to flip on the check.
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--model claude-sonnet-4-6"
           prompt: |
             Review this PR for:
             1. Security issues (OWASP top 10, hardcoded secrets, injection, XSS)

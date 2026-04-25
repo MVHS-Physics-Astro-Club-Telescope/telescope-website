@@ -23,6 +23,16 @@ export default function FundraisingProgress() {
   useEffect(() => {
     if (!isInView) return;
 
+    // Respect prefers-reduced-motion: jump straight to final values.
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      setAnimatedRaised(raised);
+      setAnimatedPercent(targetPercent);
+      return;
+    }
+
     const duration = 1800;
     let frame: number;
     let start: number | null = null;
@@ -82,13 +92,22 @@ export default function FundraisingProgress() {
           </div>
 
           {/* Progress bar */}
-          <div className="relative h-4 w-full rounded-full bg-white/[0.04] overflow-hidden border border-white/[0.06] mb-3">
+          <div
+            role="progressbar"
+            aria-label={`Fundraising progress: ${raised.toLocaleString()} dollars raised of ${goal.toLocaleString()} dollar goal`}
+            aria-valuenow={raised}
+            aria-valuemin={0}
+            aria-valuemax={goal}
+            aria-valuetext={`${targetPercent.toFixed(0)} percent funded, ${remaining.toLocaleString()} dollars still needed`}
+            className="relative h-4 w-full rounded-full bg-white/[0.04] overflow-hidden border border-white/[0.06] mb-3"
+          >
             <div
               className="h-full rounded-full bg-gradient-to-r from-[#0A84FF] via-[#30D158] to-[#5AC8FA] shadow-[0_0_20px_rgba(48,209,88,0.4)] transition-all duration-300 ease-out"
               style={{ width: `${animatedPercent}%` }}
             />
             {/* Shimmer effect */}
             <div
+              aria-hidden="true"
               className="absolute top-0 h-full w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none"
               style={{
                 left: `${animatedPercent}%`,
