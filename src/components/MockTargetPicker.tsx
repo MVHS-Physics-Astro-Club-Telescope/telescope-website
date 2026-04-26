@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useId } from "react";
+import { useEffect, useMemo, useRef, useState, useId } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Command as CommandRoot,
@@ -97,8 +97,21 @@ export default function MockTargetPicker() {
   const [chip, setChip] = useState<ChipKey>("all");
   const [selected, setSelected] = useState<Target | null>(null);
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const previewId = useId();
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const chipRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Restore focus to the trigger after the dialog closes. Wrapped in a small
+  // setTimeout so the focus call runs after the dialog unmount commits.
+  function closeAndRestoreFocus() {
+    setOpen(false);
+    setTimeout(() => {
+      triggerRef.current?.focus();
+    }, 0);
+  }
 
   // ⌘K / Ctrl-K to open the palette from anywhere on the page; Escape closes.
   useEffect(() => {
@@ -109,12 +122,27 @@ export default function MockTargetPicker() {
         return;
       }
       if (e.key === "Escape") {
-        setOpen((v) => (v ? false : v));
+        setOpen((wasOpen) => {
+          if (wasOpen) {
+            // Return focus to the trigger after Escape closes the dialog.
+            setTimeout(() => triggerRef.current?.focus(), 0);
+            return false;
+          }
+          return wasOpen;
+        });
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  function validateEmail(v: string) {
+    if (!v) return "";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+      return "That doesn't look like a valid email.";
+    }
+    return "";
+  }
 
   // Filtered + grouped catalog for the palette
   const { easy, challenging } = useMemo(() => {
@@ -127,7 +155,37 @@ export default function MockTargetPicker() {
 
   function pick(t: Target) {
     setSelected(t);
-    setOpen(false);
+    closeAndRestoreFocus();
+  }
+
+  function onChipKeyDown(
+    e: React.KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) {
+    const last = CHIPS.length - 1;
+    let next = -1;
+    switch (e.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        next = index === last ? 0 : index + 1;
+        break;
+      case "ArrowLeft":
+      case "ArrowUp":
+        next = index === 0 ? last : index - 1;
+        break;
+      case "Home":
+        next = 0;
+        break;
+      case "End":
+        next = last;
+        break;
+      default:
+        return;
+    }
+    e.preventDefault();
+    const target = CHIPS[next];
+    setChip(target.key);
+    chipRefs.current[next]?.focus();
   }
 
   return (
@@ -148,17 +206,21 @@ export default function MockTargetPicker() {
         <div
           id="target-chips"
           role="radiogroup"
-          aria-label="Filter targets by type"
           className="flex flex-wrap gap-2"
         >
-          {CHIPS.map((c) => {
+          {CHIPS.map((c, i) => {
             const active = chip === c.key;
             return (
               <button
                 key={c.key}
+                ref={(el) => {
+                  chipRefs.current[i] = el;
+                }}
                 type="button"
                 role="radio"
                 aria-checked={active}
+                tabIndex={active ? 0 : -1}
+                onKeyDown={(e) => onChipKeyDown(e, i)}
                 onClick={() => setChip(c.key)}
                 className={cn(
                   "group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-150",
@@ -194,6 +256,7 @@ export default function MockTargetPicker() {
 
         <button
           id="target-search"
+          ref={triggerRef}
           type="button"
           onClick={() => setOpen(true)}
           aria-haspopup="dialog"
@@ -285,22 +348,47 @@ export default function MockTargetPicker() {
           autoComplete="email"
           placeholder="you@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            // Clear stale errors as the user fixes the value.
+            if (emailError) setEmailError(validateEmail(e.target.value));
+          }}
+          onBlur={(e) => setEmailError(validateEmail(e.target.value))}
+          aria-invalid={!!emailError}
+          aria-describedby={emailError ? "target-email-error" : undefined}
           className="h-12 px-4 rounded-full bg-[#121A25] border border-white/[0.08] text-[15px] text-[rgba(240,240,250,0.95)] placeholder:text-[rgba(240,240,250,0.35)] focus-visible:border-[#0A84FF]/50 focus-visible:ring-2 focus-visible:ring-[#0A84FF]/20"
         />
+        {emailError && (
+          <p
+            id="target-email-error"
+            role="alert"
+            className="mt-1.5 text-xs text-[#FF6B6B]"
+          >
+            {emailError}
+          </p>
+        )}
       </div>
 
       {/* Submit (disabled with explanation) */}
       <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3">
         <TooltipProvider delay={150}>
-          <Tooltip>
+          <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
             <TooltipTrigger
               render={
                 <button
                   type="button"
-                  disabled
+                  // Use aria-disabled (not the native `disabled` attribute)
+                  // so the button remains in the focus order and can show
+                  // its tooltip on keyboard focus (WCAG 1.4.13). We
+                  // suppress activation in onClick instead.
                   aria-disabled="true"
+                  aria-label="Submit request — submissions open at first light, August 2026"
                   title="Submissions open when telescope goes online"
+                  onClick={(e) => e.preventDefault()}
+                  onFocus={() => setTooltipOpen(true)}
+                  onBlur={() => setTooltipOpen(false)}
+                  onMouseEnter={() => setTooltipOpen(true)}
+                  onMouseLeave={() => setTooltipOpen(false)}
                   className="btn-titanium-light inline-flex items-center justify-center gap-2 px-7 h-11 text-sm font-medium rounded-full opacity-70 cursor-not-allowed shrink-0"
                 >
                   <Lock className="h-4 w-4" aria-hidden="true" />
@@ -340,7 +428,7 @@ export default function MockTargetPicker() {
             <button
               type="button"
               aria-label="Close target search"
-              onClick={() => setOpen(false)}
+              onClick={closeAndRestoreFocus}
               className="absolute inset-0 bg-black/60 backdrop-blur-md cursor-default"
             />
 

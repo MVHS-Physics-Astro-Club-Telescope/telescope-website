@@ -105,9 +105,9 @@ export default function EmailSignup({
       {(title || description) && (
         <div className="mb-5">
           {title && (
-            <h3 className="font-heading text-xl font-semibold text-[rgba(240,240,250,0.95)] mb-2">
+            <h2 className="font-heading text-xl font-semibold text-[rgba(240,240,250,0.95)] mb-2">
               {title}
-            </h3>
+            </h2>
           )}
           {description && (
             <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">

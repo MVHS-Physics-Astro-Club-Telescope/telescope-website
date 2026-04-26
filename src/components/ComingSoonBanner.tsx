@@ -85,9 +85,9 @@ export default function ComingSoonBanner({
         {/* Body */}
         <div className="flex-1 sm:border-l sm:border-white/[0.06] sm:pl-6">
           {headline && (
-            <h3 className="font-heading text-[15px] sm:text-base font-semibold text-[rgba(240,240,250,0.97)] mb-1.5">
+            <h2 className="font-heading text-[15px] sm:text-base font-semibold text-[rgba(240,240,250,0.97)] mb-1.5">
               {headline}
-            </h3>
+            </h2>
           )}
           <p className="text-sm sm:text-[15px] leading-relaxed text-[rgba(240,240,250,0.78)]">
             {message}

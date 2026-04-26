@@ -204,9 +204,9 @@ export default async function TonightAtMVHS() {
           <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-[rgba(240,240,250,0.5)]">
             Tonight at MVHS · 37.37°N
           </p>
-          <h3 className="font-heading text-xl sm:text-[22px] font-semibold text-[rgba(240,240,250,0.97)] mt-1">
+          <h2 className="font-heading text-xl sm:text-[22px] font-semibold text-[rgba(240,240,250,0.97)] mt-1">
             What the sky looks like right now
-          </h3>
+          </h2>
         </div>
         {!f.ok && (
           <span
@@ -264,7 +264,7 @@ export default async function TonightAtMVHS() {
         />
       </dl>
 
-      <p className="mt-5 text-[11px] text-[rgba(240,240,250,0.45)] leading-relaxed">
+      <p className="mt-5 text-[11px] text-[rgba(240,240,250,0.65)] leading-relaxed">
         Live forecast from 7Timer · Mountain View, CA. Updates every 30
         minutes. Once the telescope is online, this widget will also show
         whether tonight&apos;s queue is currently capturing.
@@ -273,6 +273,12 @@ export default async function TonightAtMVHS() {
   );
 }
 
+/**
+ * `Tile` wraps a `<dt>` label and `<dd>` value inside a grouping `<div>`
+ * (allowed under HTML5 `<dl>` content model — a `div` may group a
+ * dt/dd pair). This gives screen readers a proper term-description
+ * association (WCAG 1.3.1) while keeping the original card visual.
+ */
 function Tile({
   icon,
   label,
@@ -286,7 +292,7 @@ function Tile({
 }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-[#121A25] px-4 py-3.5">
-      <div className="flex items-center gap-2 mb-1.5 text-[rgba(240,240,250,0.55)]">
+      <dt className="flex items-center gap-2 mb-1.5 text-[rgba(240,240,250,0.55)]">
         <span
           className={cn(
             "flex h-6 w-6 items-center justify-center rounded-md",
@@ -295,16 +301,17 @@ function Tile({
             accent === "bad" && "bg-[#FF453A]/12 text-[#ff8478]",
             !accent && "bg-white/[0.04] text-[rgba(240,240,250,0.6)]",
           )}
+          aria-hidden="true"
         >
           {icon}
         </span>
         <span className="text-[10px] font-mono uppercase tracking-[0.18em] truncate">
           {label}
         </span>
-      </div>
-      <div className="font-heading text-[18px] sm:text-[19px] font-semibold tabular-nums text-[rgba(240,240,250,0.97)]">
+      </dt>
+      <dd className="font-heading text-[18px] sm:text-[19px] font-semibold tabular-nums text-[rgba(240,240,250,0.97)]">
         {value}
-      </div>
+      </dd>
     </div>
   );
 }

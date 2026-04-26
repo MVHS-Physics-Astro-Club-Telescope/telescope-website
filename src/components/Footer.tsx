@@ -113,11 +113,11 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[rgba(240,240,250,0.3)] text-sm">
+          <p className="text-[rgba(240,240,250,0.55)] text-sm">
             &copy; {new Date().getFullYear()} MVHS Physics &amp; Astronomy Club. All
             rights reserved.
           </p>
-          <p className="text-[rgba(240,240,250,0.25)] text-xs">
+          <p className="text-[rgba(240,240,250,0.55)] text-xs">
             Mountain View High School &middot; Mountain View, CA
           </p>
         </div>

@@ -31,6 +31,11 @@
   --color-destructive: #FF453A;
   --color-destructive-foreground: #ffffff;
   --color-border: rgba(255, 255, 255, 0.08);
+  /* NOTE: shadcn convention uses --color-input as the input background; we
+     re-purpose it as the input border to match our dark theme. The bare
+     <Input> primitive will look near-invisible without explicit
+     bg-[#121A25] override — always specify a bg color when using
+     @/components/ui/input. */
   --color-input: rgba(255, 255, 255, 0.08);
   --color-ring: rgba(10, 132, 255, 0.5);
 
