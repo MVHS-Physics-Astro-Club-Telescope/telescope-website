@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 const navLinks = [
   { label: "About", href: "/#about" },
+  { label: "Observatory", href: "/#observatory" },
   { label: "Team", href: "/#team" },
   { label: "Specs", href: "/#specs" },
   { label: "Timeline", href: "/#timeline" },
@@ -85,12 +86,12 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-0.5">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="px-3 py-2 text-sm text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
+                className="px-2.5 py-2 text-[13px] whitespace-nowrap text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
               >
                 {link.label}
               </Link>

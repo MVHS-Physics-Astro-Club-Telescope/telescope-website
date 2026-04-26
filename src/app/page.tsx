@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import About from "@/components/About";
+import PublicObservatory from "@/components/PublicObservatory";
 import Team from "@/components/Team";
 import Specs from "@/components/Specs";
 import Timeline from "@/components/Timeline";
@@ -11,6 +12,7 @@ export default function Home() {
     <>
       <Hero />
       <About />
+      <PublicObservatory />
       <Team />
       <Specs />
       <Timeline />
