@@ -156,9 +156,9 @@ export default function MockTargetPicker() {
       {selected && (
         <div className="rounded-xl border border-white/[0.08] bg-[#121A25] p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-3 mb-3">
-            <h4 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)]">
+            <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)]">
               {selected.name}
-            </h4>
+            </h3>
             <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[rgba(240,240,250,0.5)]">
               {selected.type}
             </span>

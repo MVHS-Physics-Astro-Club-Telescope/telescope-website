@@ -25,8 +25,8 @@ const captureCategories = [
   {
     title: "Bright nebulae & clusters",
     image: "/request/nebula.jpg",
-    alt: "NASA infrared image of a star-forming nebula",
-    credit: "NASA / Spitzer",
+    alt: "NASA Spitzer infrared image of a star-forming nebula",
+    credit: "Star-forming nebula — NASA / Spitzer",
     description:
       "Star-forming regions, planetary nebulae, supernova remnants, open and globular clusters.",
   },

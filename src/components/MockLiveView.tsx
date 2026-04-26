@@ -63,7 +63,7 @@ export default function MockLiveView() {
         </div>
       </div>
 
-      <figcaption className="mt-3 text-xs text-[rgba(240,240,250,0.45)] text-center leading-relaxed">
+      <figcaption className="mt-3 text-xs text-[rgba(240,240,250,0.6)] text-center leading-relaxed">
         Sample preview — actual live view goes here. Image: Pillars of Creation
         (NASA, ESA, Hubble Heritage Team), public domain.
       </figcaption>
