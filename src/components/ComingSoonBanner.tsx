@@ -1,71 +1,98 @@
 "use client";
 
 import { ReactNode } from "react";
+import { motion } from "framer-motion";
+import { Telescope } from "lucide-react";
 
 interface ComingSoonBannerProps {
-  /** Short label shown left, e.g. "Coming Soon" */
+  /** Short label shown left, e.g. "In Progress" */
   label?: string;
-  /** Main message to the right of the label */
+  /** Status text in the pill (defaults to "In progress") */
+  status?: string;
+  /** Headline above the long-form message */
+  headline?: ReactNode;
+  /** Long-form message body */
   message: ReactNode;
 }
 
 /**
- * Prominent gradient banner used on /observe and /request to set expectations
- * that the telescope is still being built. Designed to feel like anticipation
- * rather than apology — gradient bar + telescope icon + plain English status.
+ * Distinctive "Coming Soon" banner. Animated telescope icon, status pill
+ * with a soft-pulsing dot ("In Progress"), headline + sub-copy. Tuned
+ * to the navy / titanium identity — no purple radial gradients.
  */
 export default function ComingSoonBanner({
   label = "Coming Soon",
+  status = "In Progress",
+  headline,
   message,
 }: ComingSoonBannerProps) {
   return (
     <div
       role="status"
       aria-live="polite"
-      className="relative overflow-hidden rounded-2xl border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+      className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0D1219] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
     >
-      {/* Gradient backdrop — keyed to the site's navy/blue accent, no AI-blob feel */}
+      {/* Subtle directional gradient — keyed to navy/blue, not pink-purple AI slop */}
       <div
         className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
         style={{
           background:
-            "linear-gradient(120deg, rgba(10,132,255,0.18) 0%, rgba(10,132,255,0.06) 35%, rgba(13,18,25,0) 75%)",
+            "linear-gradient(120deg, rgba(10,132,255,0.14) 0%, rgba(10,132,255,0.05) 35%, rgba(13,18,25,0) 70%)",
         }}
       />
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+      />
 
-      <div className="relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 px-5 sm:px-7 py-5 sm:py-6">
-        {/* Icon + label */}
+      <div className="relative flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6 px-5 sm:px-7 py-5 sm:py-6">
+        {/* Animated icon block */}
         <div className="flex items-center gap-3 shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-[#0A84FF]/15 border border-[#0A84FF]/30 flex items-center justify-center text-[#9DC4FF]">
-            {/* Telescope-on-tripod glyph */}
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="relative w-11 h-11 rounded-xl bg-[#0A84FF]/12 border border-[#0A84FF]/30 flex items-center justify-center text-[#9DC4FF]"
+          >
+            {/* Soft halo behind icon */}
+            <motion.span
               aria-hidden="true"
-            >
-              <path d="M3 11l9-3 2 4.5L5 16z" />
-              <path d="M14 12.5l4-1.4" />
-              <path d="M9 14l3 7" />
-              <path d="M12 14l-3 7" />
-              <circle cx="19" cy="9" r="2" />
-            </svg>
+              className="absolute inset-0 rounded-xl bg-[#0A84FF]/15"
+              animate={{ opacity: [0.4, 0.1, 0.4] }}
+              transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <Telescope className="relative h-5 w-5" aria-hidden="true" />
+          </motion.div>
+
+          <div className="flex flex-col">
+            <span className="font-heading text-[10px] uppercase tracking-[0.22em] text-[#9DC4FF]/80">
+              {label}
+            </span>
+            {/* Status pill: "In Progress" + soft-pulse dot */}
+            <span className="mt-1 inline-flex items-center gap-1.5 self-start">
+              <span
+                aria-hidden="true"
+                className="pulse-dot relative inline-flex h-1.5 w-1.5 rounded-full bg-[#0A84FF] shadow-[0_0_6px_rgba(10,132,255,0.7)]"
+              />
+              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[rgba(240,240,250,0.65)]">
+                {status}
+              </span>
+            </span>
           </div>
-          <span className="font-heading text-xs uppercase tracking-[0.2em] text-[#9DC4FF]">
-            {label}
-          </span>
         </div>
 
-        {/* Message */}
-        <p className="text-sm sm:text-[15px] leading-relaxed text-[rgba(240,240,250,0.85)]">
-          {message}
-        </p>
+        {/* Body */}
+        <div className="flex-1 sm:border-l sm:border-white/[0.06] sm:pl-6">
+          {headline && (
+            <h3 className="font-heading text-[15px] sm:text-base font-semibold text-[rgba(240,240,250,0.97)] mb-1.5">
+              {headline}
+            </h3>
+          )}
+          <p className="text-sm sm:text-[15px] leading-relaxed text-[rgba(240,240,250,0.78)]">
+            {message}
+          </p>
+        </div>
       </div>
     </div>
   );

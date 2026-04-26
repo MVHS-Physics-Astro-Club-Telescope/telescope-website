@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import ComingSoonBanner from "@/components/ComingSoonBanner";
 import EmailSignup from "@/components/EmailSignup";
 import FAQ from "@/components/FAQ";
 import MockLiveView from "@/components/MockLiveView";
 import StarField from "@/components/StarField";
+import TonightAtMVHS, {
+  TonightAtMVHSSkeleton,
+} from "@/components/TonightAtMVHS";
 
 export const metadata: Metadata = {
   title: "Live View — MVHS Public Observatory",
@@ -213,11 +217,14 @@ export default function ObservePage() {
       <section className="relative bg-[#080B12]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-2">
           <ComingSoonBanner
+            headline="Live view is offline until First Light"
             message={
               <>
                 The telescope is being built right now. Live view activates the
-                night we capture <strong className="text-[rgba(240,240,250,0.95)]">first light</strong> — currently
-                targeting <strong className="text-[rgba(240,240,250,0.95)]">August 2026</strong>.
+                night we capture{" "}
+                <strong className="text-[rgba(240,240,250,0.95)]">first light</strong>
+                {" "}— currently targeting{" "}
+                <strong className="text-[rgba(240,240,250,0.95)]">August 2026</strong>.
               </>
             }
           />
@@ -228,6 +235,15 @@ export default function ObservePage() {
       <section className="relative bg-[#080B12] py-16 sm:py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <MockLiveView />
+        </div>
+      </section>
+
+      {/* Tonight at MVHS — real sky conditions */}
+      <section className="relative bg-[#080B12] pb-16 sm:pb-20 -mt-4">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Suspense fallback={<TonightAtMVHSSkeleton />}>
+            <TonightAtMVHS />
+          </Suspense>
         </div>
       </section>
 

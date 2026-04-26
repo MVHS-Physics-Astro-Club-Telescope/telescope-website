@@ -112,12 +112,13 @@ export default function RequestPage() {
       <section className="relative bg-[#080B12]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-2">
           <ComingSoonBanner
+            headline="Request queue opens at First Light"
             message={
               <>
-                Submissions open when the telescope goes online — currently
-                targeting <strong className="text-[rgba(240,240,250,0.95)]">August 2026</strong>.
-                You can preview the request flow below; the form will activate
-                automatically the night of first light.
+                Currently targeting{" "}
+                <strong className="text-[rgba(240,240,250,0.95)]">August 2026</strong>.
+                You can preview the request flow below — the submit button
+                unlocks automatically the night of first light.
               </>
             }
           />

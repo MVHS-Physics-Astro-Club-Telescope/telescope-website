@@ -17,7 +17,7 @@ test.describe("/request — Submit Target preview page", () => {
   test("shows the Coming Soon banner", async ({ page }) => {
     const banner = page.getByRole("status").first();
     await expect(banner).toBeVisible();
-    await expect(banner).toContainText(/Submissions open/i);
+    await expect(banner).toContainText(/(Submissions open|Request queue|First Light)/i);
   });
 
   test("submit button is disabled with explanatory tooltip", async ({
@@ -31,24 +31,54 @@ test.describe("/request — Submit Target preview page", () => {
     );
   });
 
-  test("typeahead surfaces matches and selecting fills the input", async ({
+  test("filter chips render and respond to clicks", async ({ page }) => {
+    const galaxiesChip = page.getByRole("radio", { name: /^Galaxies$/i });
+    await expect(galaxiesChip).toBeVisible();
+    await galaxiesChip.click();
+    await expect(galaxiesChip).toHaveAttribute("aria-checked", "true");
+  });
+
+  test("⌘K keyboard shortcut opens the target command palette", async ({
     page,
   }) => {
-    const input = page.locator("#target-search");
-    await input.fill("andro");
-    // Listbox appears
-    const listbox = page.getByRole("listbox");
-    await expect(listbox).toBeVisible();
-    const option = page.getByRole("option", {
-      name: /Andromeda Galaxy \(M31\)/i,
-    });
+    // Open via keyboard
+    await page.keyboard.press(
+      process.platform === "darwin" ? "Meta+K" : "Control+K",
+    );
+    const dialog = page.getByRole("dialog", { name: /Search targets/i });
+    await expect(dialog).toBeVisible();
+    // Close with Escape
+    await page.keyboard.press("Escape");
+    await expect(dialog).not.toBeVisible();
+  });
+
+  test("clicking the search trigger opens the palette and selecting a target populates the preview", async ({
+    page,
+  }) => {
+    await page.locator("#target-search").click();
+    const dialog = page.getByRole("dialog", { name: /Search targets/i });
+    await expect(dialog).toBeVisible();
+
+    // Type to filter
+    const searchInput = dialog.getByPlaceholder(/Type to search/i);
+    await searchInput.fill("andro");
+
+    // The Andromeda option should appear; click it.
+    const option = dialog
+      .getByRole("option", { name: /Andromeda Galaxy \(M31\)/i })
+      .first();
     await expect(option).toBeVisible();
     await option.click();
-    await expect(input).toHaveValue(/Andromeda/);
-    // Preview card should now show
+
+    // Dialog closes, preview card appears with badges
+    await expect(dialog).not.toBeVisible();
     await expect(
       page.getByRole("heading", { name: /Andromeda Galaxy \(M31\)/i }),
     ).toBeVisible();
+    // Tier or type badge visible
+    await expect(page.getByText(/^Easy$/i).first()).toBeVisible();
+    // Selected name is reflected in the trigger button
+    await expect(page.locator("#target-search")).toContainText(/Andromeda/i);
   });
 
   test("renders all three 'What we can capture' categories", async ({
@@ -80,7 +110,12 @@ test.describe("/request — Submit Target preview page", () => {
 
     await page.locator("#email-request").fill("test-request@example.com");
     await page.getByRole("button", { name: /^Notify me$/i }).first().click();
-    await expect(page.getByRole("status").last()).toContainText(/test mock/i);
+    await expect(
+      page
+        .locator("[data-sonner-toast], #email-request-msg")
+        .filter({ hasText: /(test mock|on the list)/i })
+        .first(),
+    ).toBeVisible();
   });
 
   test("navigation from homepage works", async ({ page }) => {
