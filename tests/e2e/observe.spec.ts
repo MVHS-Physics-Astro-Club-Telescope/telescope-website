@@ -34,6 +34,16 @@ test.describe("/observe — Live View preview page", () => {
     }
   });
 
+  test("'Tonight at MVHS' widget renders with sky tiles", async ({ page }) => {
+    const widget = page.getByRole("region", {
+      name: /Tonight's sky conditions at MVHS/i,
+    });
+    await expect(widget).toBeVisible();
+    await expect(widget).toContainText(/Cloud cover/i);
+    await expect(widget).toContainText(/Seeing/i);
+    await expect(widget).toContainText(/Sunset/i);
+  });
+
   test("FAQ accordion expands when clicked", async ({ page }) => {
     const question = page.getByRole("button", {
       name: /When will the live view actually go live/i,
@@ -50,7 +60,6 @@ test.describe("/observe — Live View preview page", () => {
   test("email signup posts to /api/interest and shows success", async ({
     page,
   }) => {
-    // Mock the API so the test doesn't hit real Supabase / rate-limit map
     await page.route("**/api/interest", async (route) => {
       const body = route.request().postDataJSON() as {
         email: string;
@@ -71,7 +80,14 @@ test.describe("/observe — Live View preview page", () => {
     const input = page.locator("#email-observe");
     await input.fill("test-observe@example.com");
     await page.getByRole("button", { name: /^Notify me$/i }).first().click();
-    await expect(page.getByRole("status").last()).toContainText(/test mock/i);
+
+    // Either the success toast OR the inline confirm block should appear.
+    await expect(
+      page
+        .locator("[data-sonner-toast], #email-observe-msg")
+        .filter({ hasText: /(test mock|on the list)/i })
+        .first(),
+    ).toBeVisible();
   });
 
   test("homepage links to /observe via the Observatory section", async ({

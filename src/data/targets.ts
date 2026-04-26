@@ -15,6 +15,13 @@ export type TargetType =
   | "Moon"
   | "Double Star";
 
+/**
+ * Difficulty tier grouped in the command palette.
+ * - "easy": naked-eye / binocular-bright (mag <= 5) — instant gratification.
+ * - "challenging": dimmer / requires good seeing (mag > 5).
+ */
+export type TargetTier = "easy" | "challenging";
+
 export interface Target {
   id: string;
   name: string;
@@ -25,6 +32,17 @@ export interface Target {
   bestMonth: string;
   /** One-line plain-English description for the preview card */
   description: string;
+}
+
+/**
+ * Target difficulty tier — derived from apparent magnitude.
+ * "Easy" = naked-eye / instant-gratification class. "Challenging" = needs
+ * more aperture/seeing/exposure to look impressive in a final image.
+ */
+export function tierOf(t: Target): TargetTier {
+  const m = typeof t.magnitude === "number" ? t.magnitude : Number(t.magnitude);
+  if (Number.isNaN(m)) return "challenging";
+  return m <= 5 ? "easy" : "challenging";
 }
 
 export const targets: Target[] = [

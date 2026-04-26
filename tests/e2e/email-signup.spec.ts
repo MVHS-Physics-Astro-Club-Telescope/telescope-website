@@ -2,8 +2,13 @@ import { test, expect } from "@playwright/test";
 
 /**
  * Tests for the EmailSignup component, exercised on the /observe page where
- * source="observe". Covers success, error, server validation, and
+ * source="observe". Covers success, error (400 / 429 / network), and
  * client-side disabled-on-invalid behavior.
+ *
+ * Feedback now lives in two places:
+ *   - Sonner toast (data-sonner-toast) for transient success/error
+ *   - Inline aria-alert <p> beneath the input for invalid email
+ *   - Inline confirmation block (role="status") that replaces the form on success
  */
 test.describe("EmailSignup component", () => {
   test.beforeEach(async ({ page }) => {
@@ -19,13 +24,14 @@ test.describe("EmailSignup component", () => {
     await expect(submit).toBeDisabled();
 
     await input.fill("not-an-email");
+    await input.blur();
     await expect(submit).toBeDisabled();
 
     await input.fill("real@example.com");
     await expect(submit).toBeEnabled();
   });
 
-  test("displays a friendly error when the API returns 400", async ({
+  test("displays a friendly error toast when the API returns 400", async ({
     page,
   }) => {
     await page.route("**/api/interest", (route) =>
@@ -41,12 +47,13 @@ test.describe("EmailSignup component", () => {
 
     await page.locator("#email-observe").fill("bad@bad.com");
     await page.getByRole("button", { name: /^Notify me$/i }).first().click();
-    await expect(page.locator("#email-observe-msg")).toContainText(/valid email/i);
+    // Sonner renders toasts as elements with [data-sonner-toast] containing the message
+    await expect(
+      page.locator("[data-sonner-toast]").filter({ hasText: /valid email/i }),
+    ).toBeVisible();
   });
 
-  test("shows rate limit message when the API returns 429", async ({
-    page,
-  }) => {
+  test("shows rate limit toast when the API returns 429", async ({ page }) => {
     await page.route("**/api/interest", (route) =>
       route.fulfill({
         status: 429,
@@ -60,15 +67,36 @@ test.describe("EmailSignup component", () => {
 
     await page.locator("#email-observe").fill("user@example.com");
     await page.getByRole("button", { name: /^Notify me$/i }).first().click();
-    await expect(page.locator("#email-observe-msg")).toContainText(/give it a minute/i);
+    await expect(
+      page
+        .locator("[data-sonner-toast]")
+        .filter({ hasText: /give it a minute/i }),
+    ).toBeVisible();
   });
 
-  test("shows a generic error when the network request fails", async ({
+  test("shows a generic error toast when the network request fails", async ({
     page,
   }) => {
     await page.route("**/api/interest", (route) => route.abort("failed"));
     await page.locator("#email-observe").fill("user@example.com");
     await page.getByRole("button", { name: /^Notify me$/i }).first().click();
-    await expect(page.locator("#email-observe-msg")).toContainText(/Couldn't reach/i);
+    await expect(
+      page
+        .locator("[data-sonner-toast]")
+        .filter({ hasText: /Couldn't reach/i }),
+    ).toBeVisible();
+  });
+
+  test("renders inline error when email format is wrong and form submitted via JS", async ({
+    page,
+  }) => {
+    // RHF + zod: typing an invalid email surfaces the inline aria-alert
+    const input = page.locator("#email-observe");
+    await input.fill("not-an-email");
+    await input.blur();
+    // The button stays disabled, so RHF onChange validation has fired
+    await expect(
+      page.locator("#email-observe-error"),
+    ).toContainText(/valid email/i);
   });
 });
