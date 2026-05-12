@@ -22,18 +22,18 @@ export const team: TeamMember[] = [
     image: "/team/eeshan.jpg",
   },
   {
-    name: "Vidu Senadheera",
-    role: "Mechanical Lead",
-    initials: "VS",
-    color: "#06b6d4",
-    image: "/team/vidu.jpg",
-  },
-  {
     name: "Neel Chhatrala",
-    role: "Electrical Member",
+    role: "Mechanical Lead",
     initials: "NC",
     color: "#f59e0b",
     image: "/team/neel.jpg",
+  },
+  {
+    name: "Vidu Senadheera",
+    role: "Mechanical Member",
+    initials: "VS",
+    color: "#06b6d4",
+    image: "/team/vidu.jpg",
   },
   {
     name: "David Cho",
