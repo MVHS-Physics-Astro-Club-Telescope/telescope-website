@@ -97,18 +97,6 @@ export const sponsors: Sponsor[] = [
     contribution: "Educational kit (in-kind)",
   },
 
-  // ── MATERIALS PARTNERS ─────────────────────────────────────────────────
-  {
-    name: "RAFT",
-    logo: "/sponsors/raft.png",
-    url: "https://raft.net",
-    description:
-      "Resource Area for Teaching — a Bay Area nonprofit providing hands-on STEM materials to educators and youth programs. Nancy McIntyre extended us a RAFT membership and a $50 store credit toward build supplies.",
-    type: "Materials",
-    cashValue: 0,
-    contribution: "$50 store credit + membership",
-  },
-
   // ── SERVICE PARTNERS ───────────────────────────────────────────────────
   {
     name: "Copy Factory",
@@ -119,15 +107,6 @@ export const sponsors: Sponsor[] = [
     type: "Service",
     cashValue: 0,
     contribution: "Printing services (in-kind)",
-  },
-  {
-    name: "Fogarty Winery",
-    url: "http://www.fogartywinery.com",
-    description:
-      "Estate winery in Woodside, established 1981. Heather Carrie and the Fogarty team are supporting the project with a tour voucher and event hospitality for our team and partners.",
-    type: "Service",
-    cashValue: 0,
-    contribution: "Tour voucher + hospitality",
   },
 ];
 
