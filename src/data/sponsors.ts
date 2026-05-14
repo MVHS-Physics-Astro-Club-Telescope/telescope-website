@@ -6,12 +6,7 @@ export interface Sponsor {
    *  usable logo file (verified). Otherwise the card renders with a clean
    *  text wordmark. */
   logo?: string;
-  /** Homepage URL for the sponsor. */
   url?: string;
-  /** Optional direct product link (for outreach donors whose donation is a
-   *  specific product we can point visitors to — e.g. Unistellar, DWARFLAB,
-   *  Thames & Kosmos). Distinct from `url`, which is the homepage. */
-  productUrl?: string;
   description: string;
   type: SponsorType;
   /** Direct cash given to the project. Only Cash-type sponsors have non-zero
@@ -21,15 +16,6 @@ export interface Sponsor {
   /** Display string for the contribution (e.g. "$500 fabrication credit",
    *  "DWARF mini telescope"). */
   contribution: string;
-  /** True when this sponsor's contribution materially reduces the build cost
-   *  (parts/credits going onto OUR 10" Dobsonian). False for outreach-only
-   *  donations like Unistellar/DWARF smart telescopes that we use at star
-   *  parties but don't install on the build. */
-  appliesToBuild: boolean;
-  /** Retail dollar value of the in-kind contribution as it counts toward the
-   *  build budget. Only set when appliesToBuild is true and type !== "Cash".
-   *  This drives the "saved by sponsorship" headline on FundraisingProgress. */
-  estimatedRetailValue?: number;
 }
 
 export const sponsors: Sponsor[] = [
@@ -38,34 +24,22 @@ export const sponsors: Sponsor[] = [
     name: "Crave Yoga",
     url: "https://craveyoga-mv.com",
     description:
-      "Mountain View community yoga studio. Helena McLoughlin and Crave Yoga pledged a $250 cash donation to the project via our sponsor form — check pending delivery.",
+      "Mountain View community yoga studio. Helena McLoughlin and Crave Yoga submitted a direct cash donation to the project via our sponsor form.",
     type: "Cash",
     cashValue: 250,
     contribution: "$250 cash donation",
-    appliesToBuild: true,
   },
   {
     name: "Tori Atwell — The Agency RE",
     url: "https://www.theagencyre.com/agent/tori-atwell/",
     description:
-      "Bay Area real estate broker-associate at The Agency. Tori supported the project with a $100 cash donation, received April 2026.",
+      "Bay Area real estate broker-associate at The Agency. Tori is supporting the project with a direct cash donation, mailed via check to MVHS.",
     type: "Cash",
     cashValue: 100,
     contribution: "$100 cash donation",
-    appliesToBuild: true,
-  },
-  {
-    name: "Deep Sky West",
-    url: "https://www.deepskywest.com",
-    description:
-      "Remote astrophotography observatory in Rowe, NM. Lloyd Smith confirmed a monetary donation to the project (amount pending) and is offering free astrophotography classes to our club members.",
-    type: "Cash",
-    cashValue: 0,
-    contribution: "Monetary donation + free astrophotography classes",
-    appliesToBuild: true,
   },
 
-  // ── EQUIPMENT DONORS — BUILD ───────────────────────────────────────────
+  // ── EQUIPMENT DONORS ───────────────────────────────────────────────────
   {
     name: "Pacific Holographic",
     logo: "/sponsors/pacific-holographics.png",
@@ -75,66 +49,64 @@ export const sponsors: Sponsor[] = [
     type: "Equipment",
     cashValue: 0,
     contribution: "254mm primary mirror",
-    appliesToBuild: true,
-    estimatedRetailValue: 1350,
   },
   {
     name: "SendCutSend",
     logo: "/sponsors/sendcutsend.svg",
     url: "https://sendcutsend.com",
     description:
-      "Online laser cutting, waterjet cutting, and metal fabrication. SendCutSend issued a $500 fabrication credit (code MVHSTELE500) covering our strut connectors, flotation triangles, and aluminum angle stock for the mirror cell.",
+      "Online laser cutting, waterjet cutting, and metal fabrication. SendCutSend issued a $500 fabrication credit (code MVHSTELE500) we'll use to manufacture our truss connectors, mirror cell, and other precision metal parts.",
     type: "Equipment",
     cashValue: 0,
     contribution: "$500 fabrication credit",
-    appliesToBuild: true,
-    estimatedRetailValue: 500,
+  },
+  {
+    name: "Unistellar",
+    url: "https://www.unistellar.com",
+    description:
+      "Maker of smart, app-driven telescopes. Brice Rocton and Unistellar are donating a complete smart telescope to power our community star parties and outreach events.",
+    type: "Equipment",
+    cashValue: 0,
+    contribution: "Smart telescope",
+  },
+  {
+    name: "DWARFLAB",
+    url: "https://dwarflab.com",
+    description:
+      "Maker of the DWARF series of compact smart telescopes. DWARFLAB is shipping a DWARF mini smart telescope for the club's outreach program.",
+    type: "Equipment",
+    cashValue: 0,
+    contribution: "DWARF mini telescope",
   },
   {
     name: "ToupTek Astro",
     url: "https://www.touptekastro.com",
     description:
-      "Astronomy camera and accessory manufacturer. ToupTek shipped a GPM462C guide camera, an AAF electronic auto-focuser, and a cooled deep-sky imaging camera (delivered May 2026) — directly enabling our autonomous imaging pipeline.",
+      "Astronomy camera and accessory manufacturer. ToupTek is providing a GPM462C guide camera, an AAF electronic auto-focuser, and a cooled deep-sky imaging camera — directly enabling our autonomous imaging pipeline.",
     type: "Equipment",
     cashValue: 0,
     contribution: "GPM462C + AAF + cooled DSO camera",
-    appliesToBuild: true,
-    estimatedRetailValue: 1750,
-  },
-
-  // ── EQUIPMENT DONORS — OUTREACH ────────────────────────────────────────
-  {
-    name: "Unistellar",
-    url: "https://www.unistellar.com",
-    productUrl: "https://www.unistellar.com/products/equinox-2",
-    description:
-      "Maker of smart, app-driven telescopes. Brice Rocton and Unistellar are donating a complete smart telescope to power our community star parties and outreach events.",
-    type: "Equipment",
-    cashValue: 0,
-    contribution: "Smart telescope (outreach)",
-    appliesToBuild: false,
-  },
-  {
-    name: "DWARFLAB",
-    url: "https://dwarflab.com",
-    productUrl: "https://www.dwarflab.com/products/dwarf3",
-    description:
-      "Maker of the DWARF series of compact smart telescopes. DWARFLAB is shipping a DWARF mini smart telescope for the club's outreach program.",
-    type: "Equipment",
-    cashValue: 0,
-    contribution: "DWARF mini telescope (outreach)",
-    appliesToBuild: false,
   },
   {
     name: "Thames & Kosmos",
     url: "https://thamesandkosmos.com",
-    productUrl: "https://www.thamesandkosmos.com/",
     description:
       "Educational science kit publisher. Samantha Levinson and the Thames & Kosmos team are sending an in-kind product donation in support of the club's STEM outreach.",
     type: "Equipment",
     cashValue: 0,
-    contribution: "Educational kit (outreach)",
-    appliesToBuild: false,
+    contribution: "Educational kit (in-kind)",
+  },
+
+  // ── MATERIALS PARTNERS ─────────────────────────────────────────────────
+  {
+    name: "RAFT",
+    logo: "/sponsors/raft.png",
+    url: "https://raft.net",
+    description:
+      "Resource Area for Teaching — a Bay Area nonprofit providing hands-on STEM materials to educators and youth programs. Nancy McIntyre extended us a RAFT membership and a $50 store credit toward build supplies.",
+    type: "Materials",
+    cashValue: 0,
+    contribution: "$50 store credit + membership",
   },
 
   // ── SERVICE PARTNERS ───────────────────────────────────────────────────
@@ -146,8 +118,16 @@ export const sponsors: Sponsor[] = [
       "Palo Alto print shop. Todd at Copy Factory is providing in-kind printing services for our outreach flyers, star-party handouts, and event materials — drop-by anytime.",
     type: "Service",
     cashValue: 0,
-    contribution: "Printing services (outreach)",
-    appliesToBuild: false,
+    contribution: "Printing services (in-kind)",
+  },
+  {
+    name: "Fogarty Winery",
+    url: "http://www.fogartywinery.com",
+    description:
+      "Estate winery in Woodside, established 1981. Heather Carrie and the Fogarty team are supporting the project with a tour voucher and event hospitality for our team and partners.",
+    type: "Service",
+    cashValue: 0,
+    contribution: "Tour voucher + hospitality",
   },
 ];
 
@@ -168,24 +148,4 @@ export function getInKindSponsorCount(): number {
 
 export function getSponsorsByType(type: SponsorType): Sponsor[] {
   return sponsors.filter((s) => s.type === type);
-}
-
-/** Sum of retail $ value of in-kind contributions that go ONTO the build
- *  (mirror, fab credit, cameras). Excludes Cash sponsors (already counted in
- *  cash totals) and outreach-only donors (smart telescopes, kits) since their
- *  contributions don't reduce build cost. */
-export function getInKindBuildValue(): number {
-  return sponsors
-    .filter((s) => s.appliesToBuild && s.type !== "Cash")
-    .reduce((sum, s) => sum + (s.estimatedRetailValue ?? 0), 0);
-}
-
-/** Sponsors whose contribution materially reduces build cost. */
-export function getBuildSponsors(): Sponsor[] {
-  return sponsors.filter((s) => s.appliesToBuild);
-}
-
-/** Sponsors supporting outreach but not the build itself. */
-export function getOutreachSponsors(): Sponsor[] {
-  return sponsors.filter((s) => !s.appliesToBuild);
 }
