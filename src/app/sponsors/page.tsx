@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import SponsorButton from "@/components/SponsorButton";
-import { sponsors, getTotalRaised, getCashSponsorCount, getInKindSponsorCount } from "@/data/sponsors";
+import {
+  getTotalRaised,
+  getCashSponsorCount,
+  getInKindSponsorCount,
+  getBuildSponsors,
+  getOutreachSponsors,
+  type Sponsor,
+} from "@/data/sponsors";
 
 export const metadata: Metadata = {
   title: "Our Sponsors — MVHS Astronomy Telescope Project",
@@ -24,11 +31,16 @@ const TYPE_ACCENT = {
   Materials: "text-[#FF9F0A]",
 } as const;
 
-function SponsorCard({ sponsor }: { sponsor: (typeof sponsors)[number] }) {
+function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
   const cardClasses =
     "group p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300 flex flex-col items-center text-center h-full";
 
-  const inner = (
+  // When a sponsor has BOTH a homepage and a productUrl (outreach donors), we
+  // can't nest the productUrl anchor inside a card-wide anchor (invalid HTML
+  // and breaks keyboard nav). Render the card as a plain div with two distinct
+  // links instead. When there's only a homepage, the whole card is one link.
+  const hasProductLink = Boolean(sponsor.productUrl);
+  const Body = (
     <>
       {sponsor.logo ? (
         <div className="w-full h-20 flex items-center justify-center mb-6">
@@ -61,15 +73,10 @@ function SponsorCard({ sponsor }: { sponsor: (typeof sponsors)[number] }) {
       <p className="text-sm text-[rgba(240,240,250,0.5)] leading-relaxed flex-1">
         {sponsor.description}
       </p>
-      {sponsor.url && (
-        <span className="mt-4 text-xs text-[rgba(240,240,250,0.4)] group-hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200">
-          Visit website &rarr;
-        </span>
-      )}
     </>
   );
 
-  if (sponsor.url) {
+  if (sponsor.url && !hasProductLink) {
     return (
       <a
         href={sponsor.url}
@@ -78,17 +85,78 @@ function SponsorCard({ sponsor }: { sponsor: (typeof sponsors)[number] }) {
         aria-label={`Visit ${sponsor.name} website`}
         className={cardClasses}
       >
-        {inner}
+        {Body}
+        <span className="mt-4 text-xs text-[rgba(240,240,250,0.4)] group-hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200">
+          Visit website &rarr;
+        </span>
       </a>
     );
   }
-  return <div className={cardClasses}>{inner}</div>;
+
+  return (
+    <div className={cardClasses}>
+      {Body}
+      <div className="mt-4 flex flex-col items-center gap-1.5 text-xs">
+        {sponsor.url && (
+          <a
+            href={sponsor.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[rgba(240,240,250,0.55)] hover:text-[rgba(240,240,250,0.9)] hover:underline transition-colors"
+          >
+            Visit website &rarr;
+          </a>
+        )}
+        {sponsor.productUrl && (
+          <a
+            href={sponsor.productUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#0A84FF] hover:text-[#409CFF] hover:underline transition-colors"
+          >
+            View donated product &rarr;
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SponsorSubsection({
+  title,
+  blurb,
+  sponsors,
+}: {
+  title: string;
+  blurb: string;
+  sponsors: Sponsor[];
+}) {
+  if (sponsors.length === 0) return null;
+  return (
+    <div className="mb-16">
+      <div className="mb-8">
+        <h2 className="font-heading text-2xl sm:text-3xl font-bold text-[rgba(240,240,250,1)]">
+          {title}
+        </h2>
+        <p className="mt-2 text-sm text-[rgba(240,240,250,0.55)] max-w-2xl">
+          {blurb}
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {sponsors.map((sponsor) => (
+          <SponsorCard key={sponsor.name} sponsor={sponsor} />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function SponsorsPage() {
   const totalRaised = getTotalRaised();
   const cashCount = getCashSponsorCount();
   const inKindCount = getInKindSponsorCount();
+  const buildSponsors = getBuildSponsors();
+  const outreachSponsors = getOutreachSponsors();
 
   return (
     <section className="relative min-h-screen bg-[#080B12] pt-28 sm:pt-32 pb-20">
@@ -146,15 +214,22 @@ export default function SponsorsPage() {
           </div>
         </div>
 
-        {/* Sponsors Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-24">
-          {sponsors.map((sponsor) => (
-            <SponsorCard key={sponsor.name} sponsor={sponsor} />
-          ))}
-        </div>
+        {/* Build sponsors */}
+        <SponsorSubsection
+          title="Building the telescope"
+          blurb="These sponsors are directly funding the 10-inch Dobsonian build — cash, parts, and fabrication credits that go into the telescope itself."
+          sponsors={buildSponsors}
+        />
+
+        {/* Outreach sponsors */}
+        <SponsorSubsection
+          title="Supporting our outreach"
+          blurb="These sponsors power the community side of the project — smart telescopes, kits, and services that fuel our star parties and STEM programming."
+          sponsors={outreachSponsors}
+        />
 
         {/* Interested in Sponsoring CTA */}
-        <div className="p-8 sm:p-12 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300 text-center">
+        <div className="mt-8 p-8 sm:p-12 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300 text-center">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-[rgba(240,240,250,1)] mb-3">
             Interested in Sponsoring?
           </h2>
