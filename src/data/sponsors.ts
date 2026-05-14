@@ -79,13 +79,22 @@ export const sponsors: Sponsor[] = [
     contribution: "DWARF mini telescope",
   },
   {
+    name: "Pegasus Astro",
+    url: "https://pegasusastro.com",
+    description:
+      "Athens-based maker of premium telescope automation hardware. Dimitris Diakoumakos and the Pegasus team donated a Pocket Powerbox Advance Gen 2 — consolidating power distribution, USB hub, dew heater control, and environmental sensing into one weather-resistant unit for our observatory electronics.",
+    type: "Equipment",
+    cashValue: 0,
+    contribution: "Pocket Powerbox Advance Gen 2",
+  },
+  {
     name: "ToupTek Astro",
     url: "https://www.touptekastro.com",
     description:
-      "Astronomy camera and accessory manufacturer. ToupTek is providing a GPM462C guide camera, an AAF electronic auto-focuser, and a cooled deep-sky imaging camera — directly enabling our autonomous imaging pipeline.",
+      "Astronomy camera and accessory manufacturer. ToupTek delivered three units — the GPM462C guide camera (Sony IMX462), the AAF electronic auto-focuser, and the ATR585C cooled deep-sky imaging camera (Sony IMX585, 8.3MP, TEC cooled) — now physically in hand and directly enabling our autonomous imaging pipeline.",
     type: "Equipment",
     cashValue: 0,
-    contribution: "GPM462C + AAF + cooled DSO camera",
+    contribution: "GPM462C + AAF + ATR585C (cooled DSO camera)",
   },
   {
     name: "Thames & Kosmos",
