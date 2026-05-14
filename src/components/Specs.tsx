@@ -96,7 +96,7 @@ const bentoItems = [
   },
   {
     title: "Imaging Camera",
-    desc: "ZWO ASI120MC-S for planetary and deep-sky astrophotography",
+    desc: "ToupTek ATR585C (cooled, IMX585) + GPM462C guide camera for deep-sky imaging",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
