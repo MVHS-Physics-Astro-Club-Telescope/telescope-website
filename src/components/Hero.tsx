@@ -30,6 +30,7 @@ export default function Hero() {
   );
 
   const handlePointerLeave = useCallback(() => {
+    if (reducedMotion) return;
     const el = sectionRef.current;
     if (!el) return;
     cancelAnimationFrame(frame.current);
@@ -37,7 +38,7 @@ export default function Hero() {
     el.style.setProperty("--pointer-y", "38%");
     el.style.setProperty("--pointer-dx", "0");
     el.style.setProperty("--pointer-dy", "0");
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <section

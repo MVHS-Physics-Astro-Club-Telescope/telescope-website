@@ -411,5 +411,9 @@ body::before {
   }
   .hero-parallax {
     transform: none;
+    will-change: auto;
+  }
+  .animate-bounce {
+    animation: none;
   }
 }
