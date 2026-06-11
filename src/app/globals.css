@@ -14,6 +14,13 @@
   --color-surface-2: #121A25;
   --color-surface-3: #1A2333;
   --color-accent: rgba(147, 197, 253, 0.8);
+
+  /* Deep-space palette (WOR-48) */
+  --color-nebula-indigo: #4056A1;
+  --color-nebula-violet: #6D5BD0;
+  --color-nebula-teal: #2D7E8F;
+  --color-aurora: #93C5FD;
+  --color-starlight: #F5F3F0;
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains);
 
@@ -99,6 +106,19 @@ body {
     system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Site-wide cosmic wash — fixed nebula layer behind all content */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 100% 65% at 50% -20%, rgba(64, 86, 161, 0.16), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 92% 105%, rgba(109, 91, 208, 0.08), transparent 65%),
+    radial-gradient(ellipse 55% 45% at 2% 85%, rgba(45, 126, 143, 0.07), transparent 60%);
 }
 
 /* ─── Heading Font ────────────────────────────────── */
@@ -194,7 +214,17 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.25),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2),
     0 2px 4px rgba(0, 0, 0, 0.3),
-    0 8px 20px rgba(0, 0, 0, 0.25);
+    0 8px 20px rgba(0, 0, 0, 0.25),
+    0 0 24px rgba(147, 197, 253, 0.16);
+  transform: translateY(-1px);
+}
+.btn-titanium-dark:active {
+  transform: translateY(0);
+}
+.btn-titanium-dark:focus-visible,
+.btn-titanium-light:focus-visible {
+  outline: 2px solid rgba(147, 197, 253, 0.85);
+  outline-offset: 2px;
 }
 
 .btn-titanium-light {
@@ -219,6 +249,15 @@ body {
     #dcdce0 50%,
     #c7c7cc 100%
   );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.15),
+    0 0 28px rgba(147, 197, 253, 0.22);
+  transform: translateY(-1px);
+}
+.btn-titanium-light:active {
+  transform: translateY(0);
 }
 .btn-titanium-light:disabled {
   background: linear-gradient(180deg, #6a6a6f 0%, #54545a 50%, #45454a 100%);
@@ -231,6 +270,54 @@ body {
   background:
     radial-gradient(ellipse 80% 50% at 50% 0%, rgba(30, 58, 138, 0.15) 0%, transparent 70%),
     radial-gradient(ellipse 40% 30% at 70% 20%, rgba(30, 58, 138, 0.08) 0%, transparent 60%);
+}
+
+/* ─── Hero pointer-reactive glow + parallax (WOR-48) ─ */
+.hero-pointer-glow {
+  background: radial-gradient(
+    560px circle at var(--pointer-x, 50%) var(--pointer-y, 38%),
+    rgba(96, 134, 222, 0.13),
+    rgba(109, 91, 208, 0.05) 45%,
+    transparent 70%
+  );
+}
+.hero-parallax {
+  transform: translate3d(
+    calc(var(--pointer-dx, 0) * -10px),
+    calc(var(--pointer-dy, 0) * -7px),
+    0
+  );
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* ─── Nav link micro-interaction (WOR-48) ──────────── */
+.nav-link {
+  position: relative;
+  transition: color 200ms ease, text-shadow 300ms ease;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.625rem;
+  right: 0.625rem;
+  bottom: 0.35rem;
+  height: 1px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.85), transparent);
+  box-shadow: 0 0 8px rgba(147, 197, 253, 0.5);
+  opacity: 0;
+  transform: scaleX(0.3);
+  transition: opacity 240ms ease, transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.nav-link:hover,
+.nav-link:focus-visible {
+  text-shadow: 0 0 14px rgba(147, 197, 253, 0.4);
 }
 
 /* ─── Card Top-Edge Highlight ─────────────────────── */
@@ -300,4 +387,29 @@ body {
 }
 [data-sonner-toaster] [data-sonner-toast][data-type="error"] {
   border-color: rgba(255, 69, 58, 0.45) !important;
+}
+
+/* ─── Reduced motion: all animation disabled cleanly ── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .fade-in-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .star {
+    animation: none;
+  }
+  .hero-parallax {
+    transform: none;
+  }
 }

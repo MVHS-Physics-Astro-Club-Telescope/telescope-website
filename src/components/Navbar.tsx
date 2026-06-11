@@ -91,7 +91,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="px-2.5 py-2 text-[13px] whitespace-nowrap text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
+                className="nav-link px-2.5 py-2 text-[13px] whitespace-nowrap text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -140,7 +140,7 @@ export default function Navbar() {
               key={link.label}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="block px-4 py-3 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
+              className="nav-link block px-4 py-3 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
             >
               {link.label}
             </Link>
