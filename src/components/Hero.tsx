@@ -1,21 +1,63 @@
 "use client";
 
+import { useCallback, useRef } from "react";
 import Link from "next/link";
 import StarField from "./StarField";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 export default function Hero() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const frame = useRef(0);
+  const reducedMotion = usePrefersReducedMotion();
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLElement>) => {
+      if (reducedMotion) return;
+      const el = sectionRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      cancelAnimationFrame(frame.current);
+      frame.current = requestAnimationFrame(() => {
+        el.style.setProperty("--pointer-x", `${x * 100}%`);
+        el.style.setProperty("--pointer-y", `${y * 100}%`);
+        el.style.setProperty("--pointer-dx", `${x - 0.5}`);
+        el.style.setProperty("--pointer-dy", `${y - 0.5}`);
+      });
+    },
+    [reducedMotion]
+  );
+
+  const handlePointerLeave = useCallback(() => {
+    if (reducedMotion) return;
+    const el = sectionRef.current;
+    if (!el) return;
+    cancelAnimationFrame(frame.current);
+    el.style.setProperty("--pointer-x", "50%");
+    el.style.setProperty("--pointer-y", "38%");
+    el.style.setProperty("--pointer-dx", "0");
+    el.style.setProperty("--pointer-dy", "0");
+  }, [reducedMotion]);
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#080B12]">
+    <section
+      ref={sectionRef}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#080B12]"
+    >
       {/* Navy radial glow */}
-      <div
-        className="absolute inset-0 pointer-events-none hero-glow"
-      />
+      <div className="absolute inset-0 pointer-events-none hero-glow" />
+
+      {/* Pointer-reactive nebula glow */}
+      <div className="absolute inset-0 pointer-events-none hero-pointer-glow" />
 
       {/* Starfield */}
-      <StarField count={80} />
+      <StarField count={110} interactive shootingStars />
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto py-32 sm:py-40 lg:py-48">
+      {/* Content — drifts gently opposite the pointer for depth */}
+      <div className="hero-parallax relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto py-32 sm:py-40 lg:py-48">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.04] mb-8 text-xs text-[rgba(240,240,250,0.5)] tracking-[0.2em] uppercase fade-in-up">
           Student-Built Autonomous Telescope
