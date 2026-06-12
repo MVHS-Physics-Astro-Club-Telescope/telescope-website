@@ -389,7 +389,7 @@ export default function MockTargetPicker() {
                   onBlur={() => setTooltipOpen(false)}
                   onMouseEnter={() => setTooltipOpen(true)}
                   onMouseLeave={() => setTooltipOpen(false)}
-                  className="btn-titanium-light inline-flex items-center justify-center gap-2 px-7 h-11 text-sm font-medium rounded-full opacity-70 cursor-not-allowed shrink-0"
+                  className="btn-starlight inline-flex items-center justify-center gap-2 px-7 h-11 text-sm font-medium rounded-full opacity-70 cursor-not-allowed shrink-0"
                 >
                   <Lock className="h-4 w-4" aria-hidden="true" />
                   Submit request

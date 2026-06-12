@@ -174,29 +174,18 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
           </div>
 
           <div className="flex items-center gap-3 pt-2">
-            {/* Cancel — dark titanium */}
+            {/* Cancel — deep-space nebula button */}
             <button
               type="button"
               onClick={onClose}
-              style={{
-                background: 'linear-gradient(180deg, #A3A29C 0%, #878684 40%, #6b6b6b 100%)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                textShadow: '0 1px 2px rgba(0,0,0,0.4)',
-              }}
-              className="flex-1 px-4 py-3 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full hover:brightness-110 transition-all"
+              className="btn-nebula flex-1 px-4 py-3 text-sm font-medium rounded-full"
             >
               Cancel
             </button>
-            {/* Submit — light titanium */}
+            {/* Submit — deep-space starlight button */}
             <button
               type="submit"
-              style={{
-                background: 'linear-gradient(180deg, #e8e8ed 0%, #d1d1d6 50%, #BAB9B3 100%)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.15)',
-                border: '1px solid rgba(255,255,255,0.3)',
-              }}
-              className="flex-1 px-4 py-3 text-sm font-medium text-[#1a1a1f] rounded-full hover:brightness-105 transition-all"
+              className="btn-starlight flex-1 px-4 py-3 text-sm font-medium rounded-full"
             >
               Open in Email
             </button>

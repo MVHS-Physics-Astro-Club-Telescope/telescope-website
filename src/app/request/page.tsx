@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ComingSoonBanner from "@/components/ComingSoonBanner";
+import CoordinateGrid from "@/components/CoordinateGrid";
 import EmailSignup from "@/components/EmailSignup";
 import FAQ from "@/components/FAQ";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import MockTargetPicker from "@/components/MockTargetPicker";
-import StarField from "@/components/StarField";
+import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
   title: "Request a target — MVHS Public Observatory",
@@ -73,12 +75,9 @@ export default function RequestPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#080B12] pt-28 sm:pt-32 pb-16 sm:pb-20">
-        <div
-          className="absolute inset-0 pointer-events-none hero-glow"
-          aria-hidden="true"
-        />
-        <StarField count={50} />
+      <ImmersiveHero starCount={70} shootingStars className="pt-28 sm:pt-32 pb-16 sm:pb-20">
+        {/* CoordinateGrid layered behind text */}
+        <CoordinateGrid />
 
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 text-sm text-[rgba(240,240,250,0.4)] mb-8">
@@ -106,7 +105,7 @@ export default function RequestPage() {
             </p>
           </div>
         </div>
-      </section>
+      </ImmersiveHero>
 
       {/* Coming Soon banner */}
       <section className="relative bg-[#080B12]">
@@ -128,61 +127,66 @@ export default function RequestPage() {
       {/* Mock target picker */}
       <section className="relative bg-[#080B12] py-14 sm:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-2">
-              Build your request
-            </h2>
-            <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
-              Try it out — type a target name, pick from suggestions, see the
-              preview card. The submit button activates when the telescope
-              goes online.
-            </p>
-          </div>
-          <MockTargetPicker />
+          <Reveal>
+            <div className="mb-8">
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-2">
+                Build your request
+              </h2>
+              <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
+                Try it out — type a target name, pick from suggestions, see the
+                preview card. The submit button activates when the telescope
+                goes online.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal>
+            <MockTargetPicker />
+          </Reveal>
         </div>
       </section>
 
       {/* What we can capture */}
       <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
-            <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-3">
-              What we can capture
-            </h2>
-            <p className="text-[rgba(240,240,250,0.6)] text-base">
-              A 10-inch f/4.48 Dobsonian gathers enough light for the whole
-              Messier catalog, all eight planets, and most of the brighter
-              NGC objects. Here&apos;s the rough menu.
-            </p>
-          </div>
+          <Reveal>
+            <div className="max-w-2xl mb-12">
+              <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
+              <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-3">
+                What we can capture
+              </h2>
+              <p className="text-[rgba(240,240,250,0.6)] text-base">
+                A 10-inch f/4.48 Dobsonian gathers enough light for the whole
+                Messier catalog, all eight planets, and most of the brighter
+                NGC objects. Here&apos;s the rough menu.
+              </p>
+            </div>
+          </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {captureCategories.map((c) => (
-              <div
-                key={c.title}
-                className="rounded-2xl overflow-hidden bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] transition-all duration-300"
-              >
-                <div className="relative aspect-[4/3] bg-black">
-                  <Image
-                    src={c.image}
-                    alt={c.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover"
-                  />
-                  <span className="absolute bottom-2 right-2 text-[10px] font-mono uppercase tracking-[0.15em] text-white/70 bg-black/60 px-2 py-1 rounded">
-                    {c.credit}
-                  </span>
+            {captureCategories.map((c, i) => (
+              <Reveal key={c.title} delay={i * 0.08}>
+                <div className="rounded-2xl overflow-hidden bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] transition-all duration-300">
+                  <div className="relative aspect-[4/3] bg-black">
+                    <Image
+                      src={c.image}
+                      alt={c.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover"
+                    />
+                    <span className="absolute bottom-2 right-2 text-[10px] font-mono uppercase tracking-[0.15em] text-white/70 bg-black/60 px-2 py-1 rounded">
+                      {c.credit}
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mb-2">
+                      {c.title}
+                    </h3>
+                    <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
+                      {c.description}
+                    </p>
+                  </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mb-2">
-                    {c.title}
-                  </h3>
-                  <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
-                    {c.description}
-                  </p>
-                </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -191,25 +195,31 @@ export default function RequestPage() {
       {/* Email signup */}
       <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <EmailSignup
-            source="request"
-            title="Notify me when submissions open"
-            description="One email when the request queue goes live. No marketing, no follow-ups — you tell us your target, we point the telescope."
-            cta="Notify me"
-          />
+          <Reveal>
+            <EmailSignup
+              source="request"
+              title="Notify me when submissions open"
+              description="One email when the request queue goes live. No marketing, no follow-ups — you tell us your target, we point the telescope."
+              cta="Notify me"
+            />
+          </Reveal>
         </div>
       </section>
 
       {/* FAQ */}
       <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10">
-            <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)]">
-              Questions
-            </h2>
-          </div>
-          <FAQ items={faqItems} idPrefix="request-faq" />
+          <Reveal>
+            <div className="mb-10">
+              <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
+              <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)]">
+                Questions
+              </h2>
+            </div>
+          </Reveal>
+          <Reveal>
+            <FAQ items={faqItems} idPrefix="request-faq" />
+          </Reveal>
         </div>
       </section>
     </>
