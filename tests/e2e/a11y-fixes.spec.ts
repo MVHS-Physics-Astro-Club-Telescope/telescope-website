@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { gotoHydrated } from "./helpers";
 
 /**
  * Regression tests for the bundled a11y audit fixes (PR #9).
@@ -9,16 +10,7 @@ import { test, expect } from "@playwright/test";
  */
 test.describe("/request — bundled a11y audit fix regressions", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/request");
-    // The page is server-rendered, so #target-search exists (and looks
-    // actionable to Playwright) before React hydrates and attaches its
-    // onClick. React 19 stamps __reactFiber$/__reactProps$ keys on DOM
-    // nodes during hydration — wait for that so clicks can't land on a
-    // dead button.
-    await page.waitForFunction(() => {
-      const el = document.querySelector("#target-search");
-      return !!el && Object.keys(el).some((k) => k.startsWith("__react"));
-    });
+    await gotoHydrated(page, "/request", "#target-search");
   });
 
   test("focus returns to the search trigger after Escape closes the ⌘K palette", async ({
