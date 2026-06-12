@@ -7,6 +7,7 @@ interface RevealProps {
   delay?: number;
   y?: number;
   className?: string;
+  as?: "div" | "li";
 }
 
 /**
@@ -21,10 +22,12 @@ export default function Reveal({
   delay = 0,
   y = 18,
   className,
+  as = "div",
 }: RevealProps) {
+  const Component = as === "li" ? motion.li : motion.div;
   return (
     <MotionConfig reducedMotion="user">
-      <motion.div
+      <Component
         initial={{ opacity: 0, y }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2, margin: "0px 0px -40px 0px" }}
@@ -32,7 +35,7 @@ export default function Reveal({
         className={className}
       >
         {children}
-      </motion.div>
+      </Component>
     </MotionConfig>
   );
 }

@@ -255,6 +255,11 @@ body::before {
 .btn-nebula:active {
   transform: translateY(0);
 }
+.btn-nebula:disabled {
+  background: linear-gradient(180deg, #5A5F73 0%, #3E4254 100%);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+}
 
 /* Shared focus-visible for both deep-space buttons */
 .btn-starlight:focus-visible,

@@ -88,17 +88,9 @@ export default function SponsorConstellation({
           {edges.map(([a, b], ei) => {
             const na = nodes[a];
             const nb = nodes[b];
-                    const pathId = `line-${a}-${b}`;
+            const pathId = `line-${a}-${b}`;
             return (
               <g key={pathId}>
-                <path
-                  id={pathId}
-                  d={`M ${na.x} ${na.y} L ${nb.x} ${nb.y}`}
-                  fill="none"
-                  stroke="rgba(147,197,253,0.25)"
-                  strokeWidth="0.8"
-                  pathLength="1"
-                />
                 {!reducedMotion && (
                   <motion.path
                     d={`M ${na.x} ${na.y} L ${nb.x} ${nb.y}`}

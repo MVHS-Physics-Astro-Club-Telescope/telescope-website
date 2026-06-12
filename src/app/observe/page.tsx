@@ -302,18 +302,16 @@ export default function ObservePage() {
           </Reveal>
           <ol className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {steps.map((s, i) => (
-              <Reveal key={s.n} delay={i * 0.08}>
-                <li className="relative p-6 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                  <span className="font-mono text-xs text-[#9DC4FF] tracking-[0.2em]">
-                    {s.n}
-                  </span>
-                  <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mt-2 mb-2">
-                    {s.title}
-                  </h3>
-                  <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
-                    {s.description}
-                  </p>
-                </li>
+              <Reveal as="li" key={s.n} delay={i * 0.08} className="relative p-6 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                <span className="font-mono text-xs text-[#9DC4FF] tracking-[0.2em]">
+                  {s.n}
+                </span>
+                <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mt-2 mb-2">
+                  {s.title}
+                </h3>
+                <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
+                  {s.description}
+                </p>
               </Reveal>
             ))}
           </ol>

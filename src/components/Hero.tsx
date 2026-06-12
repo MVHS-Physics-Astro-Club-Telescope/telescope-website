@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import StarField from "./StarField";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
@@ -28,6 +28,8 @@ export default function Hero() {
     },
     [reducedMotion]
   );
+
+  useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
   const handlePointerLeave = useCallback(() => {
     if (reducedMotion) return;

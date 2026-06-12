@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useInView } from "@/hooks/useInView";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 interface StatCounterProps {
   value: number;
@@ -26,18 +27,19 @@ export default function StatCounter({
 }: StatCounterProps) {
   const { ref, isInView } = useInView({ threshold: 0.3 });
   const [count, setCount] = useState(0);
+  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (!isInView) return;
 
-    const duration = 2000;
+    const duration = reducedMotion ? 0 : 2000;
     let startTime: number | null = null;
     let animationFrame: number;
 
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
+      const eased = reducedMotion ? 1 : 1 - Math.pow(1 - progress, 3);
       setCount(Math.round(eased * value));
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
@@ -46,7 +48,7 @@ export default function StatCounter({
 
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
-  }, [isInView, value]);
+  }, [isInView, value, reducedMotion]);
 
   return (
     <div ref={ref} className="text-center">

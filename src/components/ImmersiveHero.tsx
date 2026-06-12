@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import StarField from "./StarField";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
@@ -46,6 +46,8 @@ export default function ImmersiveHero({
     },
     [reducedMotion]
   );
+
+  useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
   const handlePointerLeave = useCallback(() => {
     if (reducedMotion) return;

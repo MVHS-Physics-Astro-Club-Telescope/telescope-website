@@ -46,7 +46,7 @@ export default function TelescopeHUD() {
   const elevation = TARGET_ELEVATIONS[targetIndex];
 
   // Elevation arc: 0°=horizon maps to 90deg rotation, 90°=zenith maps to 0deg
-  const tubeDeg = reducedMotion ? 90 - elevation : 90 - elevation;
+  const tubeDeg = 90 - elevation;
 
   return (
     <MotionConfig reducedMotion="user">
