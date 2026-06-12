@@ -41,12 +41,13 @@ const buttonVariants = cva(
 )
 
 /**
- * shadcn Button primitive. The site uses a custom `.btn-titanium-light` /
- * `.btn-titanium-dark` style for primary CTAs — prefer those classes on a
- * native <button>. The `default`, `destructive`, `outline`, `secondary`
- * variants here render the shadcn defaults (white-ish bg) and will look
- * off-brand. Use this primitive only for `ghost` and `link` variants, or
- * inside other shadcn primitives (Dialog, InputGroup) that expect it.
+ * shadcn Button primitive. The site uses custom `.btn-starlight` /
+ * `.btn-nebula` deep-space button classes for primary CTAs — prefer those
+ * classes on a native <button>. The `default`, `destructive`, `outline`,
+ * `secondary` variants here render the shadcn defaults (white-ish bg) and
+ * will look off-brand. Use this primitive only for `ghost` and `link`
+ * variants, or inside other shadcn primitives (Dialog, InputGroup) that
+ * expect it.
  */
 function Button({
   className,

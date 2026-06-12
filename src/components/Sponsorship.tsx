@@ -54,7 +54,7 @@ export default function Sponsorship() {
             </SponsorButton>
           </div>
 
-          {/* Right: Benefits — titanium card */}
+          {/* Right: Benefits — deep-space card */}
           <div className="bg-[#0D1219] border border-white/[0.08] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300 p-8">
             <h4 className="font-heading text-xl font-semibold text-[rgba(240,240,250,0.95)] mb-6">
               Sponsor Benefits

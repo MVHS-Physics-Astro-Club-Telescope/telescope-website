@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { gotoHydrated } from "./helpers";
 
 /**
  * Regression tests for the bundled a11y audit fixes (PR #9).
@@ -9,7 +10,7 @@ import { test, expect } from "@playwright/test";
  */
 test.describe("/request — bundled a11y audit fix regressions", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/request");
+    await gotoHydrated(page, "/request", "#target-search");
   });
 
   test("focus returns to the search trigger after Escape closes the ⌘K palette", async ({

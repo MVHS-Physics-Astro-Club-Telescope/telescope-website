@@ -9,8 +9,8 @@ import SectionHeading from "./SectionHeading";
  * and the target request form. Both pages are in "Coming Soon" preview mode.
  *
  * Layout: section heading → two CTA cards side-by-side at md+ widths,
- * stacked on mobile. Cards use the same dark-titanium surface as the rest
- * of the homepage components (About, Sponsorship).
+ * stacked on mobile. Cards use the deep-space surface style consistent
+ * with the rest of the homepage components (About, Sponsorship).
  */
 export default function PublicObservatory() {
   const { ref, isInView } = useInView();

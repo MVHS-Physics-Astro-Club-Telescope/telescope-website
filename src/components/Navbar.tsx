@@ -111,7 +111,7 @@ export default function Navbar() {
             </a>
             <a
               href="mailto:mvhsphysicsastroclub@gmail.com"
-              className="btn-titanium-dark px-7 py-2.5 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
+              className="btn-nebula px-7 py-2.5 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
             >
               Contact Us
             </a>
@@ -157,7 +157,7 @@ export default function Navbar() {
             </a>
             <a
               href="mailto:mvhsphysicsastroclub@gmail.com"
-              className="flex-1 text-center btn-titanium-dark px-7 py-2.5 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
+              className="flex-1 text-center btn-nebula px-7 py-2.5 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
             >
               Contact Us
             </a>

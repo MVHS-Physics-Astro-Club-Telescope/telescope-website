@@ -32,7 +32,7 @@ interface EmailSignupProps {
  * Email capture form. POSTs to /api/interest with { email, source }.
  * - React-hook-form + Zod for typed inline validation.
  * - Sonner toast on success/error (loading state on button).
- * - Pulls in the site's titanium button identity for visual consistency.
+ * - Pulls in the site's deep-space btn-starlight button style for visual consistency.
  */
 export default function EmailSignup({
   source,
@@ -160,7 +160,7 @@ export default function EmailSignup({
             <button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="btn-titanium-light group inline-flex items-center justify-center gap-2 px-7 h-12 text-sm font-medium rounded-full whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-starlight group inline-flex items-center justify-center gap-2 px-7 h-12 text-sm font-medium rounded-full whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

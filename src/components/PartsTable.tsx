@@ -58,7 +58,7 @@ export default function PartsTable() {
         </div>
       </div>
 
-      {/* Budget Summary Cards — titanium card pattern */}
+      {/* Budget Summary Cards — deep-space card pattern */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <div className="p-5 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300">
           <p className="text-sm text-[rgba(240,240,250,0.4)] mb-1">Total Parts</p>
@@ -233,7 +233,7 @@ export default function PartsTable() {
         </table>
       </div>
 
-      {/* Mobile Cards — titanium card pattern */}
+      {/* Mobile Cards — deep-space card pattern */}
       <div className="md:hidden space-y-3">
         {filteredParts.map((part) => (
           <div

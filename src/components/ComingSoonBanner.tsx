@@ -18,7 +18,8 @@ interface ComingSoonBannerProps {
 /**
  * Distinctive "Coming Soon" banner. Animated telescope icon, status pill
  * with a soft-pulsing dot ("In Progress"), headline + sub-copy. Tuned
- * to the navy / titanium identity — no purple radial gradients.
+ * to the deep-space (btn-starlight / btn-nebula) identity — no purple
+ * radial gradients.
  */
 export default function ComingSoonBanner({
   label = "Coming Soon",

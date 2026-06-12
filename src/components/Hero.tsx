@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import StarField from "./StarField";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
@@ -28,6 +28,8 @@ export default function Hero() {
     },
     [reducedMotion]
   );
+
+  useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
   const handlePointerLeave = useCallback(() => {
     if (reducedMotion) return;
@@ -80,13 +82,13 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up animation-delay-600">
           <a
             href="#about"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 btn-titanium-light px-8 py-3.5 font-medium rounded-full"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 btn-starlight px-8 py-3.5 font-medium rounded-full"
           >
             Learn More
           </a>
           <Link
             href="/parts"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 btn-titanium-dark px-8 py-3.5 text-[rgba(240,240,250,0.9)] font-medium rounded-full"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 btn-nebula px-8 py-3.5 text-[rgba(240,240,250,0.9)] font-medium rounded-full"
           >
             View Parts List
           </Link>

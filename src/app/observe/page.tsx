@@ -4,8 +4,10 @@ import { Suspense } from "react";
 import ComingSoonBanner from "@/components/ComingSoonBanner";
 import EmailSignup from "@/components/EmailSignup";
 import FAQ from "@/components/FAQ";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import MockLiveView from "@/components/MockLiveView";
-import StarField from "@/components/StarField";
+import Reveal from "@/components/Reveal";
+import TelescopeHUD from "@/components/TelescopeHUD";
 import TonightAtMVHS, {
   TonightAtMVHSSkeleton,
 } from "@/components/TonightAtMVHS";
@@ -177,13 +179,7 @@ export default function ObservePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#080B12] pt-28 sm:pt-32 pb-16 sm:pb-20">
-        <div
-          className="absolute inset-0 pointer-events-none hero-glow"
-          aria-hidden="true"
-        />
-        <StarField count={50} />
-
+      <ImmersiveHero starCount={70} shootingStars className="pt-28 sm:pt-32 pb-16 sm:pb-20">
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm text-[rgba(240,240,250,0.4)] mb-8">
@@ -197,21 +193,29 @@ export default function ObservePage() {
             <span className="text-[rgba(240,240,250,0.7)]">Live View</span>
           </div>
 
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.04] mb-6 text-[11px] text-[rgba(240,240,250,0.55)] tracking-[0.2em] uppercase">
-              MVHS Public Observatory
+          {/* Two-column layout: copy left, HUD right */}
+          <div className="lg:grid lg:grid-cols-[1fr_minmax(0,420px)] lg:gap-12 lg:items-center">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.04] mb-6 text-[11px] text-[rgba(240,240,250,0.55)] tracking-[0.2em] uppercase">
+                MVHS Public Observatory
+              </div>
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-[rgba(240,240,250,1)] leading-[1.05] tracking-tighter mb-5">
+                Live from the night sky
+              </h1>
+              <p className="text-lg text-[rgba(240,240,250,0.65)] leading-relaxed max-w-2xl">
+                Watch our student-built telescope point at the cosmos in real
+                time. Tracking, exposures, sky conditions — all streamed straight
+                from our backyard observatory. Coming soon.
+              </p>
             </div>
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-[rgba(240,240,250,1)] leading-[1.05] tracking-tighter mb-5">
-              Live from the night sky
-            </h1>
-            <p className="text-lg text-[rgba(240,240,250,0.65)] leading-relaxed max-w-2xl">
-              Watch our student-built telescope point at the cosmos in real
-              time. Tracking, exposures, sky conditions — all streamed straight
-              from our backyard observatory. Coming soon.
-            </p>
+
+            {/* TelescopeHUD — stacks below copy on mobile, right column on lg */}
+            <div className="order-last mt-10 lg:mt-0">
+              <TelescopeHUD />
+            </div>
           </div>
         </div>
-      </section>
+      </ImmersiveHero>
 
       {/* Coming Soon banner */}
       <section className="relative bg-[#080B12]">
@@ -250,32 +254,33 @@ export default function ObservePage() {
       {/* What you'll see */}
       <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
-            <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-3">
-              What you&apos;ll see
-            </h2>
-            <p className="text-[rgba(240,240,250,0.6)] text-base">
-              Three things make the live view actually worth watching, instead
-              of being a glorified webcam.
-            </p>
-          </div>
+          <Reveal>
+            <div className="max-w-2xl mb-12">
+              <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
+              <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-3">
+                What you&apos;ll see
+              </h2>
+              <p className="text-[rgba(240,240,250,0.6)] text-base">
+                Three things make the live view actually worth watching, instead
+                of being a glorified webcam.
+              </p>
+            </div>
+          </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {features.map((f) => (
-              <div
-                key={f.title}
-                className="p-7 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300"
-              >
-                <div className="w-10 h-10 rounded-xl bg-[#121A25] border border-white/[0.06] flex items-center justify-center text-white/90 mb-5">
-                  {f.icon}
+              <Reveal key={f.title}>
+                <div className="p-7 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300">
+                  <div className="w-10 h-10 rounded-xl bg-[#121A25] border border-white/[0.06] flex items-center justify-center text-white/90 mb-5">
+                    {f.icon}
+                  </div>
+                  <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mb-2">
+                    {f.title}
+                  </h3>
+                  <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
+                    {f.description}
+                  </p>
                 </div>
-                <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mb-2">
-                  {f.title}
-                </h3>
-                <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
-                  {f.description}
-                </p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -284,21 +289,20 @@ export default function ObservePage() {
       {/* How it works */}
       <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
-            <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-3">
-              How it works
-            </h2>
-            <p className="text-[rgba(240,240,250,0.6)] text-base">
-              From request to image, four steps — most happen while you sleep.
-            </p>
-          </div>
+          <Reveal>
+            <div className="max-w-2xl mb-12">
+              <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
+              <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-3">
+                How it works
+              </h2>
+              <p className="text-[rgba(240,240,250,0.6)] text-base">
+                From request to image, four steps — most happen while you sleep.
+              </p>
+            </div>
+          </Reveal>
           <ol className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {steps.map((s) => (
-              <li
-                key={s.n}
-                className="relative p-6 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
-              >
+            {steps.map((s, i) => (
+              <Reveal as="li" key={s.n} delay={i * 0.08} className="relative p-6 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                 <span className="font-mono text-xs text-[#9DC4FF] tracking-[0.2em]">
                   {s.n}
                 </span>
@@ -308,7 +312,7 @@ export default function ObservePage() {
                 <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
                   {s.description}
                 </p>
-              </li>
+              </Reveal>
             ))}
           </ol>
         </div>
@@ -317,25 +321,31 @@ export default function ObservePage() {
       {/* Email signup */}
       <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <EmailSignup
-            source="observe"
-            title="Notify me when it's live"
-            description="One email, the night the telescope captures first light. No newsletter, no spam — promise."
-            cta="Notify me"
-          />
+          <Reveal>
+            <EmailSignup
+              source="observe"
+              title="Notify me when it's live"
+              description="One email, the night the telescope captures first light. No newsletter, no spam — promise."
+              cta="Notify me"
+            />
+          </Reveal>
         </div>
       </section>
 
       {/* FAQ */}
       <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10">
-            <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)]">
-              Questions
-            </h2>
-          </div>
-          <FAQ items={faqItems} idPrefix="observe-faq" />
+          <Reveal>
+            <div className="mb-10">
+              <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
+              <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)]">
+                Questions
+              </h2>
+            </div>
+          </Reveal>
+          <Reveal>
+            <FAQ items={faqItems} idPrefix="observe-faq" />
+          </Reveal>
         </div>
       </section>
     </>

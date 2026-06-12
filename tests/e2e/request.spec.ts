@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
+import { gotoHydrated } from "./helpers";
 
 test.describe("/request — Submit Target preview page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/request");
+    await gotoHydrated(page, "/request", "#target-search");
   });
 
   test("loads with correct title and hero", async ({ page }) => {

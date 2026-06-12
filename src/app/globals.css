@@ -3,7 +3,7 @@
 /*
  * Theme tokens
  * The site is dark-only, sponsor-facing — these tokens map shadcn/ui's
- * semantic palette onto the existing navy/titanium identity. Hand-tuned
+ * semantic palette onto the existing deep-space identity. Hand-tuned
  * for contrast on #080B12 background.
  */
 @theme inline {
@@ -185,84 +185,87 @@ body::before {
 .animation-delay-600 { animation-delay: 600ms; }
 .animation-delay-800 { animation-delay: 800ms; }
 
-/* ─── Titanium Button Styles ─────────────────────── */
-.btn-titanium-dark {
+/* ─── Deep-space button system (WOR-53) ─────────────────────── */
+/* .btn-starlight — primary CTAs (replaces the old light button) */
+.btn-starlight {
   background: linear-gradient(
     180deg,
-    #A3A29C 0%,
-    #878684 40%,
-    #6b6b6b 100%
+    #FBFAF8 0%,
+    #E8E6F0 50%,
+    #C9C9DC 100%
   );
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #14131B;
+  border: 1px solid rgba(255, 255, 255, 0.35);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+.btn-starlight:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.15),
+    0 0 28px rgba(147, 197, 253, 0.25);
+  transform: translateY(-1px);
+}
+.btn-starlight:active {
+  transform: translateY(0);
+}
+.btn-starlight:disabled {
+  background: linear-gradient(180deg, #5A5F73 0%, #3E4254 100%);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: not-allowed;
+}
+
+/* .btn-nebula — secondary CTAs (replaces the old dark button) */
+.btn-nebula {
+  background: linear-gradient(
+    180deg,
+    #34406B 0%,
+    #232B49 50%,
+    #161C30 100%
+  );
+  color: rgba(240, 240, 250, 0.92);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(147, 197, 253, 0.20);
+  box-shadow:
+    inset 0 1px 0 rgba(147, 197, 253, 0.18),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2),
     0 1px 3px rgba(0, 0, 0, 0.3),
     0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
-.btn-titanium-dark:hover {
+.btn-nebula:hover {
   background: linear-gradient(
     180deg,
-    #BAB9B3 0%,
-    #A3A29C 40%,
-    #878684 100%
+    #3D4C7A 0%,
+    #2A3457 50%,
+    #1A233A 100%
   );
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 1px 0 rgba(147, 197, 253, 0.22),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2),
     0 2px 4px rgba(0, 0, 0, 0.3),
     0 8px 20px rgba(0, 0, 0, 0.25),
-    0 0 24px rgba(147, 197, 253, 0.16);
+    0 0 24px rgba(147, 197, 253, 0.20);
   transform: translateY(-1px);
 }
-.btn-titanium-dark:active {
+.btn-nebula:active {
   transform: translateY(0);
 }
-.btn-titanium-dark:focus-visible,
-.btn-titanium-light:focus-visible {
-  outline: 2px solid rgba(147, 197, 253, 0.85);
-  outline-offset: 2px;
+.btn-nebula:disabled {
+  background: linear-gradient(180deg, #5A5F73 0%, #3E4254 100%);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
 }
 
-.btn-titanium-light {
-  background: linear-gradient(
-    180deg,
-    #e8e8ed 0%,
-    #d1d1d6 50%,
-    #BAB9B3 100%
-  );
-  color: #1a1a1f;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-.btn-titanium-light:hover {
-  background: linear-gradient(
-    180deg,
-    #f0f0f5 0%,
-    #dcdce0 50%,
-    #c7c7cc 100%
-  );
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.15),
-    0 0 28px rgba(147, 197, 253, 0.22);
-  transform: translateY(-1px);
-}
-.btn-titanium-light:active {
-  transform: translateY(0);
-}
-.btn-titanium-light:disabled {
-  background: linear-gradient(180deg, #6a6a6f 0%, #54545a 50%, #45454a 100%);
-  color: rgba(255,255,255,0.55);
-  cursor: not-allowed;
+/* Shared focus-visible for both deep-space buttons */
+.btn-starlight:focus-visible,
+.btn-nebula:focus-visible {
+  outline: 2px solid rgba(147, 197, 253, 0.85);
+  outline-offset: 2px;
 }
 
 /* ─── Hero Glow ───────────────────────────────────── */
@@ -417,3 +420,4 @@ body::before {
     animation: none;
   }
 }
+/* theme: immersive-astro */
