@@ -104,13 +104,11 @@ export default function MockTargetPicker() {
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const chipRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Restore focus to the trigger after the dialog closes. Wrapped in a small
-  // setTimeout so the focus call runs after the dialog unmount commits.
+  // Focus restoration happens in onExitComplete on the dialog's
+  // AnimatePresence — after the exit animation fully unmounts the dialog —
+  // so nothing inside the dialog can steal focus back mid-teardown.
   function closeAndRestoreFocus() {
     setOpen(false);
-    setTimeout(() => {
-      triggerRef.current?.focus();
-    }, 0);
   }
 
   // ⌘K / Ctrl-K to open the palette from anywhere on the page; Escape closes.
@@ -122,14 +120,7 @@ export default function MockTargetPicker() {
         return;
       }
       if (e.key === "Escape") {
-        setOpen((wasOpen) => {
-          if (wasOpen) {
-            // Return focus to the trigger after Escape closes the dialog.
-            setTimeout(() => triggerRef.current?.focus(), 0);
-            return false;
-          }
-          return wasOpen;
-        });
+        setOpen(false);
       }
     }
     window.addEventListener("keydown", onKey);
@@ -411,7 +402,9 @@ export default function MockTargetPicker() {
       </div>
 
       {/* Command palette dialog (cmdk inline overlay) */}
-      <AnimatePresence>
+      <AnimatePresence
+        onExitComplete={() => triggerRef.current?.focus({ preventScroll: true })}
+      >
         {open && (
           <motion.div
             id="target-command-dialog"
