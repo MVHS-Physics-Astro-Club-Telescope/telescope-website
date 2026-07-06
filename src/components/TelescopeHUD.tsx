@@ -195,33 +195,61 @@ export default function TelescopeHUD() {
               viewBox="0 0 80 120"
               className="overflow-visible"
             >
-              {/* Arc (quarter circle representing elevation) */}
+              {/* Elevation protractor: pivot (10,110), 0° = horizon
+                  (pointing right), 90° = zenith (straight up). Arc, tick
+                  dots, labels, and the tube all share this frame. */}
               <path
-                d="M 10 110 A 80 80 0 0 1 90 30"
+                d="M 90 110 A 80 80 0 0 0 10 30"
                 fill="none"
                 stroke={CHART(0.28)}
                 strokeWidth="1"
               />
-              {/* Tick marks at 0°, 30°, 60°, 90° */}
+              {/* Tick dots + labels at 0°, 30°, 60°, 90° — on the arc */}
               {[0, 30, 60, 90].map((deg) => {
-                const rad = ((90 - deg) * Math.PI) / 180;
+                const rad = (deg * Math.PI) / 180;
                 const cx = 10 + 80 * Math.cos(rad);
                 const cy = 110 - 80 * Math.sin(rad);
+                const lx = 10 + 92 * Math.cos(rad);
+                const ly = 110 - 92 * Math.sin(rad);
                 return (
-                  <circle
-                    key={deg}
-                    cx={cx}
-                    cy={cy}
-                    r="1.5"
-                    fill={CHART(0.45)}
-                  />
+                  <g key={deg}>
+                    <circle cx={cx} cy={cy} r="1.5" fill={CHART(0.45)} />
+                    <text
+                      x={lx}
+                      y={ly + 2.5}
+                      textAnchor="middle"
+                      fontSize="6"
+                      fill={CHART(0.45)}
+                      fontFamily="monospace"
+                    >
+                      {deg}°
+                    </text>
+                  </g>
                 );
               })}
-              {/* Telescope tube — brass instrument */}
+              {/* Current-elevation marker riding the arc (rotates with the tube) */}
               <motion.g
-                style={{ transformOrigin: "10px 110px" }}
-                animate={reducedMotion ? {} : { rotate: -(tubeDeg) }}
-                initial={{ rotate: -(tubeDeg) }}
+                style={{
+                  originX: "10px",
+                  originY: "110px",
+                  transformBox: "view-box",
+                }}
+                animate={reducedMotion ? {} : { rotate: tubeDeg }}
+                initial={{ rotate: tubeDeg }}
+                transition={{ duration: 10, ease: "easeInOut" }}
+              >
+                {/* At rotate 0 this sits at the zenith point (10,30) */}
+                <circle cx="10" cy="30" r="2.5" fill={BRASS(0.9)} />
+              </motion.g>
+              {/* Telescope tube — brass instrument, up = 90° elevation */}
+              <motion.g
+                style={{
+                  originX: "10px",
+                  originY: "110px",
+                  transformBox: "view-box",
+                }}
+                animate={reducedMotion ? {} : { rotate: tubeDeg }}
+                initial={{ rotate: tubeDeg }}
                 transition={{ duration: 10, ease: "easeInOut" }}
               >
                 {/* Tube body */}
