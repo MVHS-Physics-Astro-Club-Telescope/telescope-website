@@ -41,8 +41,8 @@ const buttonVariants = cva(
 )
 
 /**
- * shadcn Button primitive. The site uses custom `.btn-starlight` /
- * `.btn-nebula` deep-space button classes for primary CTAs — prefer those
+ * shadcn Button primitive. The site uses custom `.btn-brass` /
+ * `.btn-line` star-atlas button classes for primary CTAs — prefer those
  * classes on a native <button>. The `default`, `destructive`, `outline`,
  * `secondary` variants here render the shadcn defaults (white-ish bg) and
  * will look off-brand. Use this primitive only for `ghost` and `link`

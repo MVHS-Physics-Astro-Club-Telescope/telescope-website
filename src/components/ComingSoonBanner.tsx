@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 import { Telescope } from "lucide-react";
 
 interface ComingSoonBannerProps {
@@ -16,10 +16,9 @@ interface ComingSoonBannerProps {
 }
 
 /**
- * Distinctive "Coming Soon" banner. Animated telescope icon, status pill
- * with a soft-pulsing dot ("In Progress"), headline + sub-copy. Tuned
- * to the deep-space (btn-starlight / btn-nebula) identity — no purple
- * radial gradients.
+ * Atlas-plate "Coming Soon" banner: an engraved status panel with brass
+ * corner ticks, a mono status readout with a soft-pulsing warn dot, and a
+ * serif headline. role="status" + aria-live are pinned by the e2e suite.
  */
 export default function ComingSoonBanner({
   label = "Coming Soon",
@@ -28,73 +27,51 @@ export default function ComingSoonBanner({
   message,
 }: ComingSoonBannerProps) {
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0D1219] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
-    >
-      {/* Subtle directional gradient — keyed to navy/blue, not pink-purple AI slop */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden="true"
-        style={{
-          background:
-            "linear-gradient(120deg, rgba(10,132,255,0.14) 0%, rgba(10,132,255,0.05) 35%, rgba(13,18,25,0) 70%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
-      />
+    <MotionConfig reducedMotion="user">
+      <motion.div
+        role="status"
+        aria-live="polite"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        className="card-atlas tick-corners tick-corners-brass relative overflow-hidden"
+      >
+        <div className="relative flex flex-col gap-5 px-5 py-5 sm:flex-row sm:items-center sm:gap-6 sm:px-7 sm:py-6">
+          {/* Instrument mark + status readout */}
+          <div className="flex shrink-0 items-center gap-3.5">
+            <div className="flex h-11 w-11 items-center justify-center rounded-sm border border-brass/35 bg-brass/10 text-brass-bright">
+              <Telescope className="h-5 w-5" aria-hidden="true" />
+            </div>
 
-      <div className="relative flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6 px-5 sm:px-7 py-5 sm:py-6">
-        {/* Animated icon block */}
-        <div className="flex items-center gap-3 shrink-0">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-11 h-11 rounded-xl bg-[#0A84FF]/12 border border-[#0A84FF]/30 flex items-center justify-center text-[#9DC4FF]"
-          >
-            {/* Soft halo behind icon */}
-            <motion.span
-              aria-hidden="true"
-              className="absolute inset-0 rounded-xl bg-[#0A84FF]/15"
-              animate={{ opacity: [0.4, 0.1, 0.4] }}
-              transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <Telescope className="relative h-5 w-5" aria-hidden="true" />
-          </motion.div>
-
-          <div className="flex flex-col">
-            <span className="font-heading text-[10px] uppercase tracking-[0.22em] text-[#9DC4FF]/80">
-              {label}
-            </span>
-            {/* Status pill: "In Progress" + soft-pulse dot */}
-            <span className="mt-1 inline-flex items-center gap-1.5 self-start">
-              <span
-                aria-hidden="true"
-                className="pulse-dot relative inline-flex h-1.5 w-1.5 rounded-full bg-[#0A84FF] shadow-[0_0_6px_rgba(10,132,255,0.7)]"
-              />
-              <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[rgba(240,240,250,0.65)]">
-                {status}
+            <div className="flex flex-col">
+              <span className="font-mono text-[0.625rem] uppercase tracking-[0.22em] text-brass-bright/90">
+                {label}
               </span>
-            </span>
+              <span className="mt-1.5 inline-flex items-center gap-1.5 self-start">
+                <span
+                  aria-hidden="true"
+                  className="pulse-dot inline-flex h-1.5 w-1.5 rounded-full bg-brass"
+                />
+                <span className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-chart-bright/70">
+                  {status}
+                </span>
+              </span>
+            </div>
+          </div>
+
+          {/* Body */}
+          <div className="flex-1 sm:border-l sm:border-chart/12 sm:pl-6">
+            {headline && (
+              <h2 className="mb-1.5 font-display text-lg text-starlight sm:text-xl">
+                {headline}
+              </h2>
+            )}
+            <p className="text-sm leading-relaxed text-chart-bright/75 sm:text-[15px]">
+              {message}
+            </p>
           </div>
         </div>
-
-        {/* Body */}
-        <div className="flex-1 sm:border-l sm:border-white/[0.06] sm:pl-6">
-          {headline && (
-            <h2 className="font-heading text-[15px] sm:text-base font-semibold text-[rgba(240,240,250,0.97)] mb-1.5">
-              {headline}
-            </h2>
-          )}
-          <p className="text-sm sm:text-[15px] leading-relaxed text-[rgba(240,240,250,0.78)]">
-            {message}
-          </p>
-        </div>
-      </div>
-    </div>
+      </motion.div>
+    </MotionConfig>
   );
 }

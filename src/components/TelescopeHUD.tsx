@@ -24,10 +24,14 @@ const COMPASS_LABELS = [
   { label: "W", angle: 270 },
 ];
 
+// Atlas ink: engraved chart-blue lines, brass for the moving instrument.
+const CHART = (a: number) => `rgba(143, 165, 201, ${a})`;
+const BRASS = (a: number) => `rgba(217, 168, 92, ${a})`;
+
 /**
- * Animated mount-control telemetry panel for the /observe page.
- * Displays an alt-az telescope schematic with a slewing needle and
- * ticking readout rows. Aria-hidden — purely decorative.
+ * Animated mount-control telemetry panel for the /observe page, rendered
+ * as an engraved atlas instrument: chart-line dials, a brass needle and
+ * tube, mono readout rows. Aria-hidden — purely decorative.
  */
 export default function TelescopeHUD() {
   const reducedMotion = usePrefersReducedMotion();
@@ -52,25 +56,25 @@ export default function TelescopeHUD() {
     <MotionConfig reducedMotion="user">
       <div
         aria-hidden="true"
-        className="rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] p-5 select-none"
+        className="card-atlas tick-corners select-none p-5"
       >
         {/* Header chrome */}
-        <div className="flex items-center justify-between mb-4">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[rgba(240,240,250,0.4)]">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-chart/85">
             Mount Control · HUD
           </span>
-          <div className="flex items-center gap-3">
-            {/* TRACKING · SIM pill */}
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-[#0A84FF]/25 bg-[#0A84FF]/10">
-              <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-[#0A84FF]" />
-              <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#9DC4FF]">
+          <div className="flex items-center gap-2.5">
+            {/* TRACKING · SIM marker */}
+            <span className="inline-flex items-center gap-1.5 rounded-sm border border-chart/25 bg-chart/10 px-2 py-0.5">
+              <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-chart-bright" />
+              <span className="font-mono text-[0.5625rem] uppercase tracking-[0.15em] text-chart-bright">
                 Tracking · SIM
               </span>
             </span>
-            {/* MOUNT · IDLE pill */}
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-[#FF9F0A]/25 bg-[#FF9F0A]/10">
-              <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-[#FF9F0A]" />
-              <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#FF9F0A]">
+            {/* MOUNT · IDLE marker */}
+            <span className="inline-flex items-center gap-1.5 rounded-sm border border-brass/30 bg-brass/10 px-2 py-0.5">
+              <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-brass" />
+              <span className="font-mono text-[0.5625rem] uppercase tracking-[0.15em] text-brass-bright">
                 Mount · Idle
               </span>
             </span>
@@ -78,7 +82,7 @@ export default function TelescopeHUD() {
         </div>
 
         {/* Diagrams row */}
-        <div className="flex items-start gap-4 mb-5">
+        <div className="mb-5 flex items-start gap-4">
           {/* Azimuth compass dial */}
           <div className="shrink-0">
             <svg
@@ -93,7 +97,7 @@ export default function TelescopeHUD() {
                 cy="0"
                 r="54"
                 fill="none"
-                stroke="rgba(255,255,255,0.08)"
+                stroke={CHART(0.28)}
                 strokeWidth="1"
               />
               {/* Inner ring */}
@@ -102,7 +106,7 @@ export default function TelescopeHUD() {
                 cy="0"
                 r="46"
                 fill="none"
-                stroke="rgba(255,255,255,0.04)"
+                stroke={CHART(0.12)}
                 strokeWidth="1"
               />
               {/* Tick marks every 30° */}
@@ -118,7 +122,7 @@ export default function TelescopeHUD() {
                     y1={-Math.cos(angle) * r1}
                     x2={Math.sin(angle) * r2}
                     y2={-Math.cos(angle) * r2}
-                    stroke={`rgba(255,255,255,${isMajor ? 0.2 : 0.08})`}
+                    stroke={CHART(isMajor ? 0.45 : 0.2)}
                     strokeWidth={isMajor ? 1.2 : 0.8}
                   />
                 );
@@ -133,14 +137,14 @@ export default function TelescopeHUD() {
                     y={-Math.cos(rad) * 41 + 3.5}
                     textAnchor="middle"
                     fontSize="7"
-                    fill="rgba(240,240,250,0.5)"
+                    fill={CHART(0.7)}
                     fontFamily="monospace"
                   >
                     {label}
                   </text>
                 );
               })}
-              {/* Azimuth needle */}
+              {/* Azimuth needle — brass */}
               <motion.g
                 animate={reducedMotion ? {} : { rotate: azimuth }}
                 initial={{ rotate: azimuth }}
@@ -152,7 +156,7 @@ export default function TelescopeHUD() {
                   y1="0"
                   x2="0"
                   y2="-38"
-                  stroke="rgba(147,197,253,0.85)"
+                  stroke={BRASS(0.9)}
                   strokeWidth="1.5"
                   strokeLinecap="round"
                 />
@@ -162,20 +166,20 @@ export default function TelescopeHUD() {
                   y1="0"
                   x2="0"
                   y2="12"
-                  stroke="rgba(147,197,253,0.4)"
+                  stroke={BRASS(0.4)}
                   strokeWidth="1"
                   strokeLinecap="round"
                 />
               </motion.g>
               {/* Center dot */}
-              <circle cx="0" cy="0" r="3" fill="rgba(147,197,253,0.7)" />
+              <circle cx="0" cy="0" r="3" fill={BRASS(0.8)} />
               {/* Azimuth label */}
               <text
                 x="0"
                 y="58"
                 textAnchor="middle"
                 fontSize="6"
-                fill="rgba(240,240,250,0.3)"
+                fill={CHART(0.55)}
                 fontFamily="monospace"
               >
                 AZ
@@ -195,7 +199,7 @@ export default function TelescopeHUD() {
               <path
                 d="M 10 110 A 80 80 0 0 1 90 30"
                 fill="none"
-                stroke="rgba(255,255,255,0.08)"
+                stroke={CHART(0.28)}
                 strokeWidth="1"
               />
               {/* Tick marks at 0°, 30°, 60°, 90° */}
@@ -209,11 +213,11 @@ export default function TelescopeHUD() {
                     cx={cx}
                     cy={cy}
                     r="1.5"
-                    fill="rgba(255,255,255,0.18)"
+                    fill={CHART(0.45)}
                   />
                 );
               })}
-              {/* Telescope tube */}
+              {/* Telescope tube — brass instrument */}
               <motion.g
                 style={{ transformOrigin: "10px 110px" }}
                 animate={reducedMotion ? {} : { rotate: -(tubeDeg) }}
@@ -226,9 +230,9 @@ export default function TelescopeHUD() {
                   y="-52"
                   width="6"
                   height="50"
-                  rx="3"
-                  fill="rgba(147,197,253,0.15)"
-                  stroke="rgba(147,197,253,0.5)"
+                  rx="2"
+                  fill={BRASS(0.15)}
+                  stroke={BRASS(0.65)}
                   strokeWidth="0.8"
                   transform="translate(10 110)"
                 />
@@ -238,22 +242,22 @@ export default function TelescopeHUD() {
                   y="-42"
                   width="3"
                   height="22"
-                  rx="1.5"
-                  fill="rgba(147,197,253,0.1)"
-                  stroke="rgba(147,197,253,0.3)"
+                  rx="1"
+                  fill={BRASS(0.1)}
+                  stroke={BRASS(0.4)}
                   strokeWidth="0.6"
                   transform="translate(10 110)"
                 />
               </motion.g>
               {/* Mount base */}
-              <circle cx="10" cy="110" r="4" fill="rgba(147,197,253,0.4)" />
+              <circle cx="10" cy="110" r="4" fill={BRASS(0.55)} />
               {/* ALT label */}
               <text
                 x="40"
                 y="118"
                 textAnchor="middle"
                 fontSize="6"
-                fill="rgba(240,240,250,0.3)"
+                fill={CHART(0.55)}
                 fontFamily="monospace"
               >
                 ALT
@@ -263,7 +267,7 @@ export default function TelescopeHUD() {
         </div>
 
         {/* Telemetry readout rows */}
-        <div className="space-y-1.5 border-t border-white/[0.06] pt-3">
+        <div className="space-y-1.5 border-t border-chart/12 pt-3">
           {[
             { label: "TARGET", value: target.name },
             { label: "RA", value: target.ra },
@@ -272,7 +276,7 @@ export default function TelescopeHUD() {
             { label: "AZ", value: target.az },
           ].map(({ label, value }) => (
             <div key={label} className="flex items-baseline gap-2">
-              <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[rgba(240,240,250,0.35)] w-12 shrink-0">
+              <span className="w-12 shrink-0 font-mono text-[0.5625rem] uppercase tracking-[0.2em] text-chart/60">
                 {label}
               </span>
               <motion.span
@@ -280,7 +284,7 @@ export default function TelescopeHUD() {
                 initial={reducedMotion ? {} : { opacity: 0.3 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6 }}
-                className="font-mono text-[11px] text-[rgba(240,240,250,0.75)]"
+                className="font-mono text-[0.6875rem] text-starlight/80"
               >
                 {value}
               </motion.span>

@@ -180,7 +180,7 @@ export default function MockTargetPicker() {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] p-6 sm:p-8 space-y-6">
+    <div className="card-atlas tick-corners relative overflow-hidden p-6 sm:p-8 space-y-6">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
@@ -190,7 +190,7 @@ export default function MockTargetPicker() {
       <div>
         <Label
           htmlFor="target-chips"
-          className="block text-[11px] font-heading uppercase tracking-[0.18em] text-[rgba(240,240,250,0.5)] mb-3"
+          className="block font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-chart/85 mb-3"
         >
           Filter
         </Label>
@@ -214,17 +214,17 @@ export default function MockTargetPicker() {
                 onKeyDown={(e) => onChipKeyDown(e, i)}
                 onClick={() => setChip(c.key)}
                 className={cn(
-                  "group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-150",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A84FF]/40",
+                  "group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm border font-mono text-xs uppercase tracking-[0.08em] transition-all duration-150",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass/50",
                   active
-                    ? "border-[#0A84FF]/40 bg-[#0A84FF]/15 text-[#9DC4FF] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-                    : "border-white/[0.08] bg-[#121A25] text-[rgba(240,240,250,0.7)] hover:border-white/[0.16] hover:text-[rgba(240,240,250,0.95)] hover:-translate-y-px",
+                    ? "border-brass/50 bg-brass/10 text-brass-bright"
+                    : "border-chart/15 bg-deep text-chart-bright/70 hover:border-chart/35 hover:text-starlight/95 hover:-translate-y-px",
                 )}
               >
                 <span
                   className={cn(
                     "transition-colors",
-                    active ? "text-[#9DC4FF]" : "text-[rgba(240,240,250,0.5)] group-hover:text-[rgba(240,240,250,0.85)]",
+                    active ? "text-brass-bright" : "text-chart/70 group-hover:text-chart-bright/85",
                   )}
                 >
                   {c.icon}
@@ -240,7 +240,7 @@ export default function MockTargetPicker() {
       <div>
         <Label
           htmlFor="target-search"
-          className="block text-[11px] font-heading uppercase tracking-[0.18em] text-[rgba(240,240,250,0.5)] mb-2"
+          className="block font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-chart/85 mb-2"
         >
           Target
         </Label>
@@ -254,15 +254,15 @@ export default function MockTargetPicker() {
           aria-expanded={open}
           aria-controls="target-command-dialog"
           aria-keyshortcuts="Meta+K Control+K"
-          className="group relative flex w-full items-center gap-3 px-4 py-3 rounded-full bg-[#121A25] border border-white/[0.08] text-left text-sm text-[rgba(240,240,250,0.55)] hover:border-white/[0.16] hover:bg-[#16202C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A84FF]/40 focus-visible:border-[#0A84FF]/50 transition-colors"
+          className="group relative flex w-full items-center gap-3 px-4 py-3 rounded-sm bg-deep border border-chart/15 text-left text-sm text-chart-bright/60 hover:border-chart/35 hover:bg-raised/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass/50 focus-visible:border-brass/50 transition-colors"
         >
-          <Search className="h-4 w-4 text-[rgba(240,240,250,0.4)] shrink-0" />
+          <Search className="h-4 w-4 text-chart/70 shrink-0" />
           <span className="flex-1 truncate">
             {selected
               ? selected.name
               : "Search targets — Andromeda, M42, Saturn…"}
           </span>
-          <kbd className="hidden sm:inline-flex h-6 items-center gap-0.5 rounded-md border border-white/[0.1] bg-black/30 px-1.5 font-mono text-[10px] font-medium text-[rgba(240,240,250,0.6)]">
+          <kbd className="hidden sm:inline-flex h-6 items-center gap-0.5 rounded-sm border border-chart/20 bg-void px-1.5 font-mono text-[10px] font-medium text-chart-bright/65">
             <span className="text-[11px]">⌘</span>K
           </kbd>
         </button>
@@ -278,18 +278,18 @@ export default function MockTargetPicker() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#121A25] p-5"
+            className="relative overflow-hidden rounded-sm border border-chart/12 bg-deep p-5"
           >
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
+              className="chart-rule pointer-events-none absolute inset-x-0 top-0"
             />
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0A84FF]/10 border border-[#0A84FF]/25 text-[#9DC4FF]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-brass/10 border border-brass/30 text-brass-bright">
                   {iconFor(selected.type)}
                 </span>
-                <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.97)] truncate">
+                <h3 className="font-display text-lg text-starlight truncate">
                   {selected.name}
                 </h3>
               </div>
@@ -297,23 +297,23 @@ export default function MockTargetPicker() {
                 <Badge
                   variant="outline"
                   className={cn(
-                    "h-5 rounded-full border px-2 py-0 text-[10px] font-medium uppercase tracking-[0.12em]",
+                    "h-5 rounded-sm border px-2 py-0 font-mono text-[10px] uppercase tracking-[0.12em]",
                     tierOf(selected) === "easy"
-                      ? "border-[#30D158]/30 bg-[#30D158]/10 text-[#7ee79b]"
-                      : "border-[#FF9F0A]/35 bg-[#FF9F0A]/10 text-[#ffc266]",
+                      ? "border-oiii/35 bg-oiii/10 text-oiii"
+                      : "border-brass/40 bg-brass/10 text-brass-bright",
                   )}
                 >
                   {tierOf(selected) === "easy" ? "Easy" : "Challenging"}
                 </Badge>
                 <Badge
                   variant="outline"
-                  className="h-5 rounded-full border-white/[0.12] bg-white/[0.04] px-2 py-0 text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(240,240,250,0.7)]"
+                  className="h-5 rounded-sm border-chart/20 bg-chart/8 px-2 py-0 font-mono text-[10px] uppercase tracking-[0.12em] text-chart-bright/75"
                 >
                   {selected.type}
                 </Badge>
               </div>
             </div>
-            <p className="text-sm text-[rgba(240,240,250,0.72)] leading-relaxed mb-4">
+            <p className="text-sm text-chart-bright/70 leading-relaxed mb-4">
               {selected.description}
             </p>
             <dl className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
@@ -329,7 +329,7 @@ export default function MockTargetPicker() {
       <div>
         <Label
           htmlFor="target-email"
-          className="block text-[11px] font-heading uppercase tracking-[0.18em] text-[rgba(240,240,250,0.5)] mb-2"
+          className="block font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-chart/85 mb-2"
         >
           Where should we send the image?
         </Label>
@@ -347,13 +347,13 @@ export default function MockTargetPicker() {
           onBlur={(e) => setEmailError(validateEmail(e.target.value))}
           aria-invalid={!!emailError}
           aria-describedby={emailError ? "target-email-error" : undefined}
-          className="h-12 px-4 rounded-full bg-[#121A25] border border-white/[0.08] text-[15px] text-[rgba(240,240,250,0.95)] placeholder:text-[rgba(240,240,250,0.35)] focus-visible:border-[#0A84FF]/50 focus-visible:ring-2 focus-visible:ring-[#0A84FF]/20"
+          className="h-12 px-4 rounded-sm bg-deep border border-chart/15 text-[15px] text-starlight/95 placeholder:text-chart-bright/35 focus-visible:border-brass/50 focus-visible:ring-2 focus-visible:ring-brass/25"
         />
         {emailError && (
           <p
             id="target-email-error"
             role="alert"
-            className="mt-1.5 text-xs text-[#FF6B6B]"
+            className="mt-1.5 text-xs text-halpha"
           >
             {emailError}
           </p>
@@ -380,7 +380,7 @@ export default function MockTargetPicker() {
                   onBlur={() => setTooltipOpen(false)}
                   onMouseEnter={() => setTooltipOpen(true)}
                   onMouseLeave={() => setTooltipOpen(false)}
-                  className="btn-starlight inline-flex items-center justify-center gap-2 px-7 h-11 text-sm font-medium rounded-full opacity-70 cursor-not-allowed shrink-0"
+                  className="inline-flex items-center justify-center gap-2 px-7 h-11 shrink-0 rounded-sm border border-chart/15 bg-raised/70 text-sm font-medium text-starlight/45 cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass/80"
                 >
                   <Lock className="h-4 w-4" aria-hidden="true" />
                   Submit request
@@ -389,13 +389,13 @@ export default function MockTargetPicker() {
             />
             <TooltipContent
               side="top"
-              className="border-white/[0.1] bg-[#121A25] text-[rgba(240,240,250,0.9)]"
+              className="rounded-sm border-chart/20 bg-panel font-mono text-xs text-starlight/90"
             >
               Locks open at first light · August 2026
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <p className="text-xs text-[rgba(240,240,250,0.55)] leading-relaxed">
+        <p className="text-xs text-chart-bright/60 leading-relaxed">
           Submissions open when the telescope goes online. Drop your email
           below and we&apos;ll let you know.
         </p>
@@ -422,7 +422,7 @@ export default function MockTargetPicker() {
               type="button"
               aria-label="Close target search"
               onClick={closeAndRestoreFocus}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md cursor-default"
+              className="absolute inset-0 bg-void/80 cursor-default"
             />
 
             <motion.div
@@ -430,11 +430,11 @@ export default function MockTargetPicker() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, y: -4 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-full max-w-xl rounded-2xl border border-white/[0.1] bg-[#0D1219] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] overflow-hidden"
+              className="tick-corners relative w-full max-w-xl rounded-md border border-chart/20 bg-panel shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] overflow-hidden"
             >
               <CommandRoot
                 loop
-                className="bg-transparent rounded-2xl"
+                className="bg-transparent rounded-md"
                 // Use our own filter that also matches aliases
                 filter={(value, search) => {
                   if (!search) return 1;
@@ -443,27 +443,27 @@ export default function MockTargetPicker() {
                   return 0;
                 }}
               >
-                <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-white/[0.06]">
-                  <Search className="h-4 w-4 text-[rgba(240,240,250,0.4)] shrink-0" />
+                <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-chart/12">
+                  <Search className="h-4 w-4 text-chart/70 shrink-0" />
                   <CommandInput
                     autoFocus
                     placeholder="Type to search — Andromeda, M42, Saturn…"
-                    className="flex-1 bg-transparent border-0 outline-none text-[15px] text-[rgba(240,240,250,0.95)] placeholder:text-[rgba(240,240,250,0.35)] focus-visible:ring-0 [&_[data-slot=input-group]]:!border-0 [&_[data-slot=input-group]]:!bg-transparent [&_[data-slot=input-group]]:!shadow-none [&_[data-slot=input-group]]:!h-auto [&_[data-slot=input-group-addon]]:hidden"
+                    className="flex-1 bg-transparent border-0 outline-none text-[15px] text-starlight/95 placeholder:text-chart-bright/35 focus-visible:ring-0 [&_[data-slot=input-group]]:!border-0 [&_[data-slot=input-group]]:!bg-transparent [&_[data-slot=input-group]]:!shadow-none [&_[data-slot=input-group]]:!h-auto [&_[data-slot=input-group-addon]]:hidden"
                   />
-                  <kbd className="hidden sm:inline-flex h-6 items-center gap-0.5 rounded-md border border-white/[0.1] bg-black/30 px-1.5 font-mono text-[10px] font-medium text-[rgba(240,240,250,0.55)]">
+                  <kbd className="hidden sm:inline-flex h-6 items-center gap-0.5 rounded-sm border border-chart/20 bg-void px-1.5 font-mono text-[10px] font-medium text-chart-bright/60">
                     Esc
                   </kbd>
                 </div>
 
                 <CommandList className="max-h-[60vh] py-2">
                   <CommandEmpty className="px-6 py-10 text-center">
-                    <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.04] border border-white/[0.08] text-[rgba(240,240,250,0.55)]">
+                    <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-sm bg-chart/8 border border-chart/15 text-chart-bright/60">
                       <Telescope className="h-4 w-4" />
                     </div>
-                    <p className="text-sm text-[rgba(240,240,250,0.85)] font-medium">
+                    <p className="text-sm text-starlight/85 font-medium">
                       Nothing in the catalog matches that.
                     </p>
-                    <p className="mt-1 text-xs text-[rgba(240,240,250,0.55)]">
+                    <p className="mt-1 text-xs text-chart-bright/60">
                       Try a Messier number (e.g. M42), a planet, or a common name.
                     </p>
                   </CommandEmpty>
@@ -471,7 +471,7 @@ export default function MockTargetPicker() {
                   {easy.length > 0 && (
                     <CommandGroup
                       heading="Easy targets · naked-eye class"
-                      className="px-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.18em] [&_[cmdk-group-heading]]:text-[rgba(240,240,250,0.5)]"
+                      className="px-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.18em] [&_[cmdk-group-heading]]:text-chart/85"
                     >
                       {easy.map((t) => (
                         <PaletteItem key={t.id} t={t} onPick={pick} />
@@ -482,7 +482,7 @@ export default function MockTargetPicker() {
                   {challenging.length > 0 && (
                     <CommandGroup
                       heading="Challenging targets · stacked exposures"
-                      className="px-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.18em] [&_[cmdk-group-heading]]:text-[rgba(240,240,250,0.5)]"
+                      className="px-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.18em] [&_[cmdk-group-heading]]:text-chart/85"
                     >
                       {challenging.map((t) => (
                         <PaletteItem key={t.id} t={t} onPick={pick} />
@@ -491,12 +491,12 @@ export default function MockTargetPicker() {
                   )}
                 </CommandList>
 
-                <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-2 text-[11px] text-[rgba(240,240,250,0.5)]">
+                <div className="flex items-center justify-between gap-3 border-t border-chart/12 px-4 py-2 text-[11px] text-chart-bright/55">
                   <div className="flex items-center gap-2 font-mono">
                     <Kbd>↑</Kbd>
                     <Kbd>↓</Kbd>
                     <span>navigate</span>
-                    <span className="text-[rgba(240,240,250,0.25)]">·</span>
+                    <span className="text-chart/40">·</span>
                     <Kbd>↵</Kbd>
                     <span>select</span>
                   </div>
@@ -523,33 +523,33 @@ function PaletteItem({ t, onPick }: { t: Target; onPick: (t: Target) => void }) 
       value={[t.name, ...t.aliases].join(" ")}
       onSelect={() => onPick(t)}
       className={cn(
-        "group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm",
-        "data-selected:bg-white/[0.05] data-[selected=true]:bg-white/[0.05] aria-selected:bg-white/[0.05]",
-        "text-[rgba(240,240,250,0.85)] data-selected:text-white aria-selected:text-white",
+        "group flex cursor-pointer items-center gap-3 rounded-sm px-3 py-2.5 text-sm",
+        "data-selected:bg-raised/70 data-[selected=true]:bg-raised/70 aria-selected:bg-raised/70",
+        "text-starlight/85 data-selected:text-starlight aria-selected:text-starlight",
       )}
     >
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#121A25] border border-white/[0.06] text-[rgba(240,240,250,0.7)] group-data-selected:text-[#9DC4FF] group-aria-selected:text-[#9DC4FF]">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-deep border border-chart/12 text-chart-bright/70 group-data-selected:text-brass-bright group-aria-selected:text-brass-bright">
         {iconFor(t.type)}
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium truncate">{t.name}</span>
         </div>
-        <p className="text-[11px] text-[rgba(240,240,250,0.5)] truncate">
+        <p className="text-[11px] text-chart-bright/55 truncate">
           mag {t.magnitude} · best in {t.bestMonth}
         </p>
       </div>
-      <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[rgba(240,240,250,0.4)] hidden sm:inline">
+      <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-chart/70 hidden sm:inline">
         {t.type}
       </span>
-      <ChevronRight className="h-4 w-4 text-[rgba(240,240,250,0.3)] opacity-0 -translate-x-1 transition-all group-aria-selected:opacity-100 group-aria-selected:translate-x-0 group-data-selected:opacity-100 group-data-selected:translate-x-0" />
+      <ChevronRight className="h-4 w-4 text-brass/60 opacity-0 -translate-x-1 transition-all group-aria-selected:opacity-100 group-aria-selected:translate-x-0 group-data-selected:opacity-100 group-data-selected:translate-x-0" />
     </CommandItem>
   );
 }
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-md border border-white/[0.1] bg-black/30 px-1 text-[10px] text-[rgba(240,240,250,0.7)]">
+    <kbd className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-sm border border-chart/20 bg-void px-1 text-[10px] text-chart-bright/70">
       {children}
     </kbd>
   );
@@ -566,15 +566,13 @@ function Stat({
 }) {
   return (
     <div>
-      <dt className="text-[10px] font-mono uppercase tracking-[0.15em] text-[rgba(240,240,250,0.4)] mb-1">
+      <dt className="text-[10px] font-mono uppercase tracking-[0.15em] text-chart/70 mb-1">
         {label}
       </dt>
       <dd
         className={cn(
-          "text-sm",
-          muted
-            ? "text-[rgba(240,240,250,0.55)] italic"
-            : "text-[rgba(240,240,250,0.9)]",
+          "text-sm font-mono",
+          muted ? "text-chart-bright/55 italic" : "text-starlight/90",
         )}
       >
         {value}

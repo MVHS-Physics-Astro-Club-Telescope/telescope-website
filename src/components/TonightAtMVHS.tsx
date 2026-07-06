@@ -192,25 +192,20 @@ export default async function TonightAtMVHS() {
   return (
     <section
       aria-label="Tonight's sky conditions at MVHS"
-      className="relative overflow-hidden rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] p-6 sm:p-7"
+      className="card-atlas tick-corners relative overflow-hidden p-6 sm:p-7"
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
-      />
-
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-[rgba(240,240,250,0.5)]">
-            Tonight at MVHS · 37.37°N
+          <p className="eyebrow !text-[0.625rem]">
+            Tonight at MVHS · 37.37°N −122.08°W
           </p>
-          <h2 className="font-heading text-xl sm:text-[22px] font-semibold text-[rgba(240,240,250,0.97)] mt-1">
+          <h2 className="mt-2 font-display text-xl text-starlight sm:text-2xl">
             What the sky looks like right now
           </h2>
         </div>
         {!f.ok && (
           <span
-            className="inline-flex items-center gap-1.5 rounded-full border border-[#FF9F0A]/35 bg-[#FF9F0A]/10 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.15em] text-[#ffc266]"
+            className="inline-flex items-center gap-1.5 rounded-sm border border-brass/35 bg-brass/10 px-2.5 py-1 font-mono text-[0.625rem] uppercase tracking-[0.15em] text-brass-bright"
             title="Forecast service unreachable — partial data shown"
           >
             <AlertCircle className="h-3 w-3" />
@@ -264,7 +259,7 @@ export default async function TonightAtMVHS() {
         />
       </dl>
 
-      <p className="mt-5 text-[11px] text-[rgba(240,240,250,0.65)] leading-relaxed">
+      <p className="mt-5 text-[0.6875rem] leading-relaxed text-chart-bright/65">
         Live forecast from 7Timer · Mountain View, CA. Updates every 30
         minutes. Once the telescope is online, this widget will also show
         whether tonight&apos;s queue is currently capturing.
@@ -291,25 +286,25 @@ function Tile({
   accent?: "good" | "okay" | "bad";
 }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-[#121A25] px-4 py-3.5">
-      <dt className="flex items-center gap-2 mb-1.5 text-[rgba(240,240,250,0.55)]">
+    <div className="rounded-sm border border-chart/12 bg-deep px-4 py-3.5">
+      <dt className="mb-1.5 flex items-center gap-2 text-chart-bright/60">
         <span
           className={cn(
-            "flex h-6 w-6 items-center justify-center rounded-md",
-            accent === "good" && "bg-[#30D158]/12 text-[#7ee79b]",
-            accent === "okay" && "bg-[#FF9F0A]/12 text-[#ffc266]",
-            accent === "bad" && "bg-[#FF453A]/12 text-[#ff8478]",
-            !accent && "bg-white/[0.04] text-[rgba(240,240,250,0.6)]",
+            "flex h-6 w-6 items-center justify-center rounded-sm",
+            accent === "good" && "bg-oiii/12 text-oiii",
+            accent === "okay" && "bg-brass/12 text-brass-bright",
+            accent === "bad" && "bg-halpha/12 text-halpha",
+            !accent && "bg-chart/8 text-chart-bright/70",
           )}
           aria-hidden="true"
         >
           {icon}
         </span>
-        <span className="text-[10px] font-mono uppercase tracking-[0.18em] truncate">
+        <span className="truncate font-mono text-[0.625rem] uppercase tracking-[0.18em]">
           {label}
         </span>
       </dt>
-      <dd className="font-heading text-[18px] sm:text-[19px] font-semibold tabular-nums text-[rgba(240,240,250,0.97)]">
+      <dd className="font-mono text-lg tabular-nums text-starlight sm:text-[19px]">
         {value}
       </dd>
     </div>
@@ -318,17 +313,17 @@ function Tile({
 
 export function TonightAtMVHSSkeleton() {
   return (
-    <section className="rounded-2xl bg-[#0D1219] border border-white/[0.08] p-6 sm:p-7">
-      <Skeleton className="h-3 w-40 mb-2 rounded-full" />
-      <Skeleton className="h-6 w-72 mb-5 rounded-md" />
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <section className="card-atlas p-6 sm:p-7">
+      <Skeleton className="mb-2 h-3 w-40 rounded-sm" />
+      <Skeleton className="mb-5 h-6 w-72 rounded-sm" />
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
-            className="rounded-xl border border-white/[0.06] bg-[#121A25] px-4 py-3.5"
+            className="rounded-sm border border-chart/12 bg-deep px-4 py-3.5"
           >
-            <Skeleton className="h-4 w-20 mb-2 rounded" />
-            <Skeleton className="h-6 w-16 rounded" />
+            <Skeleton className="mb-2 h-4 w-20 rounded-sm" />
+            <Skeleton className="h-6 w-16 rounded-sm" />
           </div>
         ))}
       </div>

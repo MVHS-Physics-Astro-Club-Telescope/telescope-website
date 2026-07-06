@@ -8,6 +8,7 @@ import FAQ from "@/components/FAQ";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import MockTargetPicker from "@/components/MockTargetPicker";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 export const metadata: Metadata = {
   title: "Request a target — MVHS Public Observatory",
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
 
 const captureCategories = [
   {
+    ref: "PLATE I",
     title: "Moon & planets",
     image: "/request/moon.jpg",
     alt: "The full Moon photographed by NASA",
@@ -25,6 +27,7 @@ const captureCategories = [
       "Lunar craters and rilles, Jupiter's cloud bands and moons, Saturn's rings, Mars at opposition.",
   },
   {
+    ref: "PLATE II",
     title: "Bright nebulae & clusters",
     image: "/request/nebula.jpg",
     alt: "NASA Spitzer infrared image of a star-forming nebula",
@@ -33,6 +36,7 @@ const captureCategories = [
       "Star-forming regions, planetary nebulae, supernova remnants, open and globular clusters.",
   },
   {
+    ref: "PLATE III",
     title: "Galaxies",
     image: "/request/galaxy.jpg",
     alt: "GALEX/Spitzer composite image of the Andromeda Galaxy",
@@ -79,26 +83,26 @@ export default function RequestPage() {
         {/* CoordinateGrid layered behind text */}
         <CoordinateGrid />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-sm text-[rgba(240,240,250,0.4)] mb-8">
+        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-10 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-chart/70">
             <Link
               href="/"
-              className="hover:text-[rgba(240,240,250,0.8)] transition-colors duration-200"
+              className="transition-colors duration-200 hover:text-brass-bright"
             >
               Home
             </Link>
-            <span>/</span>
-            <span className="text-[rgba(240,240,250,0.7)]">Request</span>
+            <span aria-hidden="true">/</span>
+            <span className="text-chart-bright/80">Request</span>
           </div>
 
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.04] mb-6 text-[11px] text-[rgba(240,240,250,0.55)] tracking-[0.2em] uppercase">
-              MVHS Public Observatory
-            </div>
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-[rgba(240,240,250,1)] leading-[1.05] tracking-tighter mb-5">
+            <p className="eyebrow mb-5">
+              MVHS Public Observatory · Target queue · Opens Aug 2026
+            </p>
+            <h1 className="mb-5 font-display text-5xl leading-[1.05] text-starlight sm:text-6xl">
               Request a target
             </h1>
-            <p className="text-lg text-[rgba(240,240,250,0.65)] leading-relaxed max-w-2xl">
+            <p className="max-w-2xl text-lg leading-relaxed text-chart-bright/70">
               Tell our telescope what to capture for you. Pick a galaxy, a
               nebula, a planet — we&apos;ll point the optics at it and email
               you the image.
@@ -108,14 +112,14 @@ export default function RequestPage() {
       </ImmersiveHero>
 
       {/* Coming Soon banner */}
-      <section className="relative bg-[#080B12]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-2">
+      <section className="relative pt-10 sm:pt-12">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <ComingSoonBanner
             headline="Request queue opens at First Light"
             message={
               <>
                 Currently targeting{" "}
-                <strong className="text-[rgba(240,240,250,0.95)]">August 2026</strong>.
+                <strong className="text-starlight">August 2026</strong>.
                 You can preview the request flow below — the submit button
                 unlocks automatically the night of first light.
               </>
@@ -125,14 +129,15 @@ export default function RequestPage() {
       </section>
 
       {/* Mock target picker */}
-      <section className="relative bg-[#080B12] py-14 sm:py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-14 sm:py-20">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="mb-8">
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-2">
+              <p className="eyebrow mb-4">Preview · Full catalog · ⌘K to search</p>
+              <h2 className="mb-3 font-display text-3xl text-starlight sm:text-4xl">
                 Build your request
               </h2>
-              <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
+              <p className="text-sm leading-relaxed text-chart-bright/65">
                 Try it out — type a target name, pick from suggestions, see the
                 preview card. The submit button activates when the telescope
                 goes online.
@@ -146,25 +151,17 @@ export default function RequestPage() {
       </section>
 
       {/* What we can capture */}
-      <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <div className="max-w-2xl mb-12">
-              <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
-              <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)] mb-3">
-                What we can capture
-              </h2>
-              <p className="text-[rgba(240,240,250,0.6)] text-base">
-                A 10-inch f/4.48 Dobsonian gathers enough light for the whole
-                Messier catalog, all eight planets, and most of the brighter
-                NGC objects. Here&apos;s the rough menu.
-              </p>
-            </div>
-          </Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+      <section className="relative border-t border-chart/12 py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            eyebrow="Catalog · 10-inch f/4.48 · mag ≤ 12"
+            title="What we can capture"
+            subtitle="A 10-inch f/4.48 Dobsonian gathers enough light for the whole Messier catalog, all eight planets, and most of the brighter NGC objects. Here's the rough menu."
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
             {captureCategories.map((c, i) => (
               <Reveal key={c.title} delay={i * 0.08}>
-                <div className="rounded-2xl overflow-hidden bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] transition-all duration-300">
+                <div className="card-atlas tick-corners h-full overflow-hidden transition-colors duration-300 hover:border-brass/40">
                   <div className="relative aspect-[4/3] bg-black">
                     <Image
                       src={c.image}
@@ -173,15 +170,18 @@ export default function RequestPage() {
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover"
                     />
-                    <span className="absolute bottom-2 right-2 text-[10px] font-mono uppercase tracking-[0.15em] text-white/70 bg-black/60 px-2 py-1 rounded">
+                    <span className="absolute bottom-2 right-2 rounded-sm border border-chart/20 bg-void/75 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-chart-bright/70">
                       {c.credit}
                     </span>
                   </div>
                   <div className="p-6">
-                    <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mb-2">
+                    <p className="eyebrow !text-[0.625rem] text-chart/70">
+                      {c.ref}
+                    </p>
+                    <h3 className="mt-3 mb-2 font-display text-xl text-starlight">
                       {c.title}
                     </h3>
-                    <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
+                    <p className="text-sm leading-relaxed text-chart-bright/65">
                       {c.description}
                     </p>
                   </div>
@@ -193,8 +193,8 @@ export default function RequestPage() {
       </section>
 
       {/* Email signup */}
-      <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative border-t border-chart/12 py-16 sm:py-20">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <Reveal>
             <EmailSignup
               source="request"
@@ -207,16 +207,9 @@ export default function RequestPage() {
       </section>
 
       {/* FAQ */}
-      <section className="relative bg-[#080B12] py-16 sm:py-20 border-t border-white/[0.06]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <div className="mb-10">
-              <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
-              <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)]">
-                Questions
-              </h2>
-            </div>
-          </Reveal>
+      <section className="relative border-t border-chart/12 py-20 sm:py-24">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading eyebrow="Field notes · FAQ" title="Questions" />
           <Reveal>
             <FAQ items={faqItems} idPrefix="request-faq" />
           </Reveal>

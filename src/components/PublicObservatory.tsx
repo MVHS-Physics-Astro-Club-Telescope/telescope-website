@@ -1,140 +1,121 @@
 "use client";
 
 import Link from "next/link";
-import { useInView } from "@/hooks/useInView";
+import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 
 /**
- * Homepage section introducing the Public Observatory feature: the live view
- * and the target request form. Both pages are in "Coming Soon" preview mode.
- *
- * Layout: section heading → two CTA cards side-by-side at md+ widths,
- * stacked on mobile. Cards use the deep-space surface style consistent
- * with the rest of the homepage components (About, Sponsorship).
+ * The public-observatory pipeline. The numbered steps are a true
+ * sequence — a request really does move through them in this order.
  */
+const pipeline = [
+  {
+    step: "01",
+    title: "You pick a target",
+    description:
+      "A galaxy, a nebula, a planet — anything in our catalog, from any phone or laptop.",
+  },
+  {
+    step: "02",
+    title: "The telescope slews",
+    description:
+      "The mount finds your object, plate-solves to confirm it's centered, and starts the exposure.",
+  },
+  {
+    step: "03",
+    title: "The image comes back",
+    description:
+      "Your photograph of the cosmos lands in your inbox. Free, every time.",
+  },
+];
+
+const cards = [
+  {
+    eyebrow: "Live view",
+    title: "Watch the telescope work",
+    description:
+      "Real-time tracking, exposures, and sky conditions streamed straight from the observatory floor.",
+    cta: "Watch live view",
+    href: "/observe",
+  },
+  {
+    eyebrow: "Target requests",
+    title: "Tell it what to capture",
+    description:
+      "Pick a galaxy, nebula, or planet. We point the telescope at it and email you the image.",
+    cta: "Request a target",
+    href: "/request",
+  },
+];
+
 export default function PublicObservatory() {
-  const { ref, isInView } = useInView();
-
-  const cards = [
-    {
-      eyebrow: "Live View",
-      title: "Watch the telescope work",
-      description:
-        "Real-time tracking, exposures, and sky conditions streamed straight from the observatory floor.",
-      cta: "Watch live view",
-      href: "/observe",
-      icon: (
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M3 11l9-3 2 4.5L5 16z" />
-          <path d="M14 12.5l4-1.4" />
-          <path d="M9 14l3 7" />
-          <path d="M12 14l-3 7" />
-          <circle cx="19" cy="9" r="2" />
-        </svg>
-      ),
-    },
-    {
-      eyebrow: "Target Requests",
-      title: "Tell it what to capture",
-      description:
-        "Pick a galaxy, nebula, or planet. We point the telescope at it and email you the image.",
-      cta: "Request a target",
-      href: "/request",
-      icon: (
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <circle cx="12" cy="12" r="6" />
-          <circle cx="12" cy="12" r="2" />
-        </svg>
-      ),
-    },
-  ];
-
   return (
-    <section
-      id="observatory"
-      className="relative py-24 sm:py-32 bg-[#080B12]"
-    >
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="observatory" className="relative py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          title="A telescope you can use, from anywhere"
+          eyebrow="Public observatory · Remote access"
+          title="A telescope you can use from anywhere"
           subtitle="We're building a public-access robotic observatory. Submit a target, get an image of the cosmos — for free, from your phone."
         />
 
-        <div
-          ref={ref}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
-        >
+        {/* The pipeline */}
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded border border-chart/15 bg-chart/15 sm:grid-cols-3">
+          {pipeline.map((p, i) => (
+            <div key={p.step} className="bg-deep p-7 sm:p-8">
+              <Reveal delay={i * 0.12}>
+                <p className="font-mono text-xs tracking-[0.2em] text-brass">
+                  {p.step}
+                </p>
+                <h3 className="mt-4 font-display text-xl text-starlight">
+                  {p.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-chart-bright/65">
+                  {p.description}
+                </p>
+              </Reveal>
+            </div>
+          ))}
+        </div>
+
+        {/* Preview pages */}
+        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
           {cards.map((card, i) => (
-            <Link
-              key={card.title}
-              href={card.href}
-              className={`group relative p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.16] hover:bg-[#111922] transition-all duration-500 ${
-                isInView
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-12"
-              }`}
-              style={{ transitionDelay: `${i * 120}ms` }}
-            >
-              {/* "Coming Soon" pill — top right */}
-              <span className="absolute top-5 right-5 text-[10px] font-mono uppercase tracking-[0.18em] text-[#9DC4FF] bg-[#0A84FF]/10 border border-[#0A84FF]/25 rounded-full px-2.5 py-1">
-                Coming Soon
-              </span>
+            <Reveal key={card.title} delay={i * 0.12}>
+              <Link
+                href={card.href}
+                className="card-atlas tick-corners group relative block h-full p-8 transition-colors duration-300 hover:border-brass/40"
+              >
+                <span className="absolute right-6 top-6 rounded-sm border border-brass/30 bg-brass/10 px-2.5 py-1 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-brass-bright">
+                  Coming soon
+                </span>
 
-              <div className="w-11 h-11 rounded-xl bg-[#121A25] border border-white/[0.06] flex items-center justify-center text-white/90 mb-6">
-                {card.icon}
-              </div>
+                <p className="eyebrow !text-[0.625rem]">{card.eyebrow}</p>
+                <h3 className="mt-3 max-w-[16ch] font-display text-2xl text-starlight">
+                  {card.title}
+                </h3>
+                <p className="mt-3 max-w-md text-sm leading-relaxed text-chart-bright/65">
+                  {card.description}
+                </p>
 
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[rgba(240,240,250,0.45)]">
-                {card.eyebrow}
-              </span>
-              <h3 className="font-heading text-2xl font-semibold text-[rgba(240,240,250,0.97)] mt-2 mb-3">
-                {card.title}
-              </h3>
-              <p className="text-[15px] text-[rgba(240,240,250,0.65)] leading-relaxed mb-6">
-                {card.description}
-              </p>
-
-              <span className="inline-flex items-center gap-2 text-sm font-medium text-[rgba(240,240,250,0.95)] group-hover:gap-3 transition-all">
-                {card.cta}
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-              </span>
-            </Link>
+                <span className="mt-6 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-brass-bright transition-all group-hover:gap-3.5">
+                  {card.cta}
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </span>
+              </Link>
+            </Reveal>
           ))}
         </div>
       </div>

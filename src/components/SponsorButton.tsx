@@ -15,7 +15,7 @@ export default function SponsorButton({ className, children }: SponsorButtonProp
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={className || "btn-starlight rounded-full px-8 py-3 font-medium text-sm"}
+        className={className || "btn-brass px-8 py-3 text-sm"}
       >
         {children || "Become a Sponsor"}
       </button>

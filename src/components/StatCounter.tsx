@@ -9,7 +9,7 @@ interface StatCounterProps {
   prefix?: string;
   suffix?: string;
   label: string;
-  /** When true, renders in green (#30D158) to match the cash-raised highlight */
+  /** When true, renders in brass to pick out the cash-raised figure */
   highlight?: boolean;
 }
 
@@ -53,13 +53,13 @@ export default function StatCounter({
   return (
     <div ref={ref} className="text-center">
       <div
-        className={`font-heading text-3xl sm:text-4xl font-bold tabular-nums ${
-          highlight ? "text-[#30D158]" : "text-[rgba(240,240,250,1)]"
+        className={`font-mono text-2xl tabular-nums sm:text-4xl ${
+          highlight ? "text-brass-bright" : "text-starlight"
         }`}
       >
         {prefix}{count.toLocaleString()}{suffix}
       </div>
-      <div className="mt-2 text-xs uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
+      <div className="eyebrow mt-2 !text-[0.625rem]">
         {label}
       </div>
     </div>

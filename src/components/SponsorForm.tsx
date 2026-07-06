@@ -7,6 +7,12 @@ interface SponsorFormProps {
   onClose: () => void;
 }
 
+const inputClasses =
+  "w-full rounded-[3px] border border-chart/20 bg-deep px-4 py-3 text-sm text-starlight placeholder:text-chart-bright/35 transition-colors focus:border-brass/60 focus:outline-none focus:ring-1 focus:ring-brass/40";
+
+const labelClasses =
+  "mb-1.5 block font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-chart-bright/70";
+
 export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -67,22 +73,31 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}
-      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-void/80 p-4 backdrop-blur-sm"
     >
-      <div className="w-full max-w-lg rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-2xl shadow-black/50 p-8">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="sponsor-form-title"
+        className="card-atlas tick-corners tick-corners-brass max-h-[90vh] w-full max-w-lg overflow-y-auto p-8 shadow-2xl shadow-black/60"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-start justify-between">
           <div>
-            <h2 className="font-heading text-xl font-semibold text-[rgba(240,240,250,1)]">
-              Sponsor Inquiry
+            <p className="eyebrow !text-[0.625rem]">Sponsor inquiry</p>
+            <h2
+              id="sponsor-form-title"
+              className="mt-2 font-display text-2xl text-starlight"
+            >
+              Get in touch
             </h2>
-            <p className="text-sm text-[rgba(240,240,250,0.6)] mt-1">
+            <p className="mt-1 text-sm text-chart-bright/65">
               We&apos;d love to hear from you
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-[rgba(240,240,250,0.4)] hover:text-[rgba(240,240,250,0.8)] transition-colors"
+            className="rounded-[3px] p-2 text-chart-bright/50 transition-colors hover:text-starlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass-bright/90"
             aria-label="Close"
           >
             <svg
@@ -104,11 +119,8 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label
-              htmlFor="sponsor-name"
-              className="block text-sm font-medium text-[rgba(240,240,250,0.7)] mb-1.5"
-            >
-              Name <span className="text-[rgba(240,240,250,0.4)]">*</span>
+            <label htmlFor="sponsor-name" className={labelClasses}>
+              Name <span className="text-brass">*</span>
             </label>
             <input
               id="sponsor-name"
@@ -117,16 +129,13 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="w-full bg-[#121A25] border border-white/[0.08] rounded-xl px-4 py-3 text-[rgba(240,240,250,1)] placeholder:text-[rgba(240,240,250,0.3)] text-sm focus:border-white/[0.2] focus:outline-none focus:ring-1 focus:ring-white/[0.06] transition-colors"
+              className={inputClasses}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="sponsor-email"
-              className="block text-sm font-medium text-[rgba(240,240,250,0.7)] mb-1.5"
-            >
-              Email <span className="text-[rgba(240,240,250,0.4)]">*</span>
+            <label htmlFor="sponsor-email" className={labelClasses}>
+              Email <span className="text-brass">*</span>
             </label>
             <input
               id="sponsor-email"
@@ -135,17 +144,16 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-[#121A25] border border-white/[0.08] rounded-xl px-4 py-3 text-[rgba(240,240,250,1)] placeholder:text-[rgba(240,240,250,0.3)] text-sm focus:border-white/[0.2] focus:outline-none focus:ring-1 focus:ring-white/[0.06] transition-colors"
+              className={inputClasses}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="sponsor-org"
-              className="block text-sm font-medium text-[rgba(240,240,250,0.7)] mb-1.5"
-            >
+            <label htmlFor="sponsor-org" className={labelClasses}>
               Organization{" "}
-              <span className="text-[rgba(240,240,250,0.4)] font-normal">(optional)</span>
+              <span className="normal-case tracking-normal text-chart-bright/45">
+                (optional)
+              </span>
             </label>
             <input
               id="sponsor-org"
@@ -153,15 +161,12 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
               value={organization}
               onChange={(e) => setOrganization(e.target.value)}
               placeholder="Company or organization"
-              className="w-full bg-[#121A25] border border-white/[0.08] rounded-xl px-4 py-3 text-[rgba(240,240,250,1)] placeholder:text-[rgba(240,240,250,0.3)] text-sm focus:border-white/[0.2] focus:outline-none focus:ring-1 focus:ring-white/[0.06] transition-colors"
+              className={inputClasses}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="sponsor-message"
-              className="block text-sm font-medium text-[rgba(240,240,250,0.7)] mb-1.5"
-            >
+            <label htmlFor="sponsor-message" className={labelClasses}>
               Message
             </label>
             <textarea
@@ -169,30 +174,29 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
               rows={4}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full bg-[#121A25] border border-white/[0.08] rounded-xl px-4 py-3 text-[rgba(240,240,250,1)] placeholder:text-[rgba(240,240,250,0.3)] text-sm focus:border-white/[0.2] focus:outline-none focus:ring-1 focus:ring-white/[0.06] transition-colors resize-none"
+              className={`${inputClasses} resize-none`}
             />
           </div>
 
           <div className="flex items-center gap-3 pt-2">
-            {/* Cancel — deep-space nebula button */}
             <button
               type="button"
               onClick={onClose}
-              className="btn-nebula flex-1 px-4 py-3 text-sm font-medium rounded-full"
+              className="btn-line flex-1 px-4 py-3 text-sm font-medium"
             >
               Cancel
             </button>
-            {/* Submit — deep-space starlight button */}
             <button
               type="submit"
-              className="btn-starlight flex-1 px-4 py-3 text-sm font-medium rounded-full"
+              className="btn-brass flex-1 px-4 py-3 text-sm"
             >
-              Open in Email
+              Open in email
             </button>
           </div>
 
-          <p className="text-xs text-[rgba(240,240,250,0.4)] text-center pt-1">
-            This will open your default email client with the message pre-filled.
+          <p className="pt-1 text-center text-xs text-chart-bright/50">
+            This will open your default email client with the message
+            pre-filled.
           </p>
         </form>
       </div>

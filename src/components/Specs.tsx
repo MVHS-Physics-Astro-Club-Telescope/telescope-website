@@ -1,166 +1,247 @@
 "use client";
 
-import { useInView } from "@/hooks/useInView";
-import AnimatedCounter from "./AnimatedCounter";
+import { useEffect, useRef, useState } from "react";
+import { motion, MotionConfig } from "framer-motion";
+import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
+import { useInView } from "@/hooks/useInView";
+
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 const stats = [
-  { end: 10, suffix: '"', label: "Mirror Diameter", prefix: "", highlight: true },
-  { end: 1138, suffix: "mm", label: "Focal Length", prefix: "" },
-  { end: 4.48, suffix: "", label: "Focal Ratio", prefix: "f/", decimals: 2 },
-  { end: 6800, suffix: "+", label: "Lines of Code", prefix: "" },
-  { end: 328, suffix: "", label: "Tests Passing", prefix: "" },
+  { end: 254, suffix: " mm", label: "Aperture", decimals: 0 },
+  { end: 1138, suffix: " mm", label: "Focal length", decimals: 0 },
+  { end: 4.48, prefix: "f/", label: "Focal ratio", decimals: 2 },
+  { end: 6800, suffix: "+", label: "Lines of code", decimals: 0 },
+  { end: 328, label: "Tests passing", decimals: 0 },
 ];
 
-const bentoItems = [
+const manifest = [
   {
-    title: "Primary Mirror",
-    desc: '10" f/4.48 parabolic mirror — the optical heart of the system',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <circle cx="12" cy="12" r="6" />
-        <circle cx="12" cy="12" r="2" />
-      </svg>
-    ),
-    span: "md:col-span-2",
+    item: "Primary mirror",
+    spec: '254 mm (10") f/4.48 parabolic — donated by Pacific Holographic, the optical heart of the system.',
   },
   {
-    title: "Star Tracking",
-    desc: "INDI-compatible GoTo with plate-solving and auto-alignment",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <line x1="22" y1="12" x2="18" y2="12" />
-        <line x1="6" y1="12" x2="2" y2="12" />
-        <line x1="12" y1="6" x2="12" y2="2" />
-        <line x1="12" y1="22" x2="12" y2="18" />
-      </svg>
-    ),
-    span: "",
+    item: "Star tracking",
+    spec: "INDI-compatible GoTo with plate-solving and auto-alignment. The mount knows where it's pointed.",
   },
   {
-    title: "Stepper Motors",
-    desc: "NEMA 23 altitude/azimuth + NEMA 17 focus with TMC2209 silent drivers",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-      </svg>
-    ),
-    span: "",
+    item: "Drives",
+    spec: "NEMA 23 altitude/azimuth steppers on TMC2209 silent drivers; ToupTek AAF electronic auto-focuser.",
   },
   {
-    title: "Software Stack",
-    desc: "Python + TypeScript control system with web dashboard, ASCOM/INDI drivers",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="16 18 22 12 16 6" />
-        <polyline points="8 6 2 12 8 18" />
-      </svg>
-    ),
-    span: "md:col-span-2",
+    item: "Imaging",
+    spec: "ToupTek ATR585C cooled deep-sky camera (Sony IMX585) with a GPM462C guide camera for closed-loop tracking.",
   },
   {
-    title: "Dobsonian Build",
-    desc: "Truss-tube Dobsonian design for optimal portability and rigidity",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="6" width="20" height="12" rx="2" />
-        <path d="M12 6V2M7 6V4M17 6V4" />
-      </svg>
-    ),
-    span: "",
+    item: "Software",
+    spec: "Python + TypeScript control stack with a web dashboard and ASCOM/INDI drivers — written by students.",
   },
   {
-    title: "Portable Design",
-    desc: "Breaks down into two sections — fits in a car trunk for field trips",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="1" y="3" width="15" height="13" rx="2" />
-        <path d="M16 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2" />
-      </svg>
-    ),
-    span: "",
-  },
-  {
-    title: "Weight Target",
-    desc: "Under 50 lbs total — manageable by a single student",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6.5 6.5h11l1 12H5.5z" />
-        <path d="M9 6.5V4a3 3 0 0 1 6 0v2.5" />
-      </svg>
-    ),
-    span: "",
-  },
-  {
-    title: "Imaging Camera",
-    desc: "ToupTek ATR585C (cooled, IMX585) + GPM462C guide camera for deep-sky imaging",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-        <circle cx="12" cy="13" r="4" />
-      </svg>
-    ),
-    span: "",
+    item: "Structure",
+    spec: "Truss-tube Dobsonian in Baltic birch. Breaks into two sections, under 50 lbs — fits in a car trunk.",
   },
 ];
 
-export default function Specs() {
-  const { ref: bentoRef, isInView: bentoVisible } = useInView();
+/** Counts up when scrolled into view; respects reduced motion. */
+function Counter({
+  end,
+  prefix = "",
+  suffix = "",
+  decimals = 0,
+  label,
+}: {
+  end: number;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+  label: string;
+}) {
+  const { ref, isInView } = useInView({ threshold: 0.4 });
+  const [value, setValue] = useState(0);
+  const done = useRef(false);
+
+  useEffect(() => {
+    if (!isInView || done.current) return;
+    done.current = true;
+    const reduce = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const duration = reduce ? 0 : 1600;
+    let raf: number;
+    let start: number | null = null;
+    const tick = (ts: number) => {
+      if (start === null) start = ts;
+      const t = duration === 0 ? 1 : Math.min((ts - start) / duration, 1);
+      setValue(end * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [isInView, end]);
 
   return (
-    <section id="specs" className="relative py-24 sm:py-32 bg-[#080B12]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div ref={ref}>
+      <div className="font-mono text-2xl text-starlight tabular-nums sm:text-3xl">
+        {prefix}
+        {value.toLocaleString(undefined, {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        })}
+        {suffix}
+      </div>
+      <div className="eyebrow mt-1.5 !text-[0.625rem]">{label}</div>
+    </div>
+  );
+}
+
+/**
+ * The light path through the telescope, drawn as an atlas figure.
+ * Starlight enters the tube, reflects off the parabolic primary,
+ * bounces off the secondary flat, and lands on the cooled camera.
+ */
+function LightPath() {
+  const { ref, isInView } = useInView({ threshold: 0.2 });
+
+  const ray = (d: string, delay: number, color = "rgba(183,199,228,0.75)") => (
+    <motion.path
+      d={d}
+      fill="none"
+      stroke={color}
+      strokeWidth="1.25"
+      initial={{ pathLength: 0 }}
+      animate={isInView ? { pathLength: 1 } : {}}
+      transition={{ duration: 0.9, delay, ease }}
+    />
+  );
+
+  return (
+    <div ref={ref} className="card-atlas tick-corners relative p-6 sm:p-8">
+      <p className="eyebrow !text-[0.625rem]">Fig. 1 — Newtonian light path</p>
+      <MotionConfig reducedMotion="user">
+        <svg
+          viewBox="0 0 400 520"
+          className="mx-auto mt-4 w-full max-w-[26rem]"
+          role="img"
+          aria-label="Diagram of the telescope's Newtonian light path: starlight enters the tube, reflects off the 254 millimeter parabolic primary mirror, then off the secondary flat mirror, into the cooled camera at the side of the tube."
+        >
+          {/* Truss tube walls */}
+          <line x1="84" y1="48" x2="84" y2="488" stroke="rgba(143,165,201,0.3)" strokeWidth="1" strokeDasharray="7 5" />
+          <line x1="316" y1="48" x2="316" y2="488" stroke="rgba(143,165,201,0.3)" strokeWidth="1" strokeDasharray="7 5" />
+
+          {/* Primary mirror — the brass heart */}
+          <motion.path
+            d="M 92 476 Q 200 452 308 476"
+            fill="none"
+            stroke="rgba(217,168,92,0.95)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            initial={{ pathLength: 0 }}
+            animate={isInView ? { pathLength: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.1, ease }}
+          />
+
+          {/* Secondary flat */}
+          <motion.line
+            x1="184"
+            y1="102"
+            x2="216"
+            y2="134"
+            stroke="rgba(217,168,92,0.85)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.5, delay: 0.7, ease }}
+          />
+
+          {/* Camera body */}
+          <motion.rect
+            x="322"
+            y="96"
+            width="50"
+            height="44"
+            rx="2"
+            fill="rgba(14,21,38,0.9)"
+            stroke="rgba(143,165,201,0.5)"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.5, delay: 2.4, ease }}
+          />
+
+          {/* Incoming starlight */}
+          {ray("M 128 48 L 128 464", 0.3)}
+          {ray("M 272 48 L 272 466", 0.4)}
+          {/* Reflected to secondary */}
+          {ray("M 128 464 L 196 124", 1.2)}
+          {ray("M 272 466 L 204 128", 1.3)}
+          {/* Out to the camera */}
+          {ray("M 200 122 L 322 118", 2.1, "rgba(217,168,92,0.8)")}
+
+          {/* Annotations */}
+          <g
+            fill="rgba(143,165,201,0.8)"
+            fontFamily="var(--font-data), monospace"
+            fontSize="10"
+            letterSpacing="0.12em"
+          >
+            <text x="94" y="30">STARLIGHT · PARALLEL RAYS</text>
+            <text x="92" y="507">PRIMARY · 254 MM PARABOLIC</text>
+            <text x="120" y="90">SECONDARY · 70 MM FLAT</text>
+            <text x="240" y="160">ATR585C</text>
+            <text x="240" y="173">COOLED CMOS</text>
+          </g>
+        </svg>
+      </MotionConfig>
+    </div>
+  );
+}
+
+export default function Specs() {
+  return (
+    <section id="specs" className="relative py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          title="Technical Specifications"
-          subtitle="Engineered for performance — every component carefully selected and tested."
+          eyebrow="The instrument · 254 mm Newtonian on alt-az mount"
+          title="Anatomy of a light bucket"
+          subtitle="Every photon that left the Orion Nebula 1,344 years ago ends its trip on a mirror our students aligned by hand."
         />
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 mb-20">
-          {stats.map((stat) => (
-            <AnimatedCounter
-              key={stat.label}
-              end={stat.end}
-              prefix={stat.prefix}
-              suffix={stat.suffix}
-              label={stat.label}
-              decimals={stat.decimals}
-              highlight={stat.highlight}
-            />
-          ))}
-        </div>
+        {/* Stats row */}
+        <Reveal>
+          <div className="mb-16 grid grid-cols-2 gap-x-6 gap-y-8 border-y border-chart/15 py-8 sm:grid-cols-3 lg:grid-cols-5">
+            {stats.map((stat) => (
+              <Counter key={stat.label} {...stat} />
+            ))}
+          </div>
+        </Reveal>
 
-        {/* Bento Grid */}
-        <div
-          ref={bentoRef}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6"
-        >
-          {bentoItems.map((item, i) => (
-            <div
-              key={item.title}
-              className={`group p-6 lg:p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-700 hover:bg-[#111922] hover:border-white/[0.12] ${
-                item.span
-              } ${
-                bentoVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}
-              style={{ transitionDelay: `${i * 80}ms` }}
-            >
-              <div className="w-10 h-10 rounded-xl bg-[#121A25] border border-white/[0.06] flex items-center justify-center text-white/90 mb-4">
-                {item.icon}
-              </div>
-              <h3 className="font-heading text-base font-semibold text-[rgba(240,240,250,0.95)] mb-2">
-                {item.title}
-              </h3>
-              <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
-                {item.desc}
-              </p>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-14">
+          {/* Fig. 1 — light path */}
+          <Reveal>
+            <LightPath />
+          </Reveal>
+
+          {/* Manifest */}
+          <div>
+            <p className="eyebrow mb-2 !text-[0.625rem]">
+              Fig. 2 — Instrument manifest
+            </p>
+            <dl>
+              {manifest.map((row, i) => (
+                <Reveal key={row.item} delay={i * 0.06}>
+                  <div className="grid grid-cols-[7.5rem_1fr] gap-4 border-b border-chart/12 py-5 sm:grid-cols-[9rem_1fr]">
+                    <dt className="font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-brass">
+                      {row.item}
+                    </dt>
+                    <dd className="text-sm leading-relaxed text-chart-bright/70">
+                      {row.spec}
+                    </dd>
+                  </div>
+                </Reveal>
+              ))}
+            </dl>
+          </div>
         </div>
       </div>
     </section>

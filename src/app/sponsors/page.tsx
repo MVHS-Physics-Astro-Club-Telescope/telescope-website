@@ -6,7 +6,15 @@ import Reveal from "@/components/Reveal";
 import SponsorButton from "@/components/SponsorButton";
 import SponsorConstellation from "@/components/SponsorConstellation";
 import StatCounter from "@/components/StatCounter";
-import { sponsors, getTotalRaised, getCashSponsorCount, getInKindSponsorCount } from "@/data/sponsors";
+import {
+  sponsors,
+  getTotalCashRaised,
+  getCashSponsorCount,
+  getInKindSponsorCount,
+  getSponsorsByType,
+  type Sponsor,
+  type SponsorType,
+} from "@/data/sponsors";
 
 export const metadata: Metadata = {
   title: "Our Sponsors — MVHS Astronomy Telescope Project",
@@ -14,59 +22,63 @@ export const metadata: Metadata = {
     "Thank you to the organizations supporting our student-built autonomous telescope. Interested in sponsoring? Get in touch.",
 };
 
-const TYPE_LABELS = {
-  Cash: "Cash sponsor",
-  Equipment: "Equipment donor",
-  Service: "Service partner",
-  Materials: "Materials partner",
-} as const;
+const GROUPS: { type: SponsorType; heading: string }[] = [
+  { type: "Cash", heading: "Cash sponsors" },
+  { type: "Equipment", heading: "Equipment donors" },
+  { type: "Materials", heading: "Materials partners" },
+  { type: "Service", heading: "Service partners" },
+];
 
-const TYPE_ACCENT = {
-  Cash: "text-[#30D158]",
-  Equipment: "text-[#0A84FF]",
-  Service: "text-[#5AC8FA]",
-  Materials: "text-[#FF9F0A]",
-} as const;
-
-function SponsorCard({ sponsor }: { sponsor: (typeof sponsors)[number] }) {
+function SponsorCard({ sponsor, plate }: { sponsor: Sponsor; plate: number }) {
   const cardClasses =
-    "group p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-[rgba(147,197,253,0.2)] hover:shadow-[0_0_32px_rgba(147,197,253,0.08)] hover:bg-[#111922] transition-all duration-300 flex flex-col items-center text-center h-full";
+    "card-atlas tick-corners group flex h-full flex-col p-7 transition-colors duration-300 hover:border-chart/30 hover:bg-raised/40";
 
   const inner = (
     <>
-      {sponsor.logo ? (
-        <div className="w-full h-20 flex items-center justify-center mb-6">
+      {/* Plate header: catalog number + engraved type chip */}
+      <div className="flex items-center justify-between">
+        <span className="font-mono text-[0.625rem] tracking-[0.18em] text-chart-bright/45 tabular-nums">
+          PL. {String(plate).padStart(2, "0")}
+        </span>
+        <span className="rounded-[2px] border border-chart/20 px-2 py-0.5 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-chart-bright/70">
+          {sponsor.type}
+        </span>
+      </div>
+
+      {/* Logo or serif wordmark */}
+      <div className="mt-6 flex min-h-16 items-center">
+        {sponsor.logo ? (
           <Image
             src={sponsor.logo}
             alt={`${sponsor.name} logo`}
             width={200}
             height={60}
-            className="max-h-16 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+            className="max-h-14 w-auto object-contain opacity-90 transition-opacity duration-300 group-hover:opacity-100"
           />
-        </div>
-      ) : (
-        <div className="w-full h-20 flex items-center justify-center mb-6">
-          <div className="font-heading text-2xl font-bold text-[rgba(240,240,250,0.85)] tracking-tight px-4 text-center">
+        ) : (
+          <h3 className="font-display text-2xl leading-tight text-starlight">
             {sponsor.name}
-          </div>
-        </div>
+          </h3>
+        )}
+      </div>
+
+      {sponsor.logo && (
+        <h3 className="mt-5 text-base font-medium text-starlight">
+          {sponsor.name}
+        </h3>
       )}
-      <span
-        className={`text-[10px] uppercase tracking-[0.2em] font-medium mb-2 ${TYPE_ACCENT[sponsor.type]}`}
+      <p
+        className={`font-mono text-xs text-brass-bright tabular-nums ${
+          sponsor.logo ? "mt-1.5" : "mt-3"
+        }`}
       >
-        {TYPE_LABELS[sponsor.type]}
-      </span>
-      <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mb-1">
-        {sponsor.name}
-      </h3>
-      <p className="text-xs font-medium text-[rgba(240,240,250,0.6)] mb-3 tabular-nums">
         {sponsor.contribution}
       </p>
-      <p className="text-sm text-[rgba(240,240,250,0.5)] leading-relaxed flex-1">
+      <p className="mt-3 flex-1 text-sm leading-relaxed text-chart-bright/65">
         {sponsor.description}
       </p>
       {sponsor.url && (
-        <span className="mt-4 text-xs text-[rgba(240,240,250,0.4)] group-hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200">
+        <span className="mt-5 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-chart-bright/50 transition-colors duration-200 group-hover:text-brass-bright">
           Visit website &rarr;
         </span>
       )}
@@ -90,90 +102,128 @@ function SponsorCard({ sponsor }: { sponsor: (typeof sponsors)[number] }) {
 }
 
 export default function SponsorsPage() {
-  const totalRaised = getTotalRaised();
+  const totalRaised = getTotalCashRaised();
   const cashCount = getCashSponsorCount();
   const inKindCount = getInKindSponsorCount();
 
+  // Plate numbers run continuously across the grouped register
+  const grouped = GROUPS.map(({ type, heading }) => ({
+    type,
+    heading,
+    items: getSponsorsByType(type),
+  })).filter((g) => g.items.length > 0);
+  const groups = grouped.map((g, gi) => ({
+    ...g,
+    start: grouped
+      .slice(0, gi)
+      .reduce((sum, prev) => sum + prev.items.length, 0),
+  }));
+
   return (
     <>
-      {/* Hero with ImmersiveHero wrapper */}
       <ImmersiveHero starCount={60} className="pt-28 sm:pt-32 pb-8">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-[rgba(240,240,250,0.4)] mb-8">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-10 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-chart-bright/45"
+          >
             <Link
               href="/"
-              className="hover:text-[rgba(240,240,250,0.8)] transition-colors duration-200"
+              className="transition-colors duration-200 hover:text-brass-bright"
             >
               Home
             </Link>
-            <span>/</span>
-            <span className="text-[rgba(240,240,250,0.7)]">Sponsors</span>
-          </div>
+            <span aria-hidden="true">/</span>
+            <span className="text-chart-bright/75">Sponsors</span>
+          </nav>
 
-          {/* Page Header */}
-          <div className="text-center mb-10">
-            <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mb-6" />
-            <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)]">
-              Our Sponsors
+          {/* Page header */}
+          <div className="text-center">
+            <p className="eyebrow">
+              Sponsor register · {String(sponsors.length).padStart(2, "0")}{" "}
+              partners
+            </p>
+            <h1 className="mt-5 font-display text-4xl leading-tight text-starlight sm:text-5xl md:text-6xl">
+              The names behind the <em>light</em>
             </h1>
-            <p className="text-[rgba(240,240,250,0.6)] text-lg mt-4 max-w-2xl mx-auto">
-              This project wouldn&apos;t be possible without the generous support of
-              these organizations. Thank you for helping us bring the night sky to
-              the Bay Area community.
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-chart-bright/70 sm:text-lg">
+              This project wouldn&apos;t be possible without the generous
+              support of these organizations. Thank you for helping us bring
+              the night sky to the Bay Area community.
+            </p>
+            <p className="mt-6 font-mono text-sm text-brass-bright tabular-nums">
+              ${totalRaised.toLocaleString()} cash raised · {inKindCount}{" "}
+              in-kind contributions
             </p>
           </div>
         </div>
 
-        {/* Constellation band — bridges header to stats */}
+        {/* Constellation band — one star per sponsor */}
         <SponsorConstellation sponsorCount={sponsors.length} />
       </ImmersiveHero>
 
-      <section className="relative min-h-screen bg-[#080B12] pb-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-void pb-24">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          {/* Register ledger — quick stats */}
+          <Reveal className="mt-12 mb-16 sm:mt-16">
+            <div className="card-atlas tick-corners grid grid-cols-3 divide-x divide-chart/12 p-6 sm:p-8">
+              <StatCounter
+                value={totalRaised}
+                prefix="$"
+                label="Cash raised"
+                highlight
+              />
+              <StatCounter value={cashCount} label="Cash sponsors" />
+              <StatCounter value={inKindCount} label="In-kind sponsors" />
+            </div>
+          </Reveal>
 
-          {/* Quick stats strip */}
-          <div className="grid grid-cols-3 gap-4 sm:gap-8 mb-16 p-6 sm:p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-            <StatCounter
-              value={totalRaised}
-              prefix="$"
-              label="Cash raised"
-              highlight
-            />
-            <StatCounter value={cashCount} label="Cash sponsors" />
-            <StatCounter value={inKindCount} label="In-kind sponsors" />
-          </div>
+          {/* The register, grouped by contribution type */}
+          {groups.map(({ type, heading, items, start }) => (
+            <div key={type} className="mb-16">
+              <div className="mb-8 flex items-baseline gap-6">
+                <h2 className="eyebrow">
+                  {heading} · {String(items.length).padStart(2, "0")}
+                </h2>
+                <div className="chart-rule flex-1" aria-hidden="true" />
+              </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {items.map((sponsor, i) => (
+                  <Reveal
+                    key={sponsor.name}
+                    delay={i * 0.06}
+                    className="h-full"
+                  >
+                    <SponsorCard sponsor={sponsor} plate={start + i + 1} />
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          ))}
 
-          {/* Sponsors Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-24">
-            {sponsors.map((sponsor, i) => (
-              <Reveal key={sponsor.name} delay={i * 0.06}>
-                <SponsorCard sponsor={sponsor} />
-              </Reveal>
-            ))}
-          </div>
-
-          {/* Interested in Sponsoring CTA */}
+          {/* Become-a-sponsor CTA */}
           <Reveal>
-            <div className="p-8 sm:p-12 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300 text-center">
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-[rgba(240,240,250,1)] mb-3">
-                Interested in Sponsoring?
+            <div className="card-atlas tick-corners tick-corners-brass p-8 text-center sm:p-12">
+              <p className="eyebrow">Join the register</p>
+              <h2 className="mt-4 font-display text-3xl text-starlight sm:text-4xl">
+                Interested in <em>sponsoring</em>?
               </h2>
-              <p className="text-[rgba(240,240,250,0.6)] mb-8 max-w-xl mx-auto">
-                We&apos;re always looking for partners who believe in STEM education and
-                community astronomy. Whether it&apos;s financial support, in-kind
-                donations, or materials, every contribution helps us build something
-                extraordinary.
+              <p className="mx-auto mt-4 max-w-xl leading-relaxed text-chart-bright/70">
+                We&apos;re always looking for partners who believe in STEM
+                education and community astronomy. Whether it&apos;s financial
+                support, in-kind donations, or materials, every contribution
+                helps us build something extraordinary.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <SponsorButton>
-                  Get in Touch
+              <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <SponsorButton className="btn-brass px-8 py-3.5 text-sm">
+                  Get in touch
                 </SponsorButton>
                 <Link
                   href="/#fundraising"
-                  className="btn-nebula px-8 py-3 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
+                  className="btn-line px-8 py-3.5 text-sm"
                 >
-                  See progress
+                  See funding progress
                 </Link>
               </div>
             </div>

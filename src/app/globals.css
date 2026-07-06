@@ -1,55 +1,56 @@
 @import "tailwindcss";
 
 /*
- * Theme tokens
- * The site is dark-only, sponsor-facing — these tokens map shadcn/ui's
- * semantic palette onto the existing deep-space identity. Hand-tuned
- * for contrast on #080B12 background.
+ * ── THE STAR ATLAS ──────────────────────────────────────────────
+ * Design language: 19th-century celestial cartography, set in the
+ * dark. Engraved hairline chart rules, mono RA/Dec annotations,
+ * a serif display face, and a brass accent drawn from the
+ * instrument itself. Dark-only, sponsor-facing.
  */
 @theme inline {
-  /* Site-specific (legacy) */
-  --color-background: #080B12;
-  --color-foreground: rgba(240, 240, 250, 1);
-  --color-surface-1: #0D1219;
-  --color-surface-2: #121A25;
-  --color-surface-3: #1A2333;
-  --color-accent: rgba(147, 197, 253, 0.8);
+  /* Atlas palette */
+  --color-void: #05070F;        /* page — the sky itself */
+  --color-deep: #0A101D;        /* recessed panel */
+  --color-panel: #0E1526;       /* card surface */
+  --color-raised: #16203A;      /* hover / active surface */
+  --color-chart: #8FA5C9;       /* engraved chart-line blue — annotations */
+  --color-chart-bright: #B7C7E4;
+  --color-starlight: #EDF1FA;   /* primary text */
+  --color-brass: #D9A85C;       /* the instrument — accent */
+  --color-brass-bright: #F0C880;
+  --color-halpha: #E4584E;      /* hydrogen-alpha — live/alert only */
+  --color-oiii: #5FBFA8;        /* doubly-ionized oxygen — success only */
 
-  /* Deep-space palette (WOR-48) */
-  --color-nebula-indigo: #4056A1;
-  --color-nebula-violet: #6D5BD0;
-  --color-nebula-teal: #2D7E8F;
-  --color-aurora: #93C5FD;
-  --color-starlight: #F5F3F0;
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-jetbrains);
+  /* Base semantic pair — used by the shadcn/ui primitives */
+  --color-background: #05070F;
+  --color-foreground: #EDF1FA;
+
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-data);
 
   /* shadcn semantic tokens — dark theme only */
-  --color-card: #0D1219;
-  --color-card-foreground: rgba(240, 240, 250, 0.95);
-  --color-popover: #0D1219;
-  --color-popover-foreground: rgba(240, 240, 250, 0.95);
-  --color-primary: #e8e8ed;
-  --color-primary-foreground: #1a1a1f;
-  --color-secondary: #1A2333;
-  --color-secondary-foreground: rgba(240, 240, 250, 0.9);
-  --color-muted: #121A25;
-  --color-muted-foreground: rgba(240, 240, 250, 0.55);
-  --color-destructive: #FF453A;
+  --color-card: #0E1526;
+  --color-card-foreground: rgba(237, 241, 250, 0.95);
+  --color-popover: #0C1220;
+  --color-popover-foreground: rgba(237, 241, 250, 0.95);
+  --color-primary: #D9A85C;
+  --color-primary-foreground: #171008;
+  --color-secondary: #16203A;
+  --color-secondary-foreground: rgba(237, 241, 250, 0.9);
+  --color-muted: #101829;
+  --color-muted-foreground: rgba(183, 199, 228, 0.62);
+  --color-destructive: #E4584E;
   --color-destructive-foreground: #ffffff;
-  --color-border: rgba(255, 255, 255, 0.08);
-  /* NOTE: shadcn convention uses --color-input as the input background; we
-     re-purpose it as the input border to match our dark theme. The bare
-     <Input> primitive will look near-invisible without explicit
-     bg-[#121A25] override — always specify a bg color when using
-     @/components/ui/input. */
-  --color-input: rgba(255, 255, 255, 0.08);
-  --color-ring: rgba(10, 132, 255, 0.5);
+  --color-border: rgba(143, 165, 201, 0.15);
+  /* shadcn convention re-purposed: --color-input is the input BORDER.
+     Always give <Input> an explicit background (bg-deep). */
+  --color-input: rgba(143, 165, 201, 0.18);
+  --color-ring: rgba(217, 168, 92, 0.55);
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
 
   /* Animations used by shadcn/cmdk/base-ui */
   --animate-accordion-down: accordion-down 220ms cubic-bezier(0.32, 0.72, 0, 1);
@@ -100,15 +101,15 @@ html {
 }
 
 body {
-  background: #080B12;
-  color: rgba(240, 240, 250, 1);
-  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI",
+  background: #05070F;
+  color: #EDF1FA;
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI",
     system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Site-wide cosmic wash — fixed nebula layer behind all content */
+/* Site-wide sky wash — barely-there indigo gradient, no nebula neon */
 body::before {
   content: "";
   position: fixed;
@@ -116,14 +117,175 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 100% 65% at 50% -20%, rgba(64, 86, 161, 0.16), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 92% 105%, rgba(109, 91, 208, 0.08), transparent 65%),
-    radial-gradient(ellipse 55% 45% at 2% 85%, rgba(45, 126, 143, 0.07), transparent 60%);
+    radial-gradient(ellipse 120% 70% at 50% -25%, rgba(43, 58, 94, 0.22), transparent 62%),
+    radial-gradient(ellipse 80% 55% at 100% 110%, rgba(24, 32, 56, 0.35), transparent 65%);
 }
 
-/* ─── Heading Font ────────────────────────────────── */
+/* ─── Type roles ───────────────────────────────────── */
+.font-display,
 .font-heading {
-  font-family: var(--font-heading), sans-serif;
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+
+.font-mono {
+  font-family: var(--font-data), ui-monospace, SFMono-Regular, "SF Mono",
+    Menlo, Consolas, monospace;
+}
+
+/* Chart annotation — the mono eyebrow used above every heading */
+.eyebrow {
+  font-family: var(--font-data), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(143, 165, 201, 0.85);
+}
+
+/* ─── Engraved chart rules ─────────────────────────── */
+.chart-rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(143, 165, 201, 0.35) 12%,
+    rgba(143, 165, 201, 0.35) 88%,
+    transparent
+  );
+}
+
+/* Corner survey ticks — the atlas card signature */
+.tick-corners {
+  --tick: rgba(143, 165, 201, 0.4);
+  --tick-len: 12px;
+  background-image:
+    linear-gradient(var(--tick), var(--tick)),
+    linear-gradient(var(--tick), var(--tick)),
+    linear-gradient(var(--tick), var(--tick)),
+    linear-gradient(var(--tick), var(--tick)),
+    linear-gradient(var(--tick), var(--tick)),
+    linear-gradient(var(--tick), var(--tick)),
+    linear-gradient(var(--tick), var(--tick)),
+    linear-gradient(var(--tick), var(--tick));
+  background-repeat: no-repeat;
+  background-size:
+    var(--tick-len) 1px, 1px var(--tick-len),
+    var(--tick-len) 1px, 1px var(--tick-len),
+    var(--tick-len) 1px, 1px var(--tick-len),
+    var(--tick-len) 1px, 1px var(--tick-len);
+  background-position:
+    top left, top left,
+    top right, top right,
+    bottom left, bottom left,
+    bottom right, bottom right;
+}
+.tick-corners-brass {
+  --tick: rgba(217, 168, 92, 0.55);
+}
+
+/* Atlas panel — the standard card */
+.card-atlas {
+  background: #0E1526;
+  border: 1px solid rgba(143, 165, 201, 0.14);
+  border-radius: 4px;
+}
+
+/* ─── Buttons ──────────────────────────────────────── */
+/* .btn-brass — primary CTA: the instrument's brass */
+.btn-brass {
+  background: linear-gradient(180deg, #EABE79 0%, #D9A85C 55%, #C08F42 100%);
+  color: #171008;
+  font-weight: 600;
+  border: 1px solid rgba(240, 200, 128, 0.6);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 235, 200, 0.55),
+    0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, filter 0.25s ease;
+}
+.btn-brass:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 235, 200, 0.55),
+    0 1px 3px rgba(0, 0, 0, 0.35),
+    0 0 26px rgba(217, 168, 92, 0.35);
+  transform: translateY(-1px);
+}
+.btn-brass:active {
+  transform: translateY(0);
+}
+.btn-brass:disabled {
+  background: #2A3244;
+  color: rgba(237, 241, 250, 0.45);
+  border-color: rgba(143, 165, 201, 0.15);
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+/* .btn-line — secondary CTA: engraved outline */
+.btn-line {
+  background: rgba(14, 21, 38, 0.6);
+  color: rgba(237, 241, 250, 0.92);
+  border: 1px solid rgba(143, 165, 201, 0.35);
+  border-radius: 3px;
+  transition: border-color 0.25s ease, color 0.25s ease,
+    box-shadow 0.25s ease, transform 0.25s ease, background 0.25s ease;
+}
+.btn-line:hover {
+  border-color: rgba(217, 168, 92, 0.65);
+  color: #F0C880;
+  background: rgba(22, 32, 58, 0.7);
+  box-shadow: 0 0 22px rgba(217, 168, 92, 0.14);
+  transform: translateY(-1px);
+}
+.btn-line:active {
+  transform: translateY(0);
+}
+.btn-line:disabled {
+  background: #131a2b;
+  color: rgba(237, 241, 250, 0.4);
+  border-color: rgba(143, 165, 201, 0.12);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-brass:focus-visible,
+.btn-line:focus-visible {
+  outline: 2px solid rgba(240, 200, 128, 0.9);
+  outline-offset: 2px;
+}
+
+/* ─── Nav link — engraved underline ────────────────── */
+.nav-link {
+  position: relative;
+  transition: color 200ms ease;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.625rem;
+  right: 0.625rem;
+  bottom: 0.3rem;
+  height: 1px;
+  background: rgba(217, 168, 92, 0.85);
+  opacity: 0;
+  transform: scaleX(0.2);
+  transform-origin: left;
+  transition: opacity 240ms ease, transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after,
+.nav-link[aria-current="page"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.nav-link:hover,
+.nav-link:focus-visible {
+  color: #F0C880;
 }
 
 /* ─── Scrollbar ────────────────────────────────────── */
@@ -131,245 +293,41 @@ body::before {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #1A2333;
+  background: #0A101D;
 }
 ::-webkit-scrollbar-thumb {
-  background: #253040;
+  background: #24304A;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2F3D50;
+  background: #33415F;
 }
 
 /* ─── Selection ────────────────────────────────────── */
 ::selection {
-  background: rgba(74, 143, 231, 0.2);
-  color: white;
+  background: rgba(217, 168, 92, 0.28);
+  color: #FDF6EA;
 }
 
-/* ─── Star Twinkle Animation ───────────────────────── */
+/* ─── Star twinkle (SkyField) ──────────────────────── */
 @keyframes twinkle {
-  0%, 100% {
-    opacity: var(--star-opacity, 0.1);
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: var(--star-opacity, 0.12); }
+  50% { opacity: 0.55; }
 }
-
 .star {
-  --star-opacity: 0.1;
+  --star-opacity: 0.12;
   animation: twinkle var(--twinkle-duration, 6s) ease-in-out infinite;
   animation-delay: var(--twinkle-delay, 0s);
 }
 
-/* ─── Fade In Up Animation ─────────────────────────── */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in-up {
-  animation: fadeInUp 0.7s ease-out forwards;
-  opacity: 0;
-}
-
-.animation-delay-200 { animation-delay: 200ms; }
-.animation-delay-400 { animation-delay: 400ms; }
-.animation-delay-600 { animation-delay: 600ms; }
-.animation-delay-800 { animation-delay: 800ms; }
-
-/* ─── Deep-space button system (WOR-53) ─────────────────────── */
-/* .btn-starlight — primary CTAs (replaces the old light button) */
-.btn-starlight {
-  background: linear-gradient(
-    180deg,
-    #FBFAF8 0%,
-    #E8E6F0 50%,
-    #C9C9DC 100%
-  );
-  color: #14131B;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.06),
-    0 1px 3px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-.btn-starlight:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.06),
-    0 1px 3px rgba(0, 0, 0, 0.15),
-    0 0 28px rgba(147, 197, 253, 0.25);
-  transform: translateY(-1px);
-}
-.btn-starlight:active {
-  transform: translateY(0);
-}
-.btn-starlight:disabled {
-  background: linear-gradient(180deg, #5A5F73 0%, #3E4254 100%);
-  color: rgba(255, 255, 255, 0.55);
-  cursor: not-allowed;
-}
-
-/* .btn-nebula — secondary CTAs (replaces the old dark button) */
-.btn-nebula {
-  background: linear-gradient(
-    180deg,
-    #34406B 0%,
-    #232B49 50%,
-    #161C30 100%
-  );
-  color: rgba(240, 240, 250, 0.92);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(147, 197, 253, 0.20);
-  box-shadow:
-    inset 0 1px 0 rgba(147, 197, 253, 0.18),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
-    0 1px 3px rgba(0, 0, 0, 0.3),
-    0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
-.btn-nebula:hover {
-  background: linear-gradient(
-    180deg,
-    #3D4C7A 0%,
-    #2A3457 50%,
-    #1A233A 100%
-  );
-  box-shadow:
-    inset 0 1px 0 rgba(147, 197, 253, 0.22),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    0 8px 20px rgba(0, 0, 0, 0.25),
-    0 0 24px rgba(147, 197, 253, 0.20);
-  transform: translateY(-1px);
-}
-.btn-nebula:active {
-  transform: translateY(0);
-}
-.btn-nebula:disabled {
-  background: linear-gradient(180deg, #5A5F73 0%, #3E4254 100%);
-  color: rgba(255, 255, 255, 0.5);
-  cursor: not-allowed;
-}
-
-/* Shared focus-visible for both deep-space buttons */
-.btn-starlight:focus-visible,
-.btn-nebula:focus-visible {
-  outline: 2px solid rgba(147, 197, 253, 0.85);
-  outline-offset: 2px;
-}
-
-/* ─── Hero Glow ───────────────────────────────────── */
-.hero-glow {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(30, 58, 138, 0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 70% 20%, rgba(30, 58, 138, 0.08) 0%, transparent 60%);
-}
-
-/* ─── Hero pointer-reactive glow + parallax (WOR-48) ─ */
-.hero-pointer-glow {
-  background: radial-gradient(
-    560px circle at var(--pointer-x, 50%) var(--pointer-y, 38%),
-    rgba(96, 134, 222, 0.13),
-    rgba(109, 91, 208, 0.05) 45%,
-    transparent 70%
-  );
-}
-.hero-parallax {
-  transform: translate3d(
-    calc(var(--pointer-dx, 0) * -10px),
-    calc(var(--pointer-dy, 0) * -7px),
-    0
-  );
-  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-
-/* ─── Nav link micro-interaction (WOR-48) ──────────── */
-.nav-link {
-  position: relative;
-  transition: color 200ms ease, text-shadow 300ms ease;
-}
-.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0.625rem;
-  right: 0.625rem;
-  bottom: 0.35rem;
-  height: 1px;
-  border-radius: 1px;
-  background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.85), transparent);
-  box-shadow: 0 0 8px rgba(147, 197, 253, 0.5);
-  opacity: 0;
-  transform: scaleX(0.3);
-  transition: opacity 240ms ease, transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.nav-link:hover::after,
-.nav-link:focus-visible::after {
-  opacity: 1;
-  transform: scaleX(1);
-}
-.nav-link:hover,
-.nav-link:focus-visible {
-  text-shadow: 0 0 14px rgba(147, 197, 253, 0.4);
-}
-
-/* ─── Card Top-Edge Highlight ─────────────────────── */
-.card-highlight {
-  position: relative;
-}
-.card-highlight::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.06) 30%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.06) 70%,
-    transparent
-  );
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* ─── Font Mono Override ───────────────────────────── */
-.font-mono {
-  font-family: var(--font-jetbrains), ui-monospace, SFMono-Regular, "SF Mono",
-    Menlo, Consolas, monospace;
-}
-
-/* ─── Apple System Colors (dark mode) — ONLY for semantic meaning ─── */
-.text-apple-blue { color: #0A84FF; }
-.text-apple-green { color: #30D158; }
-.text-apple-orange { color: #FF9F0A; }
-.text-apple-red { color: #FF453A; }
-.bg-apple-blue { background-color: #0A84FF; }
-.bg-apple-green { background-color: #30D158; }
-.bg-apple-orange { background-color: #FF9F0A; }
-.bg-apple-red { background-color: #FF453A; }
-
-/* ─── Soft pulsing dot — for "live/offline" indicators ─── */
+/* ─── Soft pulsing dot — "live/offline" indicators ─── */
 @keyframes soft-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(0.9); }
 }
 .pulse-dot { animation: soft-pulse 2.4s ease-in-out infinite; }
 
-/* ─── Looping exposure progress (pure CSS, used by MockLiveView) ─── */
+/* ─── Looping exposure progress (MockLiveView) ─────── */
 @keyframes exposure-loop {
   0% { width: 0%; }
   85% { width: 100%; }
@@ -379,17 +337,18 @@ body::before {
   animation: exposure-loop 6s ease-in-out infinite;
 }
 
-/* ─── Sonner toaster styling ─────────────────────── */
+/* ─── Sonner toaster styling ───────────────────────── */
 [data-sonner-toaster] [data-sonner-toast] {
-  background: #0D1219 !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  color: rgba(240,240,250,0.95) !important;
+  background: #0E1526 !important;
+  border: 1px solid rgba(143, 165, 201, 0.18) !important;
+  color: rgba(237, 241, 250, 0.95) !important;
+  border-radius: 4px !important;
 }
 [data-sonner-toaster] [data-sonner-toast][data-type="success"] {
-  border-color: rgba(48, 209, 88, 0.35) !important;
+  border-color: rgba(95, 191, 168, 0.45) !important;
 }
 [data-sonner-toaster] [data-sonner-toast][data-type="error"] {
-  border-color: rgba(255, 69, 58, 0.45) !important;
+  border-color: rgba(228, 88, 78, 0.5) !important;
 }
 
 /* ─── Reduced motion: all animation disabled cleanly ── */
@@ -404,20 +363,4 @@ body::before {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .fade-in-up {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-  .star {
-    animation: none;
-  }
-  .hero-parallax {
-    transform: none;
-    will-change: auto;
-  }
-  .animate-bounce {
-    animation: none;
-  }
 }
-/* theme: immersive-astro */

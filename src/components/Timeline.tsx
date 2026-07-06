@@ -1,98 +1,109 @@
 "use client";
 
-import { useInView } from "@/hooks/useInView";
+import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 
-type MilestoneStatus = "completed" | "current" | "upcoming";
+type EntryStatus = "logged" | "active" | "scheduled";
 
-const milestones: { date: string; title: string; description: string; status: MilestoneStatus }[] = [
+const entries: {
+  stamp: string;
+  title: string;
+  description: string;
+  status: EntryStatus;
+}[] = [
   {
-    date: "April 2026",
-    title: "Design & Planning",
+    stamp: "2026-04 · APR",
+    title: "Design & planning",
     description:
       "Finalize optical design, source the primary mirror, complete CAD models for all mechanical assemblies, and begin procurement of materials.",
-    status: "current" ,
+    status: "active",
   },
   {
-    date: "May 2026",
-    title: "Fabrication & Assembly",
+    stamp: "2026-05 · MAY",
+    title: "Fabrication & assembly",
     description:
       "Cut plywood, assemble mirror box and rocker box, machine bearing surfaces, build truss structure, and integrate electronics enclosure.",
-    status: "upcoming" ,
+    status: "scheduled",
   },
   {
-    date: "June\u2013July 2026",
-    title: "Electronics & Software",
+    stamp: "2026-06/07 · JUN–JUL",
+    title: "Electronics & software",
     description:
       "Wire stepper motors and drivers, integrate Raspberry Pi control system, develop tracking software, and run automated test suites.",
-    status: "upcoming" ,
+    status: "scheduled",
   },
   {
-    date: "August 2026",
-    title: "First Light & Star Parties",
+    stamp: "2026-08 · AUG",
+    title: "First light & star parties",
     description:
       "Achieve first light, calibrate optics, perform star tests, and host our inaugural free public star party for the community.",
-    status: "upcoming" ,
+    status: "scheduled",
   },
 ];
 
-export default function Timeline() {
-  const { ref, isInView } = useInView();
-
+function StatusMark({ status }: { status: EntryStatus }) {
+  if (status === "active") {
+    return (
+      <span className="relative flex h-3 w-3">
+        <span className="pulse-dot absolute inline-flex h-full w-full rounded-full bg-brass/40" />
+        <span className="relative inline-flex h-3 w-3 rounded-full border border-brass-bright bg-brass" />
+      </span>
+    );
+  }
+  if (status === "logged") {
+    return <span className="h-3 w-3 rounded-full bg-oiii" />;
+  }
   return (
-    <section id="timeline" className="relative py-24 sm:py-32 bg-[#080B12]">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <span className="h-3 w-3 rounded-full border border-chart/50 bg-transparent" />
+  );
+}
+
+export default function Timeline() {
+  return (
+    <section id="timeline" className="relative py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          title="Project Timeline"
-          subtitle="From concept to first light in under six months."
+          eyebrow="Observing log · 2026 April — August"
+          title="From plywood to first light"
+          subtitle="Concept to a working public observatory in under six months."
         />
 
-        <div ref={ref} className="relative">
-          {/* Vertical line — gradient fades at edges */}
-          <div className="absolute left-4 sm:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-white/[0.06] via-white/[0.12] to-white/[0.06]" />
+        <div className="relative mx-auto max-w-3xl">
+          {/* The log's meridian line */}
+          <div
+            aria-hidden="true"
+            className="absolute bottom-2 left-[5px] top-2 w-px bg-gradient-to-b from-chart/10 via-chart/30 to-chart/10"
+          />
 
-          <div className="space-y-14">
-            {milestones.map((milestone, i) => (
-              <div
-                key={milestone.date}
-                className={`relative pl-14 sm:pl-20 transition-all duration-700 ${
-                  isInView
-                    ? "opacity-100 translate-x-0"
-                    : "opacity-0 -translate-x-8"
-                }`}
-                style={{ transitionDelay: `${i * 200}ms` }}
-              >
-                {/* Phase dot */}
-                {milestone.status === "current" ? (
-                  <div className="absolute top-1 left-[9px] sm:left-[25px] w-3 h-3 rounded-full bg-[#0A84FF] ring-4 ring-[#0A84FF]/20" />
-                ) : milestone.status === "completed" ? (
-                  <div className="absolute top-1 left-[9px] sm:left-[25px] w-3 h-3 rounded-full bg-[#30D158] ring-4 ring-[#30D158]/20" />
-                ) : (
-                  <div className="absolute top-1.5 left-[11px] sm:left-[27px] w-2.5 h-2.5 rounded-full bg-[rgba(240,240,250,0.5)]" />
-                )}
+          <ol className="space-y-12">
+            {entries.map((entry, i) => (
+              <Reveal key={entry.stamp} as="li" delay={i * 0.1}>
+                <div className="relative pl-10">
+                  <div className="absolute left-0 top-1">
+                    <StatusMark status={entry.status} />
+                  </div>
 
-                {/* Content */}
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-xs font-heading uppercase tracking-[0.15em] text-[rgba(240,240,250,0.4)]">
-                      {milestone.date}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                    <span className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-chart/85">
+                      {entry.stamp}
                     </span>
-                    {milestone.status === "current" && (
-                      <span className="bg-[#0A84FF]/10 border border-[#0A84FF]/20 rounded-full px-3 py-1 text-xs text-[#0A84FF]">
-                        In Progress
+                    {entry.status === "active" && (
+                      <span className="rounded-sm border border-brass/35 bg-brass/10 px-2 py-0.5 font-mono text-[0.625rem] uppercase tracking-[0.16em] text-brass-bright">
+                        In progress
                       </span>
                     )}
                   </div>
-                  <h3 className="font-heading text-lg font-semibold text-[rgba(240,240,250,0.95)] mb-2">
-                    {milestone.title}
+
+                  <h3 className="mt-2.5 font-display text-2xl text-starlight">
+                    {entry.title}
                   </h3>
-                  <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
-                    {milestone.description}
+                  <p className="mt-2 max-w-xl text-sm leading-relaxed text-chart-bright/65">
+                    {entry.description}
                   </p>
                 </div>
-              </div>
+              </Reveal>
             ))}
-          </div>
+          </ol>
         </div>
       </div>
     </section>

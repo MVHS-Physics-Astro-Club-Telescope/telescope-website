@@ -1,15 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useInView } from "@/hooks/useInView";
+import { useEffect, useRef, useState } from "react";
+import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
+import { useInView } from "@/hooks/useInView";
 import { getBudgetRange } from "@/data/parts";
-import { getTotalRaised, getCashSponsorCount, getInKindSponsorCount } from "@/data/sponsors";
+import {
+  getTotalRaised,
+  getCashSponsorCount,
+  getInKindSponsorCount,
+} from "@/data/sponsors";
+
+const R = 84;
+const CIRC = 2 * Math.PI * R;
 
 export default function FundraisingProgress() {
   const { ref, isInView } = useInView({ threshold: 0.3 });
   const [animatedRaised, setAnimatedRaised] = useState(0);
   const [animatedPercent, setAnimatedPercent] = useState(0);
+  const started = useRef(false);
 
   const { low, high } = getBudgetRange();
   const goal = high; // stretch goal = top end of estimated budget
@@ -21,156 +30,169 @@ export default function FundraisingProgress() {
   const inKindCount = getInKindSponsorCount();
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView || started.current) return;
+    started.current = true;
 
-    // Respect prefers-reduced-motion: jump straight to final values.
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) {
-      setAnimatedRaised(raised);
-      setAnimatedPercent(targetPercent);
-      return;
-    }
-
-    const duration = 1800;
+    const reduceMotion = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const duration = reduceMotion ? 0 : 1800;
     let frame: number;
     let start: number | null = null;
-
     const tick = (ts: number) => {
-      if (!start) start = ts;
-      const t = Math.min((ts - start) / duration, 1);
+      if (start === null) start = ts;
+      const t = duration === 0 ? 1 : Math.min((ts - start) / duration, 1);
       const eased = 1 - Math.pow(1 - t, 3);
       setAnimatedRaised(Math.round(eased * raised));
       setAnimatedPercent(eased * targetPercent);
       if (t < 1) frame = requestAnimationFrame(tick);
     };
-
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [isInView, raised, targetPercent]);
 
   return (
-    <section
-      id="fundraising"
-      className="relative py-24 sm:py-32 bg-[#080B12]"
-    >
-      {/* Subtle aurora glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[280px] bg-[radial-gradient(ellipse,rgba(48,209,88,0.04),transparent)] pointer-events-none" />
-
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="fundraising" className="relative py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          title="Fundraising Progress"
-          subtitle="Tracking our journey from first donation to first light."
+          eyebrow="Mirror fund · Direct cash only"
+          title="Filling the aperture"
+          subtitle="Every dollar is one more part on the build. The ring below is our 254 mm mirror — we're filling it with light."
         />
 
-        <div
-          ref={ref}
-          className={`bg-[#0D1219] border border-white/[0.08] rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] transition-all duration-300 p-8 sm:p-10 ${
-            isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-          style={{ transitionProperty: "opacity, transform", transitionDuration: "700ms" }}
-        >
-          {/* Top: Raised vs Goal */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
-            <div>
-              <div className="text-xs font-heading uppercase tracking-[0.2em] text-[rgba(240,240,250,0.4)] mb-2">
-                Raised toward build
-              </div>
-              <div className="font-heading text-5xl sm:text-6xl font-bold text-[rgba(240,240,250,1)] tabular-nums">
-                ${animatedRaised.toLocaleString()}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-xs font-heading uppercase tracking-[0.2em] text-[rgba(240,240,250,0.4)] mb-2">
-                Goal
-              </div>
-              <div className="font-heading text-2xl sm:text-3xl font-semibold text-[rgba(240,240,250,0.7)] tabular-nums">
-                ${goal.toLocaleString()}
-              </div>
-            </div>
-          </div>
-
-          {/* Progress bar */}
+        <Reveal>
           <div
-            role="progressbar"
-            aria-label={`Fundraising progress: ${raised.toLocaleString()} dollars raised of ${goal.toLocaleString()} dollar goal`}
-            aria-valuenow={raised}
-            aria-valuemin={0}
-            aria-valuemax={goal}
-            aria-valuetext={`${targetPercent.toFixed(0)} percent funded, ${remaining.toLocaleString()} dollars still needed`}
-            className="relative h-4 w-full rounded-full bg-white/[0.04] overflow-hidden border border-white/[0.06] mb-3"
+            ref={ref}
+            className="card-atlas tick-corners grid grid-cols-1 gap-10 p-8 sm:p-10 lg:grid-cols-[auto_1fr] lg:gap-16"
           >
+            {/* The aperture ring */}
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#0A84FF] via-[#30D158] to-[#5AC8FA] shadow-[0_0_20px_rgba(48,209,88,0.4)] transition-all duration-300 ease-out"
-              style={{ width: `${animatedPercent}%` }}
-            />
-            {/* Shimmer effect */}
-            <div
-              aria-hidden="true"
-              className="absolute top-0 h-full w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none"
-              style={{
-                left: `${animatedPercent}%`,
-                transform: "translateX(-100%)",
-                transition: "left 1.8s ease-out",
-              }}
-            />
-          </div>
-
-          {/* Percentage + remaining */}
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-heading font-semibold text-[#30D158] tabular-nums">
-              {animatedPercent.toFixed(0)}% funded
-            </span>
-            <span className="text-[rgba(240,240,250,0.5)] tabular-nums">
-              ${remaining.toLocaleString()} still needed
-            </span>
-          </div>
-
-          {/* Range note + sponsor counts */}
-          <div className="mt-8 pt-8 border-t border-white/[0.06] grid grid-cols-3 gap-4 sm:gap-8">
-            <div>
-              <div className="font-heading text-2xl font-bold text-[rgba(240,240,250,1)] tabular-nums">
-                ${low.toLocaleString()}–{high.toLocaleString()}
-              </div>
-              <div className="mt-1 text-xs uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                Estimated range
+              role="progressbar"
+              aria-label={`Fundraising progress: ${raised.toLocaleString()} dollars raised of ${goal.toLocaleString()} dollar goal`}
+              aria-valuenow={raised}
+              aria-valuemin={0}
+              aria-valuemax={goal}
+              aria-valuetext={`${targetPercent.toFixed(0)} percent funded, ${remaining.toLocaleString()} dollars still needed`}
+              className="relative mx-auto h-56 w-56 sm:h-64 sm:w-64"
+            >
+              <svg viewBox="0 0 200 200" className="h-full w-full -rotate-90">
+                {/* Mirror edge */}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="97"
+                  fill="none"
+                  stroke="rgba(143,165,201,0.25)"
+                  strokeWidth="1"
+                />
+                {/* Scale ticks every 10% */}
+                {Array.from({ length: 10 }, (_, i) => {
+                  const a = (i / 10) * Math.PI * 2;
+                  // Fixed precision keeps SSR and client markup identical
+                  const x1 = (100 + Math.cos(a) * 92).toFixed(2);
+                  const y1 = (100 + Math.sin(a) * 92).toFixed(2);
+                  const x2 = (100 + Math.cos(a) * 97).toFixed(2);
+                  const y2 = (100 + Math.sin(a) * 97).toFixed(2);
+                  return (
+                    <line
+                      key={i}
+                      x1={x1}
+                      y1={y1}
+                      x2={x2}
+                      y2={y2}
+                      stroke="rgba(143,165,201,0.4)"
+                      strokeWidth="1"
+                    />
+                  );
+                })}
+                {/* Track */}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r={R}
+                  fill="none"
+                  stroke="rgba(143,165,201,0.14)"
+                  strokeWidth="7"
+                />
+                {/* Funded arc */}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r={R}
+                  fill="none"
+                  stroke="rgba(217,168,92,0.95)"
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                  strokeDasharray={CIRC}
+                  strokeDashoffset={CIRC * (1 - animatedPercent / 100)}
+                  style={{ filter: "drop-shadow(0 0 8px rgba(217,168,92,0.35))" }}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="font-mono text-4xl text-starlight tabular-nums sm:text-5xl">
+                  ${animatedRaised.toLocaleString()}
+                </span>
+                <span className="eyebrow mt-2 !text-[0.625rem]">
+                  of ${goal.toLocaleString()} goal
+                </span>
+                <span className="mt-1.5 font-mono text-xs text-brass-bright tabular-nums">
+                  {animatedPercent.toFixed(0)}% funded
+                </span>
               </div>
             </div>
-            <div>
-              <div className="font-heading text-2xl font-bold text-[rgba(240,240,250,1)] tabular-nums">
-                {cashSponsorCount}
+
+            {/* Ledger */}
+            <div className="flex flex-col justify-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3">
+                <div className="border-b border-chart/12 py-5 sm:border-b-0 sm:border-r sm:py-0 sm:pr-8">
+                  <div className="font-mono text-xl text-starlight tabular-nums sm:text-2xl">
+                    ${low.toLocaleString()}–{high.toLocaleString()}
+                  </div>
+                  <div className="eyebrow mt-1.5 !text-[0.625rem]">
+                    Estimated budget
+                  </div>
+                </div>
+                <div className="border-b border-chart/12 py-5 sm:border-b-0 sm:border-r sm:px-8 sm:py-0">
+                  <div className="font-mono text-xl text-starlight tabular-nums sm:text-2xl">
+                    {cashSponsorCount}
+                  </div>
+                  <div className="eyebrow mt-1.5 !text-[0.625rem]">
+                    Cash sponsors
+                  </div>
+                </div>
+                <div className="py-5 sm:px-8 sm:py-0">
+                  <div className="font-mono text-xl text-starlight tabular-nums sm:text-2xl">
+                    {inKindCount}
+                  </div>
+                  <div className="eyebrow mt-1.5 !text-[0.625rem]">
+                    In-kind sponsors
+                  </div>
+                </div>
               </div>
-              <div className="mt-1 text-xs uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                Cash sponsors
-              </div>
-            </div>
-            <div>
-              <div className="font-heading text-2xl font-bold text-[rgba(240,240,250,1)] tabular-nums">
-                {inKindCount}
-              </div>
-              <div className="mt-1 text-xs uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                In-kind sponsors
-              </div>
+
+              <p className="mt-8 border-t border-chart/12 pt-6 text-xs leading-relaxed text-chart-bright/55">
+                The ring counts only direct cash donations. In-kind sponsors
+                provide equipment, fabrication credits, materials, or services
+                that never touch our cash budget — the full roster is on the{" "}
+                <a
+                  href="/sponsors"
+                  className="underline underline-offset-2 transition-colors hover:text-brass-bright"
+                >
+                  sponsors page
+                </a>
+                . The estimated budget reflects current pricing on every
+                non-donated part on our{" "}
+                <a
+                  href="/parts"
+                  className="underline underline-offset-2 transition-colors hover:text-brass-bright"
+                >
+                  parts list
+                </a>
+                .
+              </p>
             </div>
           </div>
-
-          {/* Footnote */}
-          <p className="mt-6 text-xs text-[rgba(240,240,250,0.4)] leading-relaxed">
-            The total reflects only direct cash donations to the project. In-kind
-            sponsors are providing equipment, fabrication credits, materials, or
-            services that don&apos;t flow through our cash budget &mdash; full list on the{" "}
-            <a href="/sponsors" className="underline underline-offset-2 hover:text-[rgba(240,240,250,0.7)] transition-colors">
-              sponsors page
-            </a>
-            . The estimated range reflects current pricing on every non-donated
-            part on our{" "}
-            <a href="/parts" className="underline underline-offset-2 hover:text-[rgba(240,240,250,0.7)] transition-colors">
-              parts list
-            </a>
-            .
-          </p>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

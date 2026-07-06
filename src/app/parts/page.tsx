@@ -5,6 +5,7 @@ import OpticalBench from "@/components/OpticalBench";
 import PartsTable from "@/components/PartsTable";
 import Reveal from "@/components/Reveal";
 import SponsorButton from "@/components/SponsorButton";
+import { parts, getBudgetRange } from "@/data/parts";
 
 export const metadata: Metadata = {
   title: "Parts List — MVHS Astronomy Telescope Project",
@@ -13,65 +14,83 @@ export const metadata: Metadata = {
 };
 
 export default function PartsPage() {
+  const budget = getBudgetRange();
+  const lineItems = parts.length;
+
   return (
     <>
       {/* Hero */}
       <ImmersiveHero starCount={50} className="pt-28 sm:pt-32 pb-16 sm:pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-[rgba(240,240,250,0.4)] mb-8">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-10 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-chart/70"
+          >
             <Link
               href="/"
-              className="hover:text-[rgba(240,240,250,0.8)] transition-colors duration-200"
+              className="transition-colors duration-200 hover:text-brass-bright"
             >
               Home
             </Link>
-            <span>/</span>
-            <span className="text-[rgba(240,240,250,0.7)]">Parts List</span>
-          </div>
+            <span aria-hidden="true" className="mx-2 text-chart/40">
+              /
+            </span>
+            <span aria-current="page" className="text-chart-bright/85">
+              Parts List
+            </span>
+          </nav>
 
-          {/* Page Header */}
-          <div className="mb-12">
-            <h1 className="font-heading text-3xl font-bold text-[rgba(240,240,250,1)] mb-4">
-              Bill of Materials
-            </h1>
-            <p className="text-[rgba(240,240,250,0.6)] max-w-2xl">
-              Every component needed to build our autonomous Dobsonian telescope.
-              Interested in donating a part?{" "}
-              <a
-                href="mailto:mvhsphysicsastroclub@gmail.com?subject=Part%20Donation%20Inquiry"
-                className="text-[rgba(240,240,250,0.95)] underline underline-offset-4 decoration-white/20 hover:decoration-white/50 transition-colors duration-200"
-              >
-                Contact us
-              </a>
-              .
-            </p>
-          </div>
+          {/* Page header */}
+          <p className="eyebrow mb-4">
+            Procurement manifest · {lineItems} line items
+          </p>
+          <h1 className="font-display text-4xl leading-tight text-starlight sm:text-5xl lg:text-6xl">
+            Bill of <em>materials</em>
+          </h1>
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-chart-bright/70 sm:text-lg">
+            Every component needed to build our autonomous Dobsonian telescope.
+            Interested in donating a part?{" "}
+            <a
+              href="mailto:mvhsphysicsastroclub@gmail.com?subject=Part%20Donation%20Inquiry"
+              className="text-starlight underline decoration-chart/30 underline-offset-4 transition-colors duration-200 hover:decoration-brass/60"
+            >
+              Contact us
+            </a>
+            .
+          </p>
+          <p className="mt-6 font-mono text-sm tracking-[0.08em] text-brass-bright tabular-nums">
+            EST. BUDGET ${budget.low.toLocaleString()}&ndash;$
+            {budget.high.toLocaleString()}
+          </p>
         </div>
       </ImmersiveHero>
 
-      <section className="relative min-h-screen bg-[#080B12] pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-void pb-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Optical bench diagram — visualizes what the parts build */}
-          <div className="py-8">
+          <div className="py-10 sm:py-12">
             <OpticalBench />
           </div>
 
           <PartsTable />
 
-          {/* Bottom CTA — deep-space card */}
+          {/* Bottom CTA */}
           <Reveal>
-            <div className="mt-16 p-8 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300 text-center">
-              <h3 className="font-heading text-xl font-semibold text-[rgba(240,240,250,0.95)] mb-3">
+            <div className="card-atlas tick-corners tick-corners-brass mt-16 p-8 text-center sm:p-10">
+              <h2 className="font-display text-2xl text-starlight sm:text-3xl">
                 Want to help us get these parts?
-              </h3>
-              <p className="text-[rgba(240,240,250,0.6)] mb-6 max-w-lg mx-auto">
-                Whether it&apos;s a financial contribution, an in-kind donation, or lending us
-                workshop space, every bit helps bring this telescope to life.
+              </h2>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-chart-bright/70 sm:text-base">
+                Whether it&apos;s a financial contribution, an in-kind donation,
+                or lending us workshop space, every bit helps bring this
+                telescope to life.
               </p>
-              <SponsorButton>
-                Become a Sponsor
-              </SponsorButton>
+              <div className="mt-7">
+                <SponsorButton className="btn-brass px-8 py-3 text-sm">
+                  Become a Sponsor
+                </SponsorButton>
+              </div>
             </div>
           </Reveal>
         </div>

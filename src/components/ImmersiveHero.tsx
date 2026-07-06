@@ -1,8 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
 import StarField from "./StarField";
-import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 interface ImmersiveHeroProps {
   children: React.ReactNode;
@@ -12,11 +10,9 @@ interface ImmersiveHeroProps {
 }
 
 /**
- * Shared hero wrapper replicating Hero.tsx's pointer interaction so all
- * sub-pages share the home page's depth language. Wraps children in a
- * hero-parallax layer that drifts gently opposite the pointer.
- *
- * Uses the deep-space btn-starlight / btn-nebula identity.
+ * Shared sub-page hero: a quiet corner of the atlas. Faint RA/Dec chart
+ * grid, sparse twinkling field stars, and an engraved rule at the base.
+ * Same props API as the previous version so all pages keep working.
  */
 export default function ImmersiveHero({
   children,
@@ -24,68 +20,30 @@ export default function ImmersiveHero({
   shootingStars = false,
   className = "",
 }: ImmersiveHeroProps) {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const frame = useRef(0);
-  const reducedMotion = usePrefersReducedMotion();
-
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLElement>) => {
-      if (reducedMotion) return;
-      const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      cancelAnimationFrame(frame.current);
-      frame.current = requestAnimationFrame(() => {
-        el.style.setProperty("--pointer-x", `${x * 100}%`);
-        el.style.setProperty("--pointer-y", `${y * 100}%`);
-        el.style.setProperty("--pointer-dx", `${x - 0.5}`);
-        el.style.setProperty("--pointer-dy", `${y - 0.5}`);
-      });
-    },
-    [reducedMotion]
-  );
-
-  useEffect(() => () => cancelAnimationFrame(frame.current), []);
-
-  const handlePointerLeave = useCallback(() => {
-    if (reducedMotion) return;
-    const el = sectionRef.current;
-    if (!el) return;
-    cancelAnimationFrame(frame.current);
-    el.style.setProperty("--pointer-x", "50%");
-    el.style.setProperty("--pointer-y", "38%");
-    el.style.setProperty("--pointer-dx", "0");
-    el.style.setProperty("--pointer-dy", "0");
-  }, [reducedMotion]);
-
   return (
-    <section
-      ref={sectionRef}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
-      className={`relative overflow-hidden bg-[#080B12] ${className}`}
-    >
-      {/* Navy radial glow */}
+    <section className={`relative overflow-hidden bg-void ${className}`}>
+      {/* Chart graticule */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none hero-glow"
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(143,165,201,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(143,165,201,0.07) 1px, transparent 1px)",
+          backgroundSize: "96px 96px",
+          maskImage:
+            "radial-gradient(ellipse 90% 80% at 50% 20%, black, transparent 75%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 90% 80% at 50% 20%, black, transparent 75%)",
+        }}
       />
 
-      {/* Pointer-reactive nebula glow */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none hero-pointer-glow"
-      />
-
-      {/* Starfield */}
+      {/* Field stars */}
       <StarField count={starCount} interactive shootingStars={shootingStars} />
 
-      {/* Content drifts gently opposite the pointer for depth */}
-      <div className="hero-parallax relative">
-        {children}
-      </div>
+      <div className="relative">{children}</div>
+
+      {/* Engraved base rule */}
+      <div className="chart-rule absolute inset-x-0 bottom-0" aria-hidden="true" />
     </section>
   );
 }
