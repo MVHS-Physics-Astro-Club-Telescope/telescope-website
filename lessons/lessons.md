@@ -27,13 +27,13 @@
 - **Prevention**: In this repo, never call setState in an effect body and never touch refs at render time; the linter is set to error.
 
 ## [2026-07-06][framer-scroll-gotchas] framer-motion scroll APIs failed three ways; drive 3D from raw scrollY
-- **Phase**: scroll-driven home page
+- **Phase**: scroll-driven home page (since reverted, lesson stands)
 - **Mistakes**: (1) `useScroll({ target })` silently fell back to whole-page progress for a sticky-pinned section. (2) `useTransform(value, inputRange, output)` freezes its ranges from the first render — updating them via state does nothing. (3) `useTransform(value, fn)` two-arg map form didn't update in v12 either.
-- **Fix**: for canvas/3D work, skip framer for scroll entirely — read `window.scrollY` in the r3f `useFrame` loop against bounds cached on resize, and damp one progress value (`THREE.MathUtils.damp`). For DOM, prefer in-flow text over a sticky stage (no scroll-linked opacity needed).
-- **Prevention**: treat framer scroll+target as unverified in this repo; anything scroll-driven gets probed with a Playwright screenshot script at known scroll fractions before styling work continues.
+- **Fix**: for canvas/3D work, read `window.scrollY` in the render loop against bounds cached on resize, damping one progress value. For DOM, prefer in-flow text over a sticky stage.
+- **Prevention**: treat framer scroll+target as unverified in this repo; probe anything scroll-driven with a Playwright screenshot script at known scroll fractions early.
 
 ## [2026-07-06][pbr-mirror-black] PBR mirrors render black without a filled environment
-- **Phase**: 3D telescope showcase
-- **Mistake**: metalness-1/roughness-0.04 mirror rendered pitch black — it was faithfully reflecting an almost-empty Lightformer environment.
-- **Fix**: add large dim fill Lightformers (front wall + floor) so specular surfaces have something to reflect; slight roughness (0.1) spreads the lobes.
+- **Phase**: 3D telescope showcase (since reverted, lesson stands)
+- **Mistake**: metalness-1/roughness-0.04 mirror rendered pitch black — faithfully reflecting an almost-empty Lightformer environment.
+- **Fix**: large dim fill Lightformers (front wall + floor) give specular surfaces something to reflect; slight roughness (0.1) spreads the lobes.
 - **Prevention**: any mirror/chrome material needs the environment designed around it, not just key lights.
