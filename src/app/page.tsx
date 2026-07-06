@@ -1,23 +1,19 @@
 import Hero from "@/components/Hero";
-import About from "@/components/About";
-import PublicObservatory from "@/components/PublicObservatory";
-import Team from "@/components/Team";
-import Specs from "@/components/Specs";
-import Timeline from "@/components/Timeline";
-import FundraisingProgress from "@/components/FundraisingProgress";
-import Sponsorship from "@/components/Sponsorship";
+import TelescopeShowcase from "@/components/TelescopeShowcase";
+import ObservatoryStrip from "@/components/ObservatoryStrip";
+import CrewStrip from "@/components/CrewStrip";
+import LogStrip from "@/components/LogStrip";
+import SupportCompact from "@/components/SupportCompact";
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <About />
-      <PublicObservatory />
-      <Team />
-      <Specs />
-      <Timeline />
-      <FundraisingProgress />
-      <Sponsorship />
+      <TelescopeShowcase />
+      <ObservatoryStrip />
+      <CrewStrip />
+      <LogStrip />
+      <SupportCompact />
     </>
   );
 }
