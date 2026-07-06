@@ -21,18 +21,9 @@
   --color-halpha: #E4584E;      /* hydrogen-alpha — live/alert only */
   --color-oiii: #5FBFA8;        /* doubly-ionized oxygen — success only */
 
-  /* Legacy aliases — components not yet migrated keep rendering */
+  /* Base semantic pair — used by the shadcn/ui primitives */
   --color-background: #05070F;
   --color-foreground: #EDF1FA;
-  --color-surface-1: #0A101D;
-  --color-surface-2: #0E1526;
-  --color-surface-3: #16203A;
-  --color-accent: #B7C7E4;
-  --color-nebula-indigo: #2B3A5E;
-  --color-nebula-violet: #3A3560;
-  --color-nebula-teal: #24504F;
-  --color-aurora: #B7C7E4;
-  --color-starlight-old: #F5F3F0;
 
   --font-sans: var(--font-body);
   --font-mono: var(--font-data);
@@ -202,8 +193,7 @@ body::before {
 
 /* ─── Buttons ──────────────────────────────────────── */
 /* .btn-brass — primary CTA: the instrument's brass */
-.btn-brass,
-.btn-starlight {
+.btn-brass {
   background: linear-gradient(180deg, #EABE79 0%, #D9A85C 55%, #C08F42 100%);
   color: #171008;
   font-weight: 600;
@@ -214,8 +204,7 @@ body::before {
     0 1px 3px rgba(0, 0, 0, 0.35);
   transition: box-shadow 0.25s ease, transform 0.25s ease, filter 0.25s ease;
 }
-.btn-brass:hover,
-.btn-starlight:hover {
+.btn-brass:hover {
   filter: brightness(1.06);
   box-shadow:
     inset 0 1px 0 rgba(255, 235, 200, 0.55),
@@ -223,12 +212,10 @@ body::before {
     0 0 26px rgba(217, 168, 92, 0.35);
   transform: translateY(-1px);
 }
-.btn-brass:active,
-.btn-starlight:active {
+.btn-brass:active {
   transform: translateY(0);
 }
-.btn-brass:disabled,
-.btn-starlight:disabled {
+.btn-brass:disabled {
   background: #2A3244;
   color: rgba(237, 241, 250, 0.45);
   border-color: rgba(143, 165, 201, 0.15);
@@ -239,8 +226,7 @@ body::before {
 }
 
 /* .btn-line — secondary CTA: engraved outline */
-.btn-line,
-.btn-nebula {
+.btn-line {
   background: rgba(14, 21, 38, 0.6);
   color: rgba(237, 241, 250, 0.92);
   border: 1px solid rgba(143, 165, 201, 0.35);
@@ -248,20 +234,17 @@ body::before {
   transition: border-color 0.25s ease, color 0.25s ease,
     box-shadow 0.25s ease, transform 0.25s ease, background 0.25s ease;
 }
-.btn-line:hover,
-.btn-nebula:hover {
+.btn-line:hover {
   border-color: rgba(217, 168, 92, 0.65);
   color: #F0C880;
   background: rgba(22, 32, 58, 0.7);
   box-shadow: 0 0 22px rgba(217, 168, 92, 0.14);
   transform: translateY(-1px);
 }
-.btn-line:active,
-.btn-nebula:active {
+.btn-line:active {
   transform: translateY(0);
 }
-.btn-line:disabled,
-.btn-nebula:disabled {
+.btn-line:disabled {
   background: #131a2b;
   color: rgba(237, 241, 250, 0.4);
   border-color: rgba(143, 165, 201, 0.12);
@@ -271,9 +254,7 @@ body::before {
 }
 
 .btn-brass:focus-visible,
-.btn-line:focus-visible,
-.btn-starlight:focus-visible,
-.btn-nebula:focus-visible {
+.btn-line:focus-visible {
   outline: 2px solid rgba(240, 200, 128, 0.9);
   outline-offset: 2px;
 }
@@ -338,23 +319,6 @@ body::before {
   animation: twinkle var(--twinkle-duration, 6s) ease-in-out infinite;
   animation-delay: var(--twinkle-delay, 0s);
 }
-
-/* ─── Status colors — semantic only ────────────────── */
-.text-status-live { color: #E4584E; }
-.text-status-ok { color: #5FBFA8; }
-.text-status-warn { color: #D9A85C; }
-.bg-status-live { background-color: #E4584E; }
-.bg-status-ok { background-color: #5FBFA8; }
-.bg-status-warn { background-color: #D9A85C; }
-/* Legacy apple-color aliases */
-.text-apple-blue { color: #B7C7E4; }
-.text-apple-green { color: #5FBFA8; }
-.text-apple-orange { color: #D9A85C; }
-.text-apple-red { color: #E4584E; }
-.bg-apple-blue { background-color: #B7C7E4; }
-.bg-apple-green { background-color: #5FBFA8; }
-.bg-apple-orange { background-color: #D9A85C; }
-.bg-apple-red { background-color: #E4584E; }
 
 /* ─── Soft pulsing dot — "live/offline" indicators ─── */
 @keyframes soft-pulse {

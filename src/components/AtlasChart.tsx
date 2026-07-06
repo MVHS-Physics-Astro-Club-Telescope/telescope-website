@@ -149,6 +149,10 @@ export default function AtlasChart({ className }: { className?: string }) {
     let width = 0;
     let height = 0;
     let dpr = 1;
+    // Pointer-to-local conversion rect, invalidated on resize/scroll so
+    // pointermove doesn't force a layout read per event
+    let wrapRect: DOMRect | null = null;
+    const getRect = () => (wrapRect ??= wrap.getBoundingClientRect());
 
     // px per degree of declination; RA hours are 15° each
     const scale = () => height / DEC_SPAN;
@@ -176,8 +180,15 @@ export default function AtlasChart({ className }: { className?: string }) {
     let locked: SlewTarget | null = null;
     let lockedAt = 0;
 
+    // Under reduced motion the loop stops after each settled frame; events
+    // (pointer, click, resize, re-entering the viewport) schedule a redraw.
+    const schedule = () => {
+      if (visible && !raf) raf = requestAnimationFrame(frame);
+    };
+
     const resize = () => {
-      const rect = wrap.getBoundingClientRect();
+      wrapRect = null;
+      const rect = getRect();
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = rect.width;
       height = rect.height;
@@ -189,6 +200,7 @@ export default function AtlasChart({ className }: { className?: string }) {
         const [tx, ty] = project(SLEW_TARGETS[0].ra, SLEW_TARGETS[0].dec);
         reticle = { x: tx, y: ty, initialized: true };
       }
+      schedule();
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -201,17 +213,22 @@ export default function AtlasChart({ className }: { className?: string }) {
     io.observe(wrap);
 
     const onMove = (e: PointerEvent) => {
-      const rect = wrap.getBoundingClientRect();
+      const rect = getRect();
       pointer = { x: e.clientX - rect.left, y: e.clientY - rect.top };
       lastPointerMove = performance.now();
       locked = null;
+      schedule();
     };
     const onLeave = () => {
       pointer = null;
       lastPointerMove = -Infinity;
+      schedule();
+    };
+    const onScroll = () => {
+      wrapRect = null;
     };
     const onClick = (e: PointerEvent) => {
-      const rect = wrap.getBoundingClientRect();
+      const rect = getRect();
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
       let best: SlewTarget | null = null;
@@ -230,13 +247,20 @@ export default function AtlasChart({ className }: { className?: string }) {
         pointer = null;
         lastPointerMove = -Infinity;
       }
+      schedule();
     };
     wrap.addEventListener("pointermove", onMove);
     wrap.addEventListener("pointerleave", onLeave);
     wrap.addEventListener("pointerdown", onClick);
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     // ── Drawing ──────────────────────────────────────
-    const mono = (px: number) => `${px}px "IBM Plex Mono", ui-monospace, monospace`;
+    // next/font registers the mono face under a hashed family name — read
+    // it from the CSS variable rather than hardcoding "IBM Plex Mono"
+    const dataFont =
+      getComputedStyle(wrap).getPropertyValue("--font-data").trim() ||
+      "ui-monospace";
+    const mono = (px: number) => `${px}px ${dataFont}, ui-monospace, monospace`;
 
     const drawGrid = () => {
       ctx.strokeStyle = `rgba(${CHART}, 0.10)`;
@@ -446,9 +470,11 @@ export default function AtlasChart({ className }: { className?: string }) {
       ctx.textAlign = "left";
     };
 
-    const frame = (now: number) => {
+    // `frame` is a hoisted declaration (schedule() runs before this line),
+    // so TS can't narrow the outer `ctx` — re-assert the guard here.
+    function frame(now: number) {
       raf = 0;
-      if (!visible) return;
+      if (!visible || !ctx) return;
       const t = now - start;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
@@ -458,8 +484,11 @@ export default function AtlasChart({ className }: { className?: string }) {
       drawStars(t);
       drawDSOs();
       drawReticle(t);
-      raf = requestAnimationFrame(frame);
-    };
+      // Reduced motion: the scene is static once drawn — don't burn frames
+      if (!reducedRef.current) {
+        raf = requestAnimationFrame(frame);
+      }
+    }
     raf = requestAnimationFrame(frame);
 
     return () => {
@@ -469,6 +498,7 @@ export default function AtlasChart({ className }: { className?: string }) {
       wrap.removeEventListener("pointermove", onMove);
       wrap.removeEventListener("pointerleave", onLeave);
       wrap.removeEventListener("pointerdown", onClick);
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 

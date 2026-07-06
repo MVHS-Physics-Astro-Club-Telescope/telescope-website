@@ -27,7 +27,6 @@ const COMPASS_LABELS = [
 // Atlas ink: engraved chart-blue lines, brass for the moving instrument.
 const CHART = (a: number) => `rgba(143, 165, 201, ${a})`;
 const BRASS = (a: number) => `rgba(217, 168, 92, ${a})`;
-const STARLIGHT = (a: number) => `rgba(237, 241, 250, ${a})`;
 
 /**
  * Animated mount-control telemetry panel for the /observe page, rendered
@@ -277,10 +276,7 @@ export default function TelescopeHUD() {
             { label: "AZ", value: target.az },
           ].map(({ label, value }) => (
             <div key={label} className="flex items-baseline gap-2">
-              <span
-                className="w-12 shrink-0 font-mono text-[0.5625rem] uppercase tracking-[0.2em]"
-                style={{ color: CHART(0.6) }}
-              >
+              <span className="w-12 shrink-0 font-mono text-[0.5625rem] uppercase tracking-[0.2em] text-chart/60">
                 {label}
               </span>
               <motion.span
@@ -288,8 +284,7 @@ export default function TelescopeHUD() {
                 initial={reducedMotion ? {} : { opacity: 0.3 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6 }}
-                className="font-mono text-[0.6875rem]"
-                style={{ color: STARLIGHT(0.8) }}
+                className="font-mono text-[0.6875rem] text-starlight/80"
               >
                 {value}
               </motion.span>
