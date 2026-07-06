@@ -38,7 +38,7 @@ export default function CoordinateGrid() {
                 key={`ra-${h}`}
                 d={`M ${x + (i % 3 === 0 ? 20 : 10)} 0 Q ${x} 200 ${x - (i % 3 === 0 ? 20 : 10)} 400`}
                 fill="none"
-                stroke="rgba(147,197,253,0.10)"
+                stroke="rgba(143,165,201,0.12)"
                 strokeWidth="0.8"
               />
             );
@@ -53,7 +53,7 @@ export default function CoordinateGrid() {
                 key={`dec-${dec}`}
                 d={`M 0 ${y + 15} Q 400 ${y - 8} 800 ${y + 12}`}
                 fill="none"
-                stroke="rgba(147,197,253,0.10)"
+                stroke="rgba(143,165,201,0.12)"
                 strokeWidth="0.8"
               />
             );
@@ -68,7 +68,7 @@ export default function CoordinateGrid() {
                 x={x + 4}
                 y={14}
                 fontSize="9"
-                fill="rgba(240,240,250,0.18)"
+                fill="rgba(143,165,201,0.35)"
                 fontFamily="monospace"
               >
                 {h}h
@@ -85,7 +85,7 @@ export default function CoordinateGrid() {
                 x={6}
                 y={y + 4}
                 fontSize="9"
-                fill="rgba(240,240,250,0.18)"
+                fill="rgba(143,165,201,0.35)"
                 fontFamily="monospace"
               >
                 {dec > 0 ? `+${dec}°` : `${dec}°`}
@@ -139,7 +139,7 @@ function Reticle({
         y1={cy}
         x2={cx - 8}
         y2={cy}
-        stroke="rgba(147,197,253,0.5)"
+        stroke="rgba(217,168,92,0.55)"
         strokeWidth="1"
       />
       <line
@@ -147,7 +147,7 @@ function Reticle({
         y1={cy}
         x2={cx + 24}
         y2={cy}
-        stroke="rgba(147,197,253,0.5)"
+        stroke="rgba(217,168,92,0.55)"
         strokeWidth="1"
       />
       <line
@@ -155,7 +155,7 @@ function Reticle({
         y1={cy - 24}
         x2={cx}
         y2={cy - 8}
-        stroke="rgba(147,197,253,0.5)"
+        stroke="rgba(217,168,92,0.55)"
         strokeWidth="1"
       />
       <line
@@ -163,7 +163,7 @@ function Reticle({
         y1={cy + 8}
         x2={cx}
         y2={cy + 24}
-        stroke="rgba(147,197,253,0.5)"
+        stroke="rgba(217,168,92,0.55)"
         strokeWidth="1"
       />
       {/* Lock ring outer */}
@@ -172,7 +172,7 @@ function Reticle({
         cy={cy}
         r="18"
         fill="none"
-        stroke="rgba(147,197,253,0.25)"
+        stroke="rgba(217,168,92,0.3)"
         strokeWidth="1.2"
         strokeDasharray="4 3"
       />
@@ -181,13 +181,13 @@ function Reticle({
         cx={cx}
         cy={cy}
         r="6"
-        fill="rgba(147,197,253,0.08)"
-        stroke="rgba(147,197,253,0.4)"
+        fill="rgba(217,168,92,0.08)"
+        stroke="rgba(217,168,92,0.45)"
         strokeWidth="0.8"
         className={reducedMotion ? "" : "pulse-dot"}
       />
       {/* Center dot */}
-      <circle cx={cx} cy={cy} r="1.5" fill="rgba(147,197,253,0.7)" />
+      <circle cx={cx} cy={cy} r="1.5" fill="rgba(217,168,92,0.75)" />
     </>
   );
 }

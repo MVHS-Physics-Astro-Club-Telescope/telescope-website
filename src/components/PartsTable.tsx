@@ -6,25 +6,59 @@ import {
   categories,
   getBudgetRange,
   getStatusCounts,
+  type Part,
   type PartCategory,
   type PartStatus,
 } from "@/data/parts";
 
-function StatusBadge({ status }: { status: PartStatus }) {
-  const colorMap: Record<PartStatus, { dot: string; text: string }> = {
-    Donated: { dot: "bg-[#30D158]", text: "text-[#30D158]" },
-    Needed: { dot: "bg-[#FF9F0A]", text: "text-[#FF9F0A]" },
-    Ordered: { dot: "bg-[#0A84FF]", text: "text-[#0A84FF]" },
-    Claimed: { dot: "bg-[#0A84FF]", text: "text-[#0A84FF]" },
-  };
+const statusStyles: Record<PartStatus, string> = {
+  Donated: "border-brass/50 text-brass",
+  Needed: "border-chart/40 text-chart",
+  Ordered: "border-chart-bright/60 text-chart-bright",
+  Claimed: "border-oiii/50 text-oiii",
+};
 
-  const colors = colorMap[status];
-
+function StatusChip({ status }: { status: PartStatus }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium">
-      <span className={`w-1.5 h-1.5 rounded-full ${colors.dot}`} />
-      <span className={colors.text}>{status}</span>
+    <span
+      className={`inline-flex items-center rounded-[2px] border px-2 py-0.5 font-mono text-[0.625rem] uppercase tracking-[0.14em] ${statusStyles[status]}`}
+    >
+      {status}
     </span>
+  );
+}
+
+function ExternalIcon() {
+  return (
+    <svg
+      className="h-3 w-3 opacity-50"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <polyline points="15 3 21 3 21 9" />
+      <line x1="10" y1="14" x2="21" y2="3" />
+    </svg>
+  );
+}
+
+function PartName({ part }: { part: Part }) {
+  if (!part.purchaseUrl) return <>{part.name}</>;
+  return (
+    <a
+      href={part.purchaseUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 text-chart-bright underline decoration-chart/30 underline-offset-2 transition-colors duration-200 hover:text-brass-bright hover:decoration-brass/60"
+    >
+      {part.name}
+      <ExternalIcon />
+    </a>
   );
 }
 
@@ -33,100 +67,93 @@ export default function PartsTable() {
   const budget = useMemo(() => getBudgetRange(), []);
   const statusCounts = useMemo(() => getStatusCounts(), []);
 
-  const filteredParts = useMemo(() => {
-    if (activeCategory === "All") return parts;
-    return parts.filter((p) => p.category === activeCategory);
+  const grouped = useMemo(() => {
+    const visible = activeCategory === "All" ? categories : [activeCategory];
+    return visible
+      .map((category) => ({
+        category,
+        items: parts.filter((p) => p.category === category),
+      }))
+      .filter((group) => group.items.length > 0);
   }, [activeCategory]);
 
   const totalParts = parts.length;
+  const lineNo = (part: Part) => String(parts.indexOf(part) + 1).padStart(2, "0");
 
   return (
     <div>
-      {/* Disclaimer Banner */}
-      <div className="mb-8 p-4 rounded-2xl bg-[#0D1219] border border-[#FF9F0A]/20 shadow-[inset_0_1px_0_rgba(255,159,10,0.06)]">
-        <div className="flex items-start gap-3">
-          <svg className="w-5 h-5 text-[#FF9F0A] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-          <p className="text-sm text-[rgba(240,240,250,0.7)] leading-relaxed">
-            Product links are provided as reference only. <span className="text-[rgba(240,240,250,0.9)] font-medium">Before purchasing any part, please contact us at{" "}
-            <a href="mailto:mvhsphysicsastroclub@gmail.com" className="text-[#0A84FF] hover:underline">mvhsphysicsastroclub@gmail.com</a></span>{" "}
-            to confirm specifications and compatibility with our build. Prices and availability may change.
-          </p>
+      <h2 className="sr-only">Parts list</h2>
+
+      {/* Advisory */}
+      <div className="card-atlas mb-10 border-l-2 border-l-brass/60 p-5">
+        <p className="font-mono text-[0.625rem] uppercase tracking-[0.22em] text-brass">
+          Advisory · Confirm before purchasing
+        </p>
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-chart-bright/70">
+          Product links are provided as reference only. Before purchasing any
+          part, please contact us at{" "}
+          <a
+            href="mailto:mvhsphysicsastroclub@gmail.com"
+            className="text-starlight underline decoration-chart/30 underline-offset-2 transition-colors duration-200 hover:decoration-brass/60"
+          >
+            mvhsphysicsastroclub@gmail.com
+          </a>{" "}
+          to confirm specifications and compatibility with our build. Prices
+          and availability may change.
+        </p>
+      </div>
+
+      {/* Manifest ledger */}
+      <div className="mb-10 grid grid-cols-2 gap-x-6 gap-y-8 border-y border-chart/15 py-8 lg:grid-cols-4">
+        <div>
+          <div className="font-mono text-2xl text-starlight tabular-nums sm:text-3xl">
+            {totalParts}
+          </div>
+          <div className="eyebrow mt-1.5 !text-[0.625rem]">Line items</div>
+        </div>
+        <div>
+          <div className="font-mono text-2xl text-starlight tabular-nums sm:text-3xl">
+            ${budget.low.toLocaleString()}&ndash;{budget.high.toLocaleString()}
+          </div>
+          <div className="eyebrow mt-1.5 !text-[0.625rem]">Estimated budget</div>
+        </div>
+        <div>
+          <div className="font-mono text-2xl tabular-nums sm:text-3xl">
+            <span className="text-brass">{statusCounts.Donated}</span>
+            <span className="text-sm text-chart-bright/50"> / {totalParts}</span>
+          </div>
+          <div className="eyebrow mt-1.5 !text-[0.625rem]">Donated</div>
+        </div>
+        <div>
+          <div className="font-mono text-2xl tabular-nums sm:text-3xl">
+            <span className="text-chart-bright">{statusCounts.Needed}</span>
+            <span className="text-sm text-chart-bright/50"> / {totalParts}</span>
+          </div>
+          <div className="eyebrow mt-1.5 !text-[0.625rem]">Still needed</div>
         </div>
       </div>
 
-      {/* Budget Summary Cards — deep-space card pattern */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <div className="p-5 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300">
-          <p className="text-sm text-[rgba(240,240,250,0.4)] mb-1">Total Parts</p>
-          <p className="text-2xl font-heading font-bold text-[rgba(240,240,250,1)]">{totalParts}</p>
-        </div>
-        <div className="p-5 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300">
-          <p className="text-sm text-[rgba(240,240,250,0.4)] mb-1">Estimated Budget</p>
-          <p className="text-2xl font-heading font-bold text-[rgba(240,240,250,1)]">
-            ${budget.low.toLocaleString()}&ndash;${budget.high.toLocaleString()}
-          </p>
-        </div>
-        <div className="p-5 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300">
-          <p className="text-sm text-[rgba(240,240,250,0.4)] mb-1">Donated</p>
-          <p className="text-2xl font-heading font-bold">
-            <span className="text-[#30D158]">{statusCounts.Donated}</span>
-            <span className="text-sm text-[rgba(240,240,250,0.4)] ml-1">/ {totalParts}</span>
-          </p>
-        </div>
-        <div className="p-5 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300">
-          <p className="text-sm text-[rgba(240,240,250,0.4)] mb-1">Still Needed</p>
-          <p className="text-2xl font-heading font-bold">
-            <span className="text-[#FF9F0A]">{statusCounts.Needed}</span>
-            <span className="text-sm text-[rgba(240,240,250,0.4)] ml-1">/ {totalParts}</span>
-          </p>
-        </div>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <button
-          onClick={() => setActiveCategory("All")}
-          style={
-            activeCategory === "All"
-              ? {
-                  background: 'linear-gradient(180deg, #e8e8ed 0%, #d1d1d6 50%, #BAB9B3 100%)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.15)',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                }
-              : undefined
-          }
-          className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
-            activeCategory === "All"
-              ? "text-[#1a1a1f]"
-              : "bg-[#121A25] text-[rgba(240,240,250,0.6)] hover:bg-[#1A2333] hover:text-[rgba(240,240,250,0.9)] border border-white/[0.06]"
-          }`}
-        >
-          All ({totalParts})
-        </button>
-        {categories.map((cat) => {
-          const count = parts.filter((p) => p.category === cat).length;
+      {/* Category filter */}
+      <div
+        role="group"
+        aria-label="Filter parts by category"
+        className="mb-10 flex flex-wrap gap-2"
+      >
+        {(["All", ...categories] as const).map((cat) => {
+          const count =
+            cat === "All"
+              ? totalParts
+              : parts.filter((p) => p.category === cat).length;
           const isActive = activeCategory === cat;
           return (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              style={
+              aria-pressed={isActive}
+              className={`rounded-[3px] border px-3 py-1.5 font-mono text-[0.6875rem] uppercase tracking-[0.14em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass-bright/80 ${
                 isActive
-                  ? {
-                      background: 'linear-gradient(180deg, #e8e8ed 0%, #d1d1d6 50%, #c7c7cc 100%)',
-                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.1)',
-                      border: '1px solid rgba(255,255,255,0.3)',
-                    }
-                  : undefined
-              }
-              className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${
-                isActive
-                  ? "text-[#1a1a1f]"
-                  : "bg-[#121A25] text-[rgba(240,240,250,0.6)] hover:bg-[#1A2333] hover:text-[rgba(240,240,250,0.9)] border border-white/[0.06]"
+                  ? "border-brass/60 bg-raised text-brass-bright"
+                  : "border-chart/15 bg-panel/60 text-chart-bright/60 hover:border-chart/35 hover:text-chart-bright"
               }`}
             >
               {cat} ({count})
@@ -135,165 +162,134 @@ export default function PartsTable() {
         })}
       </div>
 
-      {/* Desktop Table */}
-      <div className="hidden md:block overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0D1219] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-white/[0.08]">
-              <th className="text-left px-6 py-4 text-xs font-medium uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                Part
-              </th>
-              <th className="text-left px-6 py-4 text-xs font-medium uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                Specification
-              </th>
-              <th className="text-center px-6 py-4 text-xs font-medium uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                Qty
-              </th>
-              <th className="text-left px-6 py-4 text-xs font-medium uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                Category
-              </th>
-              <th className="text-right px-6 py-4 text-xs font-medium uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                Est. Cost
-              </th>
-              <th className="text-center px-6 py-4 text-xs font-medium uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                Status
-              </th>
-              <th className="text-left px-6 py-4 text-xs font-medium uppercase tracking-wider text-[rgba(240,240,250,0.4)]">
-                Donated By
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/[0.04]">
-            {filteredParts.map((part) => (
-              <tr
-                key={part.name}
-                className="group hover:bg-white/[0.02] transition-colors duration-150"
-              >
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-[rgba(240,240,250,0.95)]">
-                    {part.purchaseUrl ? (
-                      <a
-                        href={part.purchaseUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#0A84FF] hover:text-[#409CFF] hover:underline transition-colors inline-flex items-center gap-1"
-                      >
-                        {part.name}
-                        <svg className="w-3 h-3 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                          <polyline points="15 3 21 3 21 9" />
-                          <line x1="10" y1="14" x2="21" y2="3" />
-                        </svg>
-                      </a>
-                    ) : (
-                      part.name
-                    )}
-                  </div>
-                  {part.notes && (
-                    <div className="text-xs text-[rgba(240,240,250,0.4)] mt-0.5">
-                      {part.notes}
-                    </div>
-                  )}
-                </td>
-                <td className="px-6 py-4 text-sm text-[rgba(240,240,250,0.6)]">
-                  {part.specification}
-                </td>
-                <td className="px-6 py-4 text-sm text-[rgba(240,240,250,0.6)] text-center">
-                  {part.quantity}
-                </td>
-                <td className="px-6 py-4 text-sm text-[rgba(240,240,250,0.6)]">
-                  {part.category}
-                </td>
-                <td className="px-6 py-4 text-sm text-[rgba(240,240,250,0.6)] text-right">
-                  {part.estimatedCost}
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <StatusBadge status={part.status} />
-                </td>
-                <td className="px-6 py-4 text-sm text-[rgba(240,240,250,0.6)]">
-                  {part.donatedBy ? (
-                    <span className="flex items-center gap-1.5">
-                      <svg
-                        className="w-3.5 h-3.5 text-[#30D158] shrink-0"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        stroke="none"
-                      >
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                      </svg>
-                      {part.donatedBy}
-                    </span>
-                  ) : (
-                    "\u2014"
-                  )}
-                </td>
+      {/* Desktop manifest table */}
+      <div className="card-atlas hidden overflow-hidden md:block">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px]">
+            <thead>
+              <tr className="border-b border-chart/15">
+                <th className="px-4 py-3.5 text-left font-mono text-[0.625rem] font-normal uppercase tracking-[0.18em] text-chart/80">
+                  No.
+                </th>
+                <th className="px-4 py-3.5 text-left font-mono text-[0.625rem] font-normal uppercase tracking-[0.18em] text-chart/80">
+                  Part
+                </th>
+                <th className="px-4 py-3.5 text-left font-mono text-[0.625rem] font-normal uppercase tracking-[0.18em] text-chart/80">
+                  Specification
+                </th>
+                <th className="px-4 py-3.5 text-center font-mono text-[0.625rem] font-normal uppercase tracking-[0.18em] text-chart/80">
+                  Qty
+                </th>
+                <th className="px-4 py-3.5 text-right font-mono text-[0.625rem] font-normal uppercase tracking-[0.18em] text-chart/80">
+                  Est. cost
+                </th>
+                <th className="px-4 py-3.5 text-center font-mono text-[0.625rem] font-normal uppercase tracking-[0.18em] text-chart/80">
+                  Status
+                </th>
+                <th className="px-4 py-3.5 text-left font-mono text-[0.625rem] font-normal uppercase tracking-[0.18em] text-chart/80">
+                  Donated by
+                </th>
               </tr>
+            </thead>
+            {grouped.map((group) => (
+              <tbody key={group.category}>
+                <tr className="border-b border-chart/12 bg-deep">
+                  <td colSpan={7} className="px-4 py-2.5">
+                    <span className="eyebrow !text-[0.625rem]">
+                      {group.category} · {group.items.length}{" "}
+                      {group.items.length === 1 ? "item" : "items"}
+                    </span>
+                  </td>
+                </tr>
+                {group.items.map((part) => (
+                  <tr
+                    key={part.name}
+                    className="border-b border-chart/8 transition-colors duration-150 hover:bg-raised"
+                  >
+                    <td className="px-4 py-4 align-top font-mono text-xs text-chart/60 tabular-nums">
+                      {lineNo(part)}
+                    </td>
+                    <td className="px-4 py-4 align-top">
+                      <div className="text-sm text-starlight">
+                        <PartName part={part} />
+                      </div>
+                      {part.notes && (
+                        <div className="mt-1 text-xs leading-relaxed text-chart-bright/50">
+                          {part.notes}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 align-top text-sm leading-relaxed text-chart-bright/70">
+                      {part.specification}
+                    </td>
+                    <td className="px-4 py-4 text-center align-top font-mono text-xs text-chart-bright/85 tabular-nums">
+                      {part.quantity}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4 text-right align-top font-mono text-xs text-chart-bright/85 tabular-nums">
+                      {part.estimatedCost}
+                    </td>
+                    <td className="px-4 py-4 text-center align-top">
+                      <StatusChip status={part.status} />
+                    </td>
+                    <td className="px-4 py-4 align-top">
+                      {part.donatedBy ? (
+                        <span className="font-mono text-xs text-brass/90">
+                          {part.donatedBy}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-chart/40">&mdash;</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             ))}
-          </tbody>
-        </table>
+          </table>
+        </div>
       </div>
 
-      {/* Mobile Cards — deep-space card pattern */}
-      <div className="md:hidden space-y-3">
-        {filteredParts.map((part) => (
-          <div
-            key={part.name}
-            className="p-4 rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/[0.12] hover:bg-[#111922] transition-all duration-300"
-          >
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div>
-                <h3 className="text-sm font-semibold text-[rgba(240,240,250,0.95)]">
-                  {part.purchaseUrl ? (
-                    <a
-                      href={part.purchaseUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#0A84FF] hover:text-[#409CFF] hover:underline transition-colors inline-flex items-center gap-1"
-                    >
-                      {part.name}
-                      <svg className="w-3 h-3 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                        <polyline points="15 3 21 3 21 9" />
-                        <line x1="10" y1="14" x2="21" y2="3" />
-                      </svg>
-                    </a>
-                  ) : (
-                    part.name
-                  )}
-                </h3>
-                <p className="text-xs text-[rgba(240,240,250,0.4)] mt-0.5">{part.category}</p>
-              </div>
-              <StatusBadge status={part.status} />
-            </div>
-            <p className="text-xs text-[rgba(240,240,250,0.6)] mb-2">
-              {part.specification}
+      {/* Mobile manifest cards */}
+      <div className="space-y-8 md:hidden">
+        {grouped.map((group) => (
+          <div key={group.category}>
+            <p className="eyebrow mb-3 !text-[0.625rem]">
+              {group.category} · {group.items.length}{" "}
+              {group.items.length === 1 ? "item" : "items"}
             </p>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-[rgba(240,240,250,0.4)]">
-                Qty: <span className="text-[rgba(240,240,250,0.6)]">{part.quantity}</span>
-              </span>
-              <span className="text-[rgba(240,240,250,0.7)] font-medium">
-                {part.estimatedCost}
-              </span>
+            <div className="space-y-3">
+              {group.items.map((part) => (
+                <article key={part.name} className="card-atlas p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="text-sm font-medium text-starlight">
+                      <span className="mr-2 font-mono text-[0.625rem] text-chart/50 tabular-nums">
+                        {lineNo(part)}
+                      </span>
+                      <PartName part={part} />
+                    </h3>
+                    <StatusChip status={part.status} />
+                  </div>
+                  <p className="mt-1.5 text-xs leading-relaxed text-chart-bright/65">
+                    {part.specification}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between border-t border-chart/10 pt-3 font-mono text-xs">
+                    <span className="text-chart/70">QTY {part.quantity}</span>
+                    <span className="text-chart-bright/85 tabular-nums">
+                      {part.estimatedCost}
+                    </span>
+                  </div>
+                  {part.donatedBy && (
+                    <p className="mt-2 font-mono text-[0.625rem] uppercase tracking-[0.14em] text-brass/90">
+                      Donated by {part.donatedBy}
+                    </p>
+                  )}
+                  {part.notes && (
+                    <p className="mt-2 text-xs leading-relaxed text-chart-bright/50">
+                      {part.notes}
+                    </p>
+                  )}
+                </article>
+              ))}
             </div>
-            {part.donatedBy && (
-              <div className="flex items-center gap-1.5 text-xs text-[rgba(240,240,250,0.6)] mt-2 pt-2 border-t border-white/[0.04]">
-                <svg
-                  className="w-3 h-3 text-[#30D158] shrink-0"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  stroke="none"
-                >
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-                Donated by {part.donatedBy}
-              </div>
-            )}
-            {part.notes && (
-              <p className={`text-xs text-[rgba(240,240,250,0.4)] mt-2 ${!part.donatedBy ? "pt-2 border-t border-white/[0.04]" : ""}`}>
-                {part.notes}
-              </p>
-            )}
           </div>
         ))}
       </div>

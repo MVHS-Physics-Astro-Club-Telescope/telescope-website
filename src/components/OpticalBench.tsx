@@ -42,9 +42,11 @@ const RAYS = [
   },
 ];
 
+const MONO = "var(--font-data), monospace";
+
 /**
- * Animated SVG side-view physics diagram of the Newtonian optical path.
- * Aria-hidden — purely decorative.
+ * Animated SVG side-view physics diagram of the Newtonian optical path,
+ * drawn as an atlas figure. Aria-hidden — purely decorative.
  */
 export default function OpticalBench() {
   const reducedMotion = usePrefersReducedMotion();
@@ -53,43 +55,16 @@ export default function OpticalBench() {
     <MotionConfig reducedMotion="user">
       <div
         aria-hidden="true"
-        className="rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] p-4 overflow-hidden relative"
+        className="card-atlas tick-corners relative overflow-hidden p-5 sm:p-6"
       >
-        {/* Slow-rotating orbital ring decoration */}
-        <div
-          className="absolute -bottom-8 -right-8 pointer-events-none"
-          style={{
-            animation: reducedMotion ? "none" : "orbit-ring 48s linear infinite",
-          }}
-        >
-          <svg width="160" height="160" viewBox="-80 -80 160 160">
-            <ellipse
-              cx="0"
-              cy="0"
-              rx="70"
-              ry="28"
-              fill="none"
-              stroke="rgba(147,197,253,0.06)"
-              strokeWidth="1"
-            />
-            <ellipse
-              cx="0"
-              cy="0"
-              rx="55"
-              ry="20"
-              fill="none"
-              stroke="rgba(147,197,253,0.04)"
-              strokeWidth="0.8"
-              transform="rotate(30)"
-            />
-            <circle cx="70" cy="0" r="2.5" fill="rgba(147,197,253,0.2)" />
-          </svg>
-        </div>
+        <p className="eyebrow !text-[0.625rem]">
+          Fig. 1 — Newtonian optical path · side elevation
+        </p>
 
         <svg
           viewBox="0 0 720 260"
           preserveAspectRatio="xMidYMid meet"
-          className="w-full h-auto"
+          className="mt-4 h-auto w-full"
           style={{ maxHeight: "260px" }}
         >
           {/* Open truss tube outline */}
@@ -98,11 +73,11 @@ export default function OpticalBench() {
             y="55"
             width="580"
             height="155"
-            rx="4"
+            rx="2"
             fill="none"
-            stroke="rgba(255,255,255,0.22)"
+            stroke="rgba(143,165,201,0.3)"
             strokeWidth="1"
-            strokeDasharray="8 4"
+            strokeDasharray="7 5"
           />
           {/* Truss struts */}
           {[0, 1, 2, 3].map((i) => (
@@ -112,24 +87,26 @@ export default function OpticalBench() {
               y1="55"
               x2={30 + i * 145}
               y2="210"
-              stroke="rgba(255,255,255,0.22)"
+              stroke="rgba(143,165,201,0.18)"
               strokeWidth="0.8"
             />
           ))}
 
-          {/* PRIMARY mirror — parabolic curve at right */}
+          {/* PRIMARY mirror — parabolic curve at right, the brass heart */}
           <path
             d="M 600 55 Q 650 130 600 210"
             fill="none"
-            stroke="rgba(147,197,253,0.55)"
-            strokeWidth="2"
+            stroke="rgba(217,168,92,0.9)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
           />
           <text
             x="658"
             y="126"
             fontSize="9"
-            fill="rgba(147,197,253,0.65)"
-            fontFamily="monospace"
+            fill="rgba(143,165,201,0.8)"
+            fontFamily={MONO}
+            letterSpacing="0.1em"
             textAnchor="start"
           >
             PRIMARY · 254mm f/4.48
@@ -141,15 +118,17 @@ export default function OpticalBench() {
             y1="105"
             x2="255"
             y2="155"
-            stroke="rgba(147,197,253,0.45)"
-            strokeWidth="2"
+            stroke="rgba(217,168,92,0.8)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
           />
           <text
             x="180"
             y="175"
             fontSize="9"
-            fill="rgba(147,197,253,0.62)"
-            fontFamily="monospace"
+            fill="rgba(143,165,201,0.8)"
+            fontFamily={MONO}
+            letterSpacing="0.1em"
             textAnchor="middle"
           >
             SECONDARY
@@ -161,17 +140,18 @@ export default function OpticalBench() {
             y="8"
             width="50"
             height="30"
-            rx="3"
-            fill="rgba(147,197,253,0.08)"
-            stroke="rgba(147,197,253,0.3)"
+            rx="2"
+            fill="rgba(14,21,38,0.9)"
+            stroke="rgba(143,165,201,0.5)"
             strokeWidth="1"
           />
           <text
             x="230"
             y="27"
             fontSize="7"
-            fill="rgba(147,197,253,0.6)"
-            fontFamily="monospace"
+            fill="rgba(143,165,201,0.75)"
+            fontFamily={MONO}
+            letterSpacing="0.08em"
             textAnchor="middle"
           >
             IMX585 SENSOR
@@ -182,18 +162,18 @@ export default function OpticalBench() {
             <g key={i}>
               <line
                 {...ray.incoming}
-                stroke="rgba(147,197,253,0.08)"
-                strokeWidth="0.7"
+                stroke="rgba(183,199,228,0.12)"
+                strokeWidth="0.75"
               />
               <line
                 {...ray.toSecondary}
-                stroke="rgba(147,197,253,0.08)"
-                strokeWidth="0.7"
+                stroke="rgba(183,199,228,0.12)"
+                strokeWidth="0.75"
               />
               <line
                 {...ray.toCamera}
-                stroke="rgba(147,197,253,0.08)"
-                strokeWidth="0.7"
+                stroke="rgba(183,199,228,0.12)"
+                strokeWidth="0.75"
               />
             </g>
           ))}
@@ -204,8 +184,8 @@ export default function OpticalBench() {
               <motion.circle
                 key={ri}
                 r="3.5"
-                fill="rgba(147,197,253,0.9)"
-                filter="url(#glow)"
+                fill="rgba(183,199,228,0.95)"
+                filter="url(#photon-glow)"
                 initial={{ cx: ray.keyframes.x[0], cy: ray.keyframes.y[0] }}
                 animate={{
                   cx: ray.keyframes.x,
@@ -230,13 +210,13 @@ export default function OpticalBench() {
                 cx={ray.keyframes.x[1]}
                 cy={ray.keyframes.y[1]}
                 r="3"
-                fill="rgba(147,197,253,0.5)"
+                fill="rgba(183,199,228,0.5)"
               />
             ))}
 
-          {/* Aurora glow filter */}
+          {/* Soft photon glow */}
           <defs>
-            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <filter id="photon-glow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="3" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
@@ -245,13 +225,6 @@ export default function OpticalBench() {
             </filter>
           </defs>
         </svg>
-
-        <style>{`
-          @keyframes orbit-ring {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     </MotionConfig>
   );

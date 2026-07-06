@@ -54,9 +54,18 @@ function getEdges(
 const W = 800;
 const H = 300;
 
+// Atlas palette — engraved chart-blue lines, brass for the brightest stars
+const LINE = "rgba(143, 165, 201, 0.24)";
+const HALO = "rgba(143, 165, 201, 0.05)";
+const STAR = "rgba(183, 199, 228, 0.88)";
+const STAR_BRASS = "rgba(240, 200, 128, 0.92)";
+const SPIKE_BRASS = "rgba(217, 168, 92, 0.45)";
+
 /**
- * SVG constellation spanning a wide band. One star node per sponsor,
- * connected by thin constellation lines that draw themselves on scroll.
+ * SVG constellation spanning a wide band, drawn in the atlas's engraved
+ * chart-line blue. One star node per sponsor, connected by hairline
+ * constellation edges that draw themselves on scroll; the three brightest
+ * stars are picked out in brass with diffraction spikes.
  * Aria-hidden — purely decorative.
  */
 export default function SponsorConstellation({
@@ -95,8 +104,8 @@ export default function SponsorConstellation({
                   <motion.path
                     d={`M ${na.x} ${na.y} L ${nb.x} ${nb.y}`}
                     fill="none"
-                    stroke="rgba(147,197,253,0.25)"
-                    strokeWidth="0.8"
+                    stroke={LINE}
+                    strokeWidth="0.75"
                     pathLength="1"
                     initial={{ pathLength: 0, opacity: 0 }}
                     whileInView={{ pathLength: 1, opacity: 1 }}
@@ -116,8 +125,8 @@ export default function SponsorConstellation({
                   <path
                     d={`M ${na.x} ${na.y} L ${nb.x} ${nb.y}`}
                     fill="none"
-                    stroke="rgba(147,197,253,0.25)"
-                    strokeWidth="0.8"
+                    stroke={LINE}
+                    strokeWidth="0.75"
                   />
                 )}
               </g>
@@ -133,14 +142,14 @@ export default function SponsorConstellation({
 
             return (
               <g key={i}>
-                {/* Soft aurora halo */}
+                {/* Soft halo */}
                 <circle
                   cx={node.x}
                   cy={node.y}
                   r={r * 4}
-                  fill="rgba(147,197,253,0.04)"
+                  fill={HALO}
                 />
-                {/* 4-point diffraction spikes on brightest nodes */}
+                {/* 4-point diffraction spikes on the brass stars */}
                 {isBright && (
                   <>
                     <line
@@ -148,7 +157,7 @@ export default function SponsorConstellation({
                       y1={node.y}
                       x2={node.x + r * 3.5}
                       y2={node.y}
-                      stroke="rgba(147,197,253,0.3)"
+                      stroke={SPIKE_BRASS}
                       strokeWidth="0.6"
                     />
                     <line
@@ -156,7 +165,7 @@ export default function SponsorConstellation({
                       y1={node.y - r * 3.5}
                       x2={node.x}
                       y2={node.y + r * 3.5}
-                      stroke="rgba(147,197,253,0.3)"
+                      stroke={SPIKE_BRASS}
                       strokeWidth="0.6"
                     />
                   </>
@@ -166,7 +175,7 @@ export default function SponsorConstellation({
                   cx={node.x}
                   cy={node.y}
                   r={r}
-                  fill="rgba(147,197,253,0.9)"
+                  fill={isBright ? STAR_BRASS : STAR}
                   className="star"
                   style={
                     {

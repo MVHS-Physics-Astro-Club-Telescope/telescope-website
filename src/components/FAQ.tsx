@@ -32,7 +32,7 @@ export default function FAQ({ items, idPrefix = "faq" }: FAQProps) {
       data-slot="accordion"
       // multiple = users can leave several panels open at once.
       multiple
-      className="rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] divide-y divide-white/[0.06]"
+      className="card-atlas divide-y divide-chart/10"
     >
       {items.map((item, i) => {
         const id = `${idPrefix}-${i}`;
@@ -40,17 +40,17 @@ export default function FAQ({ items, idPrefix = "faq" }: FAQProps) {
           <AccordionItem
             key={id}
             value={id}
-            className="px-6 [&_[data-slot=accordion-trigger]]:py-5 [&_[data-slot=accordion-trigger]]:focus-visible:rounded-lg"
+            className="px-6 [&_[data-slot=accordion-trigger]]:py-5 [&_[data-slot=accordion-trigger]]:focus-visible:rounded-sm"
           >
             <AccordionTrigger
               id={`${idPrefix}-q-${i}`}
-              className="font-heading text-base font-medium text-[rgba(240,240,250,0.95)] hover:no-underline data-[panel-open]:text-white"
+              className="font-display text-base text-starlight/90 hover:no-underline hover:text-brass-bright data-[panel-open]:text-starlight"
             >
               {item.question}
             </AccordionTrigger>
             <AccordionContent
               id={`${idPrefix}-a-${i}`}
-              className="text-sm text-[rgba(240,240,250,0.7)] leading-relaxed pr-6"
+              className="pr-6 text-sm leading-relaxed text-chart-bright/70"
             >
               {item.answer}
             </AccordionContent>

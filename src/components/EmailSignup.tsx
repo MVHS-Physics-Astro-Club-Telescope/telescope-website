@@ -32,7 +32,7 @@ interface EmailSignupProps {
  * Email capture form. POSTs to /api/interest with { email, source }.
  * - React-hook-form + Zod for typed inline validation.
  * - Sonner toast on success/error (loading state on button).
- * - Pulls in the site's deep-space btn-starlight button style for visual consistency.
+ * - Atlas plate visuals: engraved panel, brass CTA, ha/oiii semantics.
  */
 export default function EmailSignup({
   source,
@@ -95,22 +95,19 @@ export default function EmailSignup({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl bg-[#0D1219] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-colors",
+        "card-atlas tick-corners relative overflow-hidden",
         compact ? "p-6" : "p-8",
       )}
     >
-      {/* Soft top edge highlight */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-
       {(title || description) && (
-        <div className="mb-5">
+        <div className="mb-6">
           {title && (
-            <h2 className="font-heading text-xl font-semibold text-[rgba(240,240,250,0.95)] mb-2">
+            <h2 className="mb-2 font-display text-2xl text-starlight">
               {title}
             </h2>
           )}
           {description && (
-            <p className="text-sm text-[rgba(240,240,250,0.6)] leading-relaxed">
+            <p className="text-sm leading-relaxed text-chart-bright/65">
               {description}
             </p>
           )}
@@ -121,13 +118,13 @@ export default function EmailSignup({
         <div
           id={liveMsgId}
           role="status"
-          className="flex items-start gap-3 rounded-xl border border-[#30D158]/30 bg-[#30D158]/5 px-4 py-3"
+          className="flex items-start gap-3 rounded-sm border border-oiii/35 bg-oiii/5 px-4 py-3"
         >
-          <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#30D158]/20 text-[#30D158]">
+          <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-sm bg-oiii/20 text-oiii">
             <Check className="h-3.5 w-3.5" />
           </span>
-          <div className="text-sm text-[rgba(240,240,250,0.85)] leading-relaxed">
-            <strong className="text-[#30D158]">You&apos;re on the list.</strong>{" "}
+          <div className="text-sm leading-relaxed text-starlight/85">
+            <strong className="text-oiii">You&apos;re on the list.</strong>{" "}
             Clear skies — we&apos;ll be in touch.
           </div>
         </div>
@@ -140,7 +137,7 @@ export default function EmailSignup({
           <Label htmlFor={inputId} className="sr-only">
             Email address
           </Label>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Input
               id={inputId}
               type="email"
@@ -152,15 +149,16 @@ export default function EmailSignup({
               disabled={isSubmitting}
               {...register("email")}
               className={cn(
-                "flex-1 h-12 px-4 rounded-full bg-[#121A25] border text-[15px] text-[rgba(240,240,250,0.95)] placeholder:text-[rgba(240,240,250,0.35)] outline-none transition-colors",
-                "border-white/[0.08] focus-visible:border-[#0A84FF]/50 focus-visible:ring-2 focus-visible:ring-[#0A84FF]/20",
-                errors.email && "border-[#FF453A]/50 focus-visible:border-[#FF453A]/70 focus-visible:ring-[#FF453A]/20",
+                "h-12 flex-1 rounded-sm border bg-deep px-4 text-[15px] text-starlight/95 placeholder:text-chart-bright/35 outline-none transition-colors",
+                "border-chart/15 focus-visible:border-brass/50 focus-visible:ring-2 focus-visible:ring-brass/25",
+                errors.email &&
+                  "border-halpha/50 focus-visible:border-halpha/70 focus-visible:ring-halpha/20",
               )}
             />
             <button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="btn-starlight group inline-flex items-center justify-center gap-2 px-7 h-12 text-sm font-medium rounded-full whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-brass group inline-flex h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap px-7 text-sm"
             >
               {isSubmitting ? (
                 <>
@@ -183,7 +181,7 @@ export default function EmailSignup({
             <p
               id={errorId}
               role="alert"
-              className="text-xs text-[#FF6B61] pl-2"
+              className="pl-1 text-xs text-halpha"
             >
               {errors.email.message}
             </p>
