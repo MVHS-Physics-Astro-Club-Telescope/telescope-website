@@ -1,31 +1,45 @@
 "use client";
 
-import { useInView } from "@/hooks/useInView";
+import { motion, MotionConfig } from "framer-motion";
 
 interface SectionHeadingProps {
   title: string;
   subtitle?: string;
+  /** Chart annotation above the title — coordinates, catalog ids, dates */
+  eyebrow?: string;
 }
 
-export default function SectionHeading({ title, subtitle }: SectionHeadingProps) {
-  const { ref, isInView } = useInView();
-
+/**
+ * Atlas-plate section heading: mono chart annotation, serif display title
+ * with an engraved rule running to the margin, optional subtitle.
+ */
+export default function SectionHeading({
+  title,
+  subtitle,
+  eyebrow,
+}: SectionHeadingProps) {
   return (
-    <div
-      ref={ref}
-      className={`text-center mb-16 transition-all duration-700 ${
-        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
-    >
-      <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mb-6" />
-      <h2 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-[rgba(240,240,250,1)]">
-        {title}
-      </h2>
-      {subtitle && (
-        <p className="text-[rgba(240,240,250,0.6)] text-lg mt-4 max-w-2xl mx-auto">
-          {subtitle}
-        </p>
-      )}
-    </div>
+    <MotionConfig reducedMotion="user">
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="mb-14 sm:mb-16"
+      >
+        {eyebrow && <p className="eyebrow mb-4">{eyebrow}</p>}
+        <div className="flex items-baseline gap-6">
+          <h2 className="font-display text-4xl leading-tight text-starlight sm:text-5xl">
+            {title}
+          </h2>
+          <div className="chart-rule mt-2 hidden flex-1 sm:block" aria-hidden="true" />
+        </div>
+        {subtitle && (
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-chart-bright/70 sm:text-lg">
+            {subtitle}
+          </p>
+        )}
+      </motion.div>
+    </MotionConfig>
   );
 }

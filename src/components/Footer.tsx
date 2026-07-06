@@ -3,12 +3,12 @@ import Link from "next/link";
 function InstagramIcon() {
   return (
     <svg
-      width="18"
-      height="18"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -22,12 +22,12 @@ function InstagramIcon() {
 function MailIcon() {
   return (
     <svg
-      width="18"
-      height="18"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -38,45 +38,47 @@ function MailIcon() {
 }
 
 const footerLinks = [
-  { label: "About", href: "/#about" },
-  { label: "Team", href: "/#team" },
-  { label: "Specs", href: "/#specs" },
-  { label: "Timeline", href: "/#timeline" },
+  { label: "Mission", href: "/#about" },
+  { label: "Observatory", href: "/#observatory" },
+  { label: "Crew", href: "/#team" },
+  { label: "Instrument", href: "/#specs" },
+  { label: "Observing log", href: "/#timeline" },
   { label: "Support", href: "/#support" },
   { label: "Sponsors", href: "/sponsors" },
-  { label: "Parts", href: "/parts" },
+  { label: "Parts list", href: "/parts" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[#080B12] border-t border-white/[0.06]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* Brand */}
+    <footer className="relative border-t border-chart/15 bg-void">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
+          {/* Plate colophon */}
           <div>
-            <Link href="/" className="inline-block mb-4">
-              <span className="font-heading text-[rgba(240,240,250,1)] font-semibold text-lg tracking-tight">
-                MVHS Astronomy
+            <Link href="/" className="inline-block">
+              <span className="font-display text-xl text-starlight">
+                MVHS <em className="text-chart-bright">Astronomy</em>
               </span>
             </Link>
-            <p className="text-[rgba(240,240,250,0.5)] text-sm leading-relaxed max-w-xs">
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-chart-bright/60">
               A student-run physics and astronomy club at Mountain View High
-              School, building an autonomous telescope for community star
-              parties.
+              School, building an autonomous telescope for free community
+              star parties.
+            </p>
+            <p className="eyebrow mt-6 !text-[0.625rem]">
+              37.3894° N · 122.0819° W · ELEV 32 M
             </p>
           </div>
 
-          {/* Links */}
+          {/* Index */}
           <div>
-            <h4 className="text-sm font-medium text-[rgba(240,240,250,0.5)] uppercase tracking-wider mb-4 font-heading">
-              Quick Links
-            </h4>
-            <ul className="space-y-2">
+            <h4 className="eyebrow mb-5">Chart index</h4>
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
               {footerLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-[rgba(240,240,250,0.5)] hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200 text-sm"
+                    className="text-sm text-chart-bright/60 transition-colors duration-200 hover:text-brass-bright"
                   >
                     {link.label}
                   </Link>
@@ -87,13 +89,11 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm font-medium text-[rgba(240,240,250,0.5)] uppercase tracking-wider mb-4 font-heading">
-              Connect
-            </h4>
+            <h4 className="eyebrow mb-5">Transmissions</h4>
             <div className="space-y-3">
               <a
                 href="mailto:mvhsphysicsastroclub@gmail.com"
-                className="flex items-center gap-3 text-[rgba(240,240,250,0.5)] hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200 text-sm"
+                className="flex items-center gap-3 text-sm text-chart-bright/60 transition-colors duration-200 hover:text-brass-bright"
               >
                 <MailIcon />
                 mvhsphysicsastroclub@gmail.com
@@ -102,7 +102,7 @@ export default function Footer() {
                 href="https://instagram.com/mvhs_physics_astro_club"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-[rgba(240,240,250,0.5)] hover:text-[rgba(240,240,250,0.7)] transition-colors duration-200 text-sm"
+                className="flex items-center gap-3 text-sm text-chart-bright/60 transition-colors duration-200 hover:text-brass-bright"
               >
                 <InstagramIcon />
                 @mvhs_physics_astro_club
@@ -112,13 +112,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[rgba(240,240,250,0.55)] text-sm">
-            &copy; {new Date().getFullYear()} MVHS Physics &amp; Astronomy Club. All
-            rights reserved.
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-chart/10 pt-8 sm:flex-row">
+          <p className="text-sm text-chart-bright/50">
+            &copy; {new Date().getFullYear()}{" "}MVHS Physics &amp;
+            Astronomy Club. All rights reserved.
           </p>
-          <p className="text-[rgba(240,240,250,0.55)] text-xs">
-            Mountain View High School &middot; Mountain View, CA
+          <p className="font-mono text-[0.625rem] uppercase tracking-[0.18em] text-chart-bright/40">
+            Mountain View High School · Mountain View, CA
           </p>
         </div>
       </div>

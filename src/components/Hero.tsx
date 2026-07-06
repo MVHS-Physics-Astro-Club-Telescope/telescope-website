@@ -1,109 +1,103 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
-import StarField from "./StarField";
-import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
+import { motion, MotionConfig } from "framer-motion";
+import AtlasChart from "@/components/AtlasChart";
+
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+const stats = [
+  { label: "Aperture", value: "254 mm" },
+  { label: "Focal ratio", value: "f/4.48" },
+  { label: "Mount", value: "Alt-az GoTo" },
+  { label: "First light", value: "Aug 2026" },
+];
 
 export default function Hero() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const frame = useRef(0);
-  const reducedMotion = usePrefersReducedMotion();
-
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLElement>) => {
-      if (reducedMotion) return;
-      const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      cancelAnimationFrame(frame.current);
-      frame.current = requestAnimationFrame(() => {
-        el.style.setProperty("--pointer-x", `${x * 100}%`);
-        el.style.setProperty("--pointer-y", `${y * 100}%`);
-        el.style.setProperty("--pointer-dx", `${x - 0.5}`);
-        el.style.setProperty("--pointer-dy", `${y - 0.5}`);
-      });
-    },
-    [reducedMotion]
-  );
-
-  useEffect(() => () => cancelAnimationFrame(frame.current), []);
-
-  const handlePointerLeave = useCallback(() => {
-    if (reducedMotion) return;
-    const el = sectionRef.current;
-    if (!el) return;
-    cancelAnimationFrame(frame.current);
-    el.style.setProperty("--pointer-x", "50%");
-    el.style.setProperty("--pointer-y", "38%");
-    el.style.setProperty("--pointer-dx", "0");
-    el.style.setProperty("--pointer-dy", "0");
-  }, [reducedMotion]);
-
   return (
-    <section
-      ref={sectionRef}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#080B12]"
-    >
-      {/* Navy radial glow */}
-      <div className="absolute inset-0 pointer-events-none hero-glow" />
+    <MotionConfig reducedMotion="user">
+      <section className="relative min-h-svh overflow-hidden">
+        {/* The chart IS the hero — interactive everywhere */}
+        <AtlasChart className="absolute inset-0" />
 
-      {/* Pointer-reactive nebula glow */}
-      <div className="absolute inset-0 pointer-events-none hero-pointer-glow" />
+        {/* Bottom fade into the page */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-void" />
 
-      {/* Starfield */}
-      <StarField count={110} interactive shootingStars />
+        <div className="pointer-events-none relative z-10 mx-auto flex min-h-svh max-w-7xl flex-col justify-end px-4 pb-14 pt-28 sm:px-6 sm:pb-20 lg:px-8">
+          <div className="max-w-2xl">
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease }}
+              className="eyebrow mb-5"
+            >
+              MVHS Physics &amp; Astronomy Club · 37.3894° N, 122.0819° W
+            </motion.p>
 
-      {/* Content — drifts gently opposite the pointer for depth */}
-      <div className="hero-parallax relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto py-32 sm:py-40 lg:py-48">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.04] mb-8 text-xs text-[rgba(240,240,250,0.5)] tracking-[0.2em] uppercase fade-in-up">
-          Student-Built Autonomous Telescope
+            <motion.h1
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.35, ease }}
+              className="font-display text-[13vw] leading-[0.95] sm:text-7xl lg:text-8xl"
+            >
+              Point it at <em className="text-brass-bright">anything.</em>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.55, ease }}
+              className="mt-6 max-w-xl text-base leading-relaxed text-chart-bright/80 sm:text-lg"
+            >
+              Seven students at Mountain View High School are building a
+              10-inch telescope that aims itself. At first light, anyone can
+              request a target — the telescope finds it, photographs it, and
+              sends the image back.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.72, ease }}
+              className="pointer-events-auto mt-9 flex flex-wrap items-center gap-4"
+            >
+              <Link href="/#support" className="btn-brass px-7 py-3 text-sm">
+                Back the build
+              </Link>
+              <Link href="/request" className="btn-line px-7 py-3 text-sm">
+                Request a target
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Instrument data strip */}
+          <motion.dl
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1.0, ease }}
+            className="mt-14 grid grid-cols-2 gap-y-5 border-t border-chart/15 pt-5 sm:grid-cols-4"
+          >
+            {stats.map((s) => (
+              <div key={s.label} className="pr-6">
+                <dt className="eyebrow !text-[0.625rem]">{s.label}</dt>
+                <dd className="mt-1 font-mono text-sm text-starlight/90">
+                  {s.value}
+                </dd>
+              </div>
+            ))}
+          </motion.dl>
         </div>
 
-        {/* Headline */}
-        <h1 className="font-heading text-5xl sm:text-6xl lg:text-7xl font-bold text-[rgba(240,240,250,1)] leading-tight tracking-tighter mb-6 fade-in-up animation-delay-200">
-          Building the Future
-          <br />
-          of Astronomy
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-lg text-[rgba(240,240,250,0.6)] max-w-2xl mx-auto mb-10 leading-relaxed fade-in-up animation-delay-400">
-          A student-built autonomous telescope bringing the night sky
-          to the Bay Area
-        </p>
-
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up animation-delay-600">
-          <a
-            href="#about"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 btn-starlight px-8 py-3.5 font-medium rounded-full"
-          >
-            Learn More
-          </a>
-          <Link
-            href="/parts"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 btn-nebula px-8 py-3.5 text-[rgba(240,240,250,0.9)] font-medium rounded-full"
-          >
-            View Parts List
-          </Link>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[rgba(240,240,250,0.3)] animate-bounce">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </div>
-
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#080B12] to-transparent pointer-events-none" />
-    </section>
+        {/* Hint that the chart is live */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.6, ease }}
+          className="pointer-events-none absolute right-8 top-24 hidden font-mono text-[0.625rem] uppercase tracking-[0.22em] text-chart/60 lg:block"
+        >
+          Live chart — click a target to slew
+        </motion.p>
+      </section>
+    </MotionConfig>
   );
 }

@@ -2,15 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 const navLinks = [
-  { label: "About", href: "/#about" },
+  { label: "Mission", href: "/#about" },
   { label: "Observatory", href: "/#observatory" },
-  { label: "Team", href: "/#team" },
-  { label: "Specs", href: "/#specs" },
-  { label: "Timeline", href: "/#timeline" },
-  { label: "Support Us", href: "/#support" },
+  { label: "Crew", href: "/#team" },
+  { label: "Instrument", href: "/#specs" },
+  { label: "Log", href: "/#timeline" },
+  { label: "Support", href: "/#support" },
   { label: "Sponsors", href: "/sponsors" },
   { label: "Parts", href: "/parts" },
 ];
@@ -23,7 +22,7 @@ function InstagramIcon() {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -53,10 +52,32 @@ function CloseIcon() {
   );
 }
 
+/** Reticle wordmark — the telescope's crosshair, in brass */
+function Mark() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      aria-hidden="true"
+      className="text-brass"
+    >
+      <circle cx="12" cy="12" r="8" />
+      <line x1="12" y1="1" x2="12" y2="6" />
+      <line x1="12" y1="18" x2="12" y2="23" />
+      <line x1="1" y1="12" x2="6" y2="12" />
+      <line x1="18" y1="12" x2="23" y2="12" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -64,24 +85,21 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#080B12]/80 backdrop-blur-xl border-b border-white/[0.06]"
+          ? "bg-void/85 backdrop-blur-xl border-b border-chart/15"
           : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="font-heading text-[rgba(240,240,250,1)] font-semibold text-lg tracking-tight">
-              MVHS Astronomy
+          {/* Wordmark */}
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <Mark />
+            <span className="font-display text-lg text-starlight">
+              MVHS <em className="text-chart-bright">Astronomy</em>
             </span>
           </Link>
 
@@ -91,7 +109,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="nav-link px-2.5 py-2 text-[13px] whitespace-nowrap text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
+                className="nav-link px-2.5 py-2 font-mono text-[0.6875rem] uppercase tracking-[0.14em] whitespace-nowrap text-chart-bright/70"
               >
                 {link.label}
               </Link>
@@ -104,24 +122,25 @@ export default function Navbar() {
               href="https://instagram.com/mvhs_physics_astro_club"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
+              className="p-2 text-chart-bright/60 hover:text-brass-bright transition-colors duration-200"
               aria-label="Instagram"
             >
               <InstagramIcon />
             </a>
             <a
               href="mailto:mvhsphysicsastroclub@gmail.com"
-              className="btn-nebula px-7 py-2.5 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
+              className="btn-line px-6 py-2.5 text-sm"
             >
-              Contact Us
+              Contact us
             </a>
           </div>
 
           {/* Mobile Toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors"
+            className="lg:hidden p-2 text-chart-bright/70 hover:text-starlight transition-colors"
             aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
@@ -131,35 +150,35 @@ export default function Navbar() {
       {/* Mobile Menu */}
       <div
         className={`lg:hidden transition-all duration-300 overflow-hidden ${
-          mobileOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          mobileOpen ? "max-h-[520px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="bg-[#080B12]/95 backdrop-blur-xl border-t border-white/[0.06] px-4 py-4 space-y-1">
+        <div className="bg-void/95 backdrop-blur-xl border-t border-chart/15 px-4 py-4 space-y-1">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="nav-link block px-4 py-3 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors duration-200"
+              className="nav-link block px-4 py-3 font-mono text-xs uppercase tracking-[0.14em] text-chart-bright/70"
             >
               {link.label}
             </Link>
           ))}
-          <div className="flex items-center gap-3 px-4 pt-4 border-t border-white/[0.06] mt-2">
+          <div className="flex items-center gap-3 px-4 pt-4 border-t border-chart/15 mt-2">
             <a
               href="https://instagram.com/mvhs_physics_astro_club"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-[rgba(240,240,250,0.6)] hover:text-[rgba(240,240,250,1)] transition-colors"
+              className="p-2 text-chart-bright/60 hover:text-brass-bright transition-colors"
               aria-label="Instagram"
             >
               <InstagramIcon />
             </a>
             <a
               href="mailto:mvhsphysicsastroclub@gmail.com"
-              className="flex-1 text-center btn-nebula px-7 py-2.5 text-sm font-medium text-[rgba(240,240,250,0.9)] rounded-full"
+              className="flex-1 text-center btn-line px-6 py-2.5 text-sm"
             >
-              Contact Us
+              Contact us
             </a>
           </div>
         </div>
