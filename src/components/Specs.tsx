@@ -5,6 +5,7 @@ import { motion, MotionConfig } from "framer-motion";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
 import { useInView } from "@/hooks/useInView";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -96,58 +97,106 @@ function Counter({
 }
 
 /**
- * The light path through the telescope, drawn as an atlas figure.
- * Starlight enters the tube, reflects off the parabolic primary,
- * bounces off the secondary flat, and lands on the cooled camera.
+ * The light path through the telescope, drawn as an atlas figure with
+ * true Newtonian geometry: parallel starlight reflects off the parabolic
+ * primary into a converging cone, a 45° flat folds the cone sideways
+ * before prime focus, and the fold lands on the camera sensor. All three
+ * ray paths are equal length (as physics demands), so the animated
+ * photon wavefront arrives at focus simultaneously.
  */
+const FOCUS = { x: 330, y: 220 }; // folded focal point (sensor plane)
+
+// Piecewise photon paths: entry → primary → secondary → focus.
+// Derived from: primary vertex (200,470), prime focus (200,90),
+// secondary flat along y = −x + 420. Times ∝ segment lengths.
+const PHOTON_PATHS = [
+  {
+    x: [110, 110, 158.5, FOCUS.x],
+    y: [36, 462, 261.5, FOCUS.y],
+    times: [0, 0.527, 0.782, 1],
+  },
+  {
+    x: [200, 200, 200, FOCUS.x],
+    y: [36, 470, 220, FOCUS.y],
+    times: [0, 0.533, 0.84, 1],
+  },
+  {
+    x: [290, 290, 225.3, FOCUS.x],
+    y: [36, 462, 194.7, FOCUS.y],
+    times: [0, 0.527, 0.867, 1],
+  },
+];
+
 function LightPath() {
   const { ref, isInView } = useInView({ threshold: 0.2 });
+  const reduced = usePrefersReducedMotion();
 
-  const ray = (d: string, delay: number, color = "rgba(183,199,228,0.75)") => (
+  const ray = (
+    d: string,
+    delay: number,
+    color = "rgba(183,199,228,0.55)",
+    dash?: string
+  ) => (
     <motion.path
       d={d}
       fill="none"
       stroke={color}
-      strokeWidth="1.25"
-      initial={{ pathLength: 0 }}
+      strokeWidth="1.1"
+      strokeDasharray={dash}
+      initial={reduced ? undefined : { pathLength: 0 }}
       animate={isInView ? { pathLength: 1 } : {}}
-      transition={{ duration: 0.9, delay, ease }}
+      transition={{ duration: 0.8, delay: reduced ? 0 : delay, ease }}
     />
   );
 
   return (
     <div ref={ref} className="card-atlas tick-corners relative p-6 sm:p-8">
-      <p className="eyebrow !text-[0.625rem]">Fig. 1 — Newtonian light path</p>
+      <p className="eyebrow !text-[0.625rem]">
+        Fig. 1 — Newtonian light path · f/4.48
+      </p>
       <MotionConfig reducedMotion="user">
         <svg
           viewBox="0 0 400 520"
           className="mx-auto mt-4 w-full max-w-[26rem]"
           role="img"
-          aria-label="Diagram of the telescope's Newtonian light path: starlight enters the tube, reflects off the 254 millimeter parabolic primary mirror, then off the secondary flat mirror, into the cooled camera at the side of the tube."
+          aria-label="Diagram of the telescope's Newtonian light path: parallel starlight reflects off the 254 millimeter parabolic primary mirror into a converging cone, a 45 degree secondary flat folds the cone sideways, and it comes to focus on the cooled camera sensor at the side of the tube."
         >
-          {/* Truss tube walls */}
-          <line x1="84" y1="48" x2="84" y2="488" stroke="rgba(143,165,201,0.3)" strokeWidth="1" strokeDasharray="7 5" />
-          <line x1="316" y1="48" x2="316" y2="488" stroke="rgba(143,165,201,0.3)" strokeWidth="1" strokeDasharray="7 5" />
+          <defs>
+            <filter id="lp-glow" x="-80%" y="-80%" width="260%" height="260%">
+              <feGaussianBlur stdDeviation="2.6" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
 
-          {/* Primary mirror — the brass heart */}
+          {/* Truss tube walls */}
+          <line x1="92" y1="36" x2="92" y2="486" stroke="rgba(143,165,201,0.3)" strokeWidth="1" strokeDasharray="7 5" />
+          <line x1="308" y1="36" x2="308" y2="486" stroke="rgba(143,165,201,0.3)" strokeWidth="1" strokeDasharray="7 5" />
+
+          {/* Optical axis */}
+          <line x1="200" y1="36" x2="200" y2="470" stroke="rgba(143,165,201,0.12)" strokeWidth="0.75" strokeDasharray="2 6" />
+
+          {/* Primary mirror — concave toward the sky, vertex at (200,470) */}
           <motion.path
-            d="M 92 476 Q 200 452 308 476"
+            d="M 105 462 Q 200 478 295 462"
             fill="none"
             stroke="rgba(217,168,92,0.95)"
             strokeWidth="3"
             strokeLinecap="round"
-            initial={{ pathLength: 0 }}
+            initial={reduced ? undefined : { pathLength: 0 }}
             animate={isInView ? { pathLength: 1 } : {}}
             transition={{ duration: 0.8, delay: 0.1, ease }}
           />
 
-          {/* Secondary flat */}
+          {/* Secondary flat — 45°, sized to the converging cone */}
           <motion.line
-            x1="184"
-            y1="102"
-            x2="216"
-            y2="134"
-            stroke="rgba(217,168,92,0.85)"
+            x1="152"
+            y1="268"
+            x2="232"
+            y2="188"
+            stroke="rgba(217,168,92,0.9)"
             strokeWidth="2.5"
             strokeLinecap="round"
             initial={{ opacity: 0 }}
@@ -155,28 +204,97 @@ function LightPath() {
             transition={{ duration: 0.5, delay: 0.7, ease }}
           />
 
-          {/* Camera body */}
-          <motion.rect
-            x="322"
-            y="96"
-            width="50"
-            height="44"
-            rx="2"
-            fill="rgba(14,21,38,0.9)"
-            stroke="rgba(143,165,201,0.5)"
+          {/* Focuser drawtube and camera, sensor plane at the folded focus */}
+          <motion.g
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.5, delay: 2.4, ease }}
-          />
+            transition={{ duration: 0.5, delay: 2.3, ease }}
+          >
+            <line x1="308" y1="206" x2="332" y2="206" stroke="rgba(143,165,201,0.5)" strokeWidth="1" />
+            <line x1="308" y1="234" x2="332" y2="234" stroke="rgba(143,165,201,0.5)" strokeWidth="1" />
+            <rect
+              x="332"
+              y="194"
+              width="48"
+              height="52"
+              rx="2"
+              fill="rgba(14,21,38,0.9)"
+              stroke="rgba(143,165,201,0.5)"
+            />
+            <line x1="332" y1="204" x2="332" y2="236" stroke="rgba(228,88,78,0.7)" strokeWidth="2" />
+          </motion.g>
 
-          {/* Incoming starlight */}
-          {ray("M 128 48 L 128 464", 0.3)}
-          {ray("M 272 48 L 272 466", 0.4)}
-          {/* Reflected to secondary */}
-          {ray("M 128 464 L 196 124", 1.2)}
-          {ray("M 272 466 L 204 128", 1.3)}
-          {/* Out to the camera */}
-          {ray("M 200 122 L 322 118", 2.1, "rgba(217,168,92,0.8)")}
+          {/* Incoming parallel wavefront */}
+          {ray("M 110 36 L 110 462", 0.3)}
+          {ray("M 290 36 L 290 462", 0.4)}
+
+          {/* Converging cone to the secondary */}
+          {ray("M 110 462 L 158.5 261.5", 1.2)}
+          {ray("M 290 462 L 225.3 194.7", 1.3)}
+          {ray("M 200 470 L 200 220", 1.25)}
+
+          {/* Ghost of the unfolded cone — where prime focus would be */}
+          {ray("M 158.5 261.5 L 200 90", 1.9, "rgba(143,165,201,0.22)", "3 4")}
+          {ray("M 225.3 194.7 L 200 90", 1.9, "rgba(143,165,201,0.22)", "3 4")}
+
+          {/* Folded cone to the sensor */}
+          {ray(`M 158.5 261.5 L ${FOCUS.x} ${FOCUS.y}`, 2.0, "rgba(217,168,92,0.7)")}
+          {ray(`M 225.3 194.7 L ${FOCUS.x} ${FOCUS.y}`, 2.1, "rgba(217,168,92,0.7)")}
+          {ray(`M 200 220 L ${FOCUS.x} ${FOCUS.y}`, 2.05, "rgba(217,168,92,0.7)")}
+
+          {/* Focus pulse — fires as each photon wavefront lands */}
+          {!reduced && isInView && (
+            <motion.circle
+              cx={FOCUS.x}
+              cy={FOCUS.y}
+              r="5"
+              fill="rgba(240,200,128,0.9)"
+              filter="url(#lp-glow)"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: [0, 1.4, 0], opacity: [0, 1, 0] }}
+              transition={{
+                duration: 0.9,
+                delay: 6.2,
+                repeat: Infinity,
+                repeatDelay: 3.9,
+                ease: "easeOut",
+              }}
+            />
+          )}
+          {reduced && (
+            <circle cx={FOCUS.x} cy={FOCUS.y} r="3" fill="rgba(240,200,128,0.8)" />
+          )}
+
+          {/* Photon wavefront — equal path lengths, simultaneous arrival */}
+          {!reduced &&
+            isInView &&
+            PHOTON_PATHS.map((p, i) => (
+              <motion.circle
+                key={i}
+                r="3"
+                fill="rgba(237,241,250,0.95)"
+                filter="url(#lp-glow)"
+                initial={{ cx: p.x[0], cy: p.y[0], opacity: 0 }}
+                animate={{ cx: p.x, cy: p.y, opacity: [0, 1, 1, 1] }}
+                transition={{
+                  duration: 3.6,
+                  delay: 3.5,
+                  repeat: Infinity,
+                  repeatDelay: 1.2,
+                  ease: "linear",
+                  times: p.times,
+                }}
+              />
+            ))}
+
+          {/* Prime-focus marker */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.5, delay: 2.2, ease }}
+          >
+            <circle cx="200" cy="90" r="2.5" fill="none" stroke="rgba(143,165,201,0.5)" strokeWidth="1" strokeDasharray="2 2" />
+          </motion.g>
 
           {/* Annotations */}
           <g
@@ -185,11 +303,13 @@ function LightPath() {
             fontSize="10"
             letterSpacing="0.12em"
           >
-            <text x="94" y="30">STARLIGHT · PARALLEL RAYS</text>
-            <text x="92" y="507">PRIMARY · 254 MM PARABOLIC</text>
-            <text x="120" y="90">SECONDARY · 70 MM FLAT</text>
-            <text x="240" y="160">ATR585C</text>
-            <text x="240" y="173">COOLED CMOS</text>
+            <text x="98" y="24">STARLIGHT · PARALLEL WAVEFRONT</text>
+            <text x="98" y="505">PRIMARY · 254 MM PARABOLIC</text>
+            <text x="98" y="176">SECONDARY</text>
+            <text x="98" y="189">70 MM FLAT · 45°</text>
+            <text x="212" y="86" fill="rgba(143,165,201,0.5)">PRIME FOCUS</text>
+            <text x="392" y="266" textAnchor="end">ATR585C</text>
+            <text x="392" y="279" textAnchor="end">SENSOR AT FOCUS</text>
           </g>
         </svg>
       </MotionConfig>
