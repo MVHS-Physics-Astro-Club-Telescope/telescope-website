@@ -44,3 +44,9 @@
 - **Root cause**: Both sites gate body content behind bot detection; the fetcher only gets the document head.
 - **Fix**: Playwright MCP `browser_navigate` + `browser_snapshot`, then grep the snapshot YAML for `$`/`In Stock` lines. Snapshots land in `.playwright-mcp/` under the *parent* dir (`~/Projects/telescope/`), not the repo.
 - **Prevention**: For price checks, go straight to the Playwright browser for Amazon/StepperOnline; WebFetch works fine for Shopify stores, Agena, and Explore Scientific.
+
+## [2026-08-09][onshape-line-angle-planes] LINE_ANGLE cPlane semantics are hinge-direction-dependent
+**Mistake:** Pocket cuts via LINE_ANGLE construction planes landed sideways/half-off — four different plane/extrude flip combinations all failed for a Y-axis hinge line.
+**Root cause:** The angle parameter is measured from the vertical plane containing the hinge line for X-hinges (use 90−φ for a φ-from-vertical pocket), behaves differently for Y-hinges, and the sketch frame origin is not the global origin.
+**Fix:** X-hinge lines with angle=90−φ work deterministically (probe-verified with marker holes + STL inspection); for a single tilted pocket where slop allows, a plain vertical bore + pinch-closure avoids tilted planes entirely.
+**Prevention:** Never trust a tilted-plane cut on volume delta alone — direction-degenerate volumes match coincidentally (the clamp's sideways pocket matched the expected mm³ within 2%). Always render/STL-inspect any cut whose direction the volume can't distinguish.
