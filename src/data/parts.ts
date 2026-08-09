@@ -19,6 +19,8 @@ export interface Part {
   donatedBy?: string;
   /** CAD render tile under /public/cad/parts/ */
   image?: string;
+  /** In-house fabrication method — rendered as a chip in the table */
+  fab?: "3D Print" | "Laser Cut" | "Woodshop";
   purchaseUrl?: string;
 }
 
@@ -47,6 +49,7 @@ export const parts: Part[] = [
   },
   {
     name: "Spider + Secondary Holder",
+    fab: "3D Print",
     image: "/cad/parts/secondary-hub.png",
     category: "Optics",
     specification: "3-vane printed spider + collimating hub (ASA)",
@@ -81,6 +84,7 @@ export const parts: Part[] = [
   // ── Structure ───────────────────────────────────────
   {
     name: "Cabinet-Grade Plywood",
+    fab: "Woodshop",
     image: "/cad/parts/mirror-box.png",
     category: "Structure",
     specification: '3/4" cabinet-grade birch plywood (PureBond)',
@@ -92,6 +96,7 @@ export const parts: Part[] = [
   },
   {
     name: "Ground Board",
+    fab: "Woodshop",
     image: "/cad/parts/ground-board.png",
     category: "Structure",
     specification: '3/4" plywood, 20" diameter',
@@ -113,6 +118,7 @@ export const parts: Part[] = [
   },
   {
     name: "Strut Connectors",
+    fab: "3D Print",
     image: "/cad/parts/pole-clamp.png",
     category: "Structure",
     specification: "3D-printed pole clamps (ASA)",
@@ -123,6 +129,7 @@ export const parts: Part[] = [
   },
   {
     name: "Truss Shoes",
+    fab: "3D Print",
     image: "/cad/parts/truss-shoe-skew.png",
     category: "Structure",
     specification: "3D-printed double-pocket pole shoes (ASA)",
@@ -132,7 +139,42 @@ export const parts: Part[] = [
     notes: "Printed in-house: 2× SKEW + 1× CENTER — bolt to mirror-box walls, receive the pole pairs",
   },
   {
+    name: "UTA Ring Segments",
+    fab: "3D Print",
+    image: "/cad/parts/ring-segment.png",
+    category: "Structure",
+    specification: "120° ring segments, Ø337/305 (ASA)",
+    quantity: 6,
+    estimatedCost: "$0",
+    status: "Claimed",
+    notes: "3 per ring × top+bottom — one universal part, clearanced finger joints",
+  },
+  {
+    name: "Mirror Cell v2",
+    fab: "3D Print",
+    image: "/cad/parts/mirror-cell.png",
+    category: "Mirror Cell",
+    specification: "Ø272 printed cell, 3-point pads + collimation nut pockets",
+    quantity: 1,
+    estimatedCost: "$0",
+    status: "Claimed",
+    notes: "Printed in-house; SCS flotation triangles sit on top for 9-point support",
+  },
+  {
+    name: "Focuser Board v2",
+    fab: "3D Print",
+    image: "/cad/parts/focuser-board.png",
+    category: "Structure",
+    specification: "110×96×8 board, Ø58 focuser bore (ASA)",
+    quantity: 1,
+    estimatedCost: "$0",
+    status: "Claimed",
+    notes: "Carries the GSO focuser on the UTA ring",
+  },
+
+  {
     name: "Bearing Tower Plates",
+    fab: "Laser Cut",
     image: "/cad/parts/bearing-tower.png",
     category: "Structure",
     specification: "6mm 6061 plates, laser-cut (SendCutSend)",
@@ -301,6 +343,7 @@ export const parts: Part[] = [
   },
   {
     name: "Flotation Triangles",
+    fab: "Laser Cut",
     category: "Mirror Cell",
     specification: "6061 laser-cut 9-point triangles (SendCutSend)",
     quantity: 3,
