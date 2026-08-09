@@ -391,13 +391,14 @@ export const parts: Part[] = [
   },
   {
     name: "NEMA 23 Stepper (Altitude)",
+    specification: "23HS30-2804S — 1.8° 1.9 N·m 2.8 A, 8 mm shaft",
+    notes: "8 mm shaft matches the Romer ALT pinion 8 mm bore (previous pick was 6.35 mm — no fit)",
     image: "/cad/parts/nema23.png",
     category: "Electronics",
-    specification: "1.8° 1.2 N·m bipolar",
     quantity: 1,
-    estimatedCost: "$26",
+    estimatedCost: "$28",
     status: "Needed",
-    purchaseUrl: "https://www.amazon.com/STEPPERONLINE-Stepper-178-5oz-1-26Nm-Stepping/dp/B00PNEPF5I",
+    purchaseUrl: "https://www.omc-stepperonline.com/nema-23-bipolar-1-8deg-1-9nm-269oz-in-2-8a-3-2v-57x57x76mm-4-wires-23hs30-2804s",
   },
   {
     name: "NEMA 17 Stepper (Azimuth)",
@@ -451,6 +452,7 @@ export const parts: Part[] = [
   },
   {
     name: "AZ/ALT Gears Kit (Romer Optics)",
+    // ALT pinion ships with 8 mm (NEMA 23) or 5 mm (NEMA 17) bore — order the 8 mm variant.
     image: "/cad/parts/sector-gear.png",
     category: "Electronics",
     specification: '12" stainless ALT sector gear + AZ gear & belt (L2.5m, W10mm) + motor slides/brackets',
