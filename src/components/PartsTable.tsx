@@ -28,6 +28,23 @@ function StatusChip({ status }: { status: PartStatus }) {
   );
 }
 
+const fabStyles: Record<NonNullable<Part["fab"]>, string> = {
+  "3D Print": "border-oiii/60 bg-oiii/10 text-oiii",
+  "Laser Cut": "border-brass/50 bg-brass/10 text-brass",
+  Woodshop: "border-chart/40 bg-chart/10 text-chart-bright",
+};
+
+function FabChip({ fab }: { fab: NonNullable<Part["fab"]> }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-[2px] border px-1.5 py-0.5 font-mono text-[0.56rem] uppercase tracking-[0.12em] ${fabStyles[fab]}`}
+      title={`Fabricated in-house: ${fab}`}
+    >
+      {fab === "3D Print" ? "⬢ 3D Print" : fab}
+    </span>
+  );
+}
+
 function ExternalIcon() {
   return (
     <svg
@@ -223,8 +240,9 @@ export default function PartsTable() {
                           />
                         )}
                         <div>
-                          <div className="text-sm text-starlight">
+                          <div className="flex flex-wrap items-center gap-2 text-sm text-starlight">
                             <PartName part={part} />
+                            {part.fab && <FabChip fab={part.fab} />}
                           </div>
                           {part.notes && (
                             <div className="mt-1 text-xs leading-relaxed text-chart-bright/50">
@@ -287,11 +305,12 @@ export default function PartsTable() {
                           className="h-11 w-11 shrink-0 rounded-[3px] border border-chart/15 object-cover"
                         />
                       )}
-                      <h3 className="text-sm font-medium text-starlight">
-                        <span className="mr-2 font-mono text-[0.625rem] text-chart/50 tabular-nums">
+                      <h3 className="flex flex-wrap items-center gap-1.5 text-sm font-medium text-starlight">
+                        <span className="mr-0.5 font-mono text-[0.625rem] text-chart/50 tabular-nums">
                           {lineNo(part)}
                         </span>
                         <PartName part={part} />
+                        {part.fab && <FabChip fab={part.fab} />}
                       </h3>
                     </div>
                     <StatusChip status={part.status} />
