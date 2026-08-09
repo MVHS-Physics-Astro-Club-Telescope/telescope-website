@@ -28,7 +28,7 @@ const manifest = [
   },
   {
     item: "Drives",
-    spec: "NEMA 23 altitude/azimuth steppers on TMC2209 silent drivers; ToupTek AAF electronic auto-focuser.",
+    spec: "Romer Optics EZ GOTO drive — NEMA 23 altitude + NEMA 17 azimuth steppers on DM542 digital drivers; ToupTek AAF electronic auto-focuser.",
   },
   {
     item: "Imaging",
@@ -40,7 +40,7 @@ const manifest = [
   },
   {
     item: "Structure",
-    spec: "Truss-tube Dobsonian in Baltic birch. Breaks into two sections, under 50 lbs — fits in a car trunk.",
+    spec: "Truss-tube Dobsonian in cabinet-grade birch. Breaks into two sections, under 50 lbs — fits in a car trunk.",
   },
 ];
 

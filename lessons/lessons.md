@@ -37,3 +37,10 @@
 - **Mistake**: metalness-1/roughness-0.04 mirror rendered pitch black — faithfully reflecting an almost-empty Lightformer environment.
 - **Fix**: large dim fill Lightformers (front wall + floor) give specular surfaces something to reflect; slight roughness (0.1) spreads the lobes.
 - **Prevention**: any mirror/chrome material needs the environment designed around it, not just key lights.
+
+## [2026-08-09][amazon-price-verification] Amazon/StepperOnline prices need a real browser
+- **Phase**: BOM price verification (feat/bom-verified-update)
+- **Mistake**: Tried WebFetch on Amazon product pages — it returns only `<head>` metadata (title confirms the listing exists, but no price/stock). omc-stepperonline.com 403-blocks non-browser fetches entirely.
+- **Root cause**: Both sites gate body content behind bot detection; the fetcher only gets the document head.
+- **Fix**: Playwright MCP `browser_navigate` + `browser_snapshot`, then grep the snapshot YAML for `$`/`In Stock` lines. Snapshots land in `.playwright-mcp/` under the *parent* dir (`~/Projects/telescope/`), not the repo.
+- **Prevention**: For price checks, go straight to the Playwright browser for Amazon/StepperOnline; WebFetch works fine for Shopify stores, Agena, and Explore Scientific.

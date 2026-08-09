@@ -210,14 +210,29 @@ export default function PartsTable() {
                       {lineNo(part)}
                     </td>
                     <td className="px-4 py-4 align-top">
-                      <div className="text-sm text-starlight">
-                        <PartName part={part} />
-                      </div>
-                      {part.notes && (
-                        <div className="mt-1 text-xs leading-relaxed text-chart-bright/50">
-                          {part.notes}
+                      <div className="flex items-start gap-3">
+                        {part.image && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={part.image}
+                            alt={`CAD render of ${part.name}`}
+                            loading="lazy"
+                            width={48}
+                            height={48}
+                            className="mt-0.5 h-12 w-12 shrink-0 rounded-[3px] border border-chart/15 object-cover transition-transform duration-200 hover:scale-[2.5] hover:border-brass/50"
+                          />
+                        )}
+                        <div>
+                          <div className="text-sm text-starlight">
+                            <PartName part={part} />
+                          </div>
+                          {part.notes && (
+                            <div className="mt-1 text-xs leading-relaxed text-chart-bright/50">
+                              {part.notes}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </td>
                     <td className="px-4 py-4 align-top text-sm leading-relaxed text-chart-bright/70">
                       {part.specification}
@@ -260,12 +275,25 @@ export default function PartsTable() {
               {group.items.map((part) => (
                 <article key={part.name} className="card-atlas p-4">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-sm font-medium text-starlight">
-                      <span className="mr-2 font-mono text-[0.625rem] text-chart/50 tabular-nums">
-                        {lineNo(part)}
-                      </span>
-                      <PartName part={part} />
-                    </h3>
+                    <div className="flex items-start gap-3">
+                      {part.image && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={part.image}
+                          alt={`CAD render of ${part.name}`}
+                          loading="lazy"
+                          width={44}
+                          height={44}
+                          className="h-11 w-11 shrink-0 rounded-[3px] border border-chart/15 object-cover"
+                        />
+                      )}
+                      <h3 className="text-sm font-medium text-starlight">
+                        <span className="mr-2 font-mono text-[0.625rem] text-chart/50 tabular-nums">
+                          {lineNo(part)}
+                        </span>
+                        <PartName part={part} />
+                      </h3>
+                    </div>
                     <StatusChip status={part.status} />
                   </div>
                   <p className="mt-1.5 text-xs leading-relaxed text-chart-bright/65">
