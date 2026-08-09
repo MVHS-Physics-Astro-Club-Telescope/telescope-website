@@ -154,11 +154,12 @@ export const parts: Part[] = [
     fab: "3D Print",
     image: "/cad/parts/mirror-cell.png",
     category: "Mirror Cell",
-    specification: "Ø272 printed cell, 3-point pads + collimation nut pockets",
+    specification: "Ø272 printed cell — two bolted halves, 3-point pads + collimation nut pockets",
     quantity: 1,
     estimatedCost: "$0",
     status: "Claimed",
-    notes: "Printed in-house; SCS flotation triangles sit on top for 9-point support",
+    notes:
+      "Printed in-house as TWO bolted halves (Ø272 exceeds the 256mm bed): 4× M4×35 cross-bolts + 2× 3/8\" dowel pins at the seam. SCS flotation triangles sit on top for 9-point support",
   },
   {
     name: "Focuser Board v2",
@@ -214,7 +215,7 @@ export const parts: Part[] = [
     quantity: 1,
     estimatedCost: "$18–25",
     status: "Needed",
-    notes: "Fastens ring joints, vane feet, pole clamps; springs load the secondary collimation cell",
+    notes: "Fastens ring joints, vane feet, pole clamps, mirror-cell seam (4× M4×35); springs load the secondary collimation cell",
   },
   {
     name: "ASA Filament",
@@ -243,7 +244,7 @@ export const parts: Part[] = [
     quantity: 16,
     estimatedCost: "$36",
     status: "Needed",
-    notes: "2× POWERTEC 8-packs (16 pins)",
+    notes: "2× POWERTEC 8-packs (16 pins) — 4 rocker corners + 2 mirror-cell seam, 10 spare",
     purchaseUrl: "https://www.amazon.com/POWERTEC-71473-P2-Hardened-Precisely-Alignment/dp/B0C1RYN84B",
   },
   {
