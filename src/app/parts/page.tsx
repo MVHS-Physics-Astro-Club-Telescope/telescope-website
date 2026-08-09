@@ -73,6 +73,42 @@ export default function PartsPage() {
             <OpticalBench />
           </div>
 
+          {/* As-built CAD */}
+          <Reveal>
+            <div className="card-atlas mb-14 p-6 sm:p-8">
+              <p className="eyebrow mb-1">As-built CAD · full assembly</p>
+              <h2 className="font-display text-2xl text-starlight sm:text-3xl">
+                The telescope, <em>bolt for bolt</em>
+              </h2>
+              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-chart-bright/70">
+                Our complete Onshape assembly — 204 placed components including
+                every fastener, insert, and spring. Renders throughout the
+                manifest below come straight from this model, so every line item
+                maps to the part it becomes.
+              </p>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/cad/assembly-iso.png"
+                  alt="Isometric CAD render of the full telescope assembly"
+                  loading="lazy"
+                  className="w-full rounded-[3px] border border-chart/15 bg-white"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/cad/assembly-drive-side.png"
+                  alt="Drive-side CAD render showing the EZ GOTO altitude sector gear"
+                  loading="lazy"
+                  className="w-full rounded-[3px] border border-chart/15 bg-white"
+                />
+              </div>
+              <p className="mt-4 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-chart/70">
+                Left: full assembly · Right: EZ GOTO altitude drive (R285 sector
+                gear)
+              </p>
+            </div>
+          </Reveal>
+
           <PartsTable />
 
           {/* Bottom CTA */}

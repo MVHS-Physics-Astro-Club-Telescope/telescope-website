@@ -17,6 +17,8 @@ export interface Part {
   status: PartStatus;
   notes?: string;
   donatedBy?: string;
+  /** CAD render tile under /public/cad/parts/ */
+  image?: string;
   purchaseUrl?: string;
 }
 
@@ -24,6 +26,7 @@ export const parts: Part[] = [
   // ── Optics ──────────────────────────────────────────
   {
     name: "Primary Mirror",
+    image: "/cad/parts/primary-mirror.png",
     category: "Optics",
     specification: '254mm (10") f/4.48 parabolic',
     quantity: 1,
@@ -34,6 +37,7 @@ export const parts: Part[] = [
   },
   {
     name: "Secondary Mirror",
+    image: "/cad/parts/secondary-mirror.png",
     category: "Optics",
     specification: "70mm minor axis elliptical flat",
     quantity: 1,
@@ -43,6 +47,7 @@ export const parts: Part[] = [
   },
   {
     name: "Spider + Secondary Holder",
+    image: "/cad/parts/secondary-hub.png",
     category: "Optics",
     specification: "3-vane printed spider + collimating hub (ASA)",
     quantity: 1,
@@ -53,6 +58,7 @@ export const parts: Part[] = [
   },
   {
     name: "Focuser",
+    image: "/cad/parts/focuser-gso.png",
     category: "Optics",
     specification: '1.25" Crayford single-speed (GSO)',
     quantity: 1,
@@ -75,6 +81,7 @@ export const parts: Part[] = [
   // ── Structure ───────────────────────────────────────
   {
     name: "Cabinet-Grade Plywood",
+    image: "/cad/parts/mirror-box.png",
     category: "Structure",
     specification: '3/4" cabinet-grade birch plywood (PureBond)',
     quantity: 1,
@@ -85,6 +92,7 @@ export const parts: Part[] = [
   },
   {
     name: "Ground Board",
+    image: "/cad/parts/ground-board.png",
     category: "Structure",
     specification: '3/4" plywood, 20" diameter',
     quantity: 1,
@@ -94,6 +102,7 @@ export const parts: Part[] = [
   },
   {
     name: "Aluminum Tubes",
+    image: "/cad/parts/truss-pole.png",
     category: "Structure",
     specification: '1" OD × 0.058" wall truss poles',
     quantity: 6,
@@ -104,6 +113,7 @@ export const parts: Part[] = [
   },
   {
     name: "Strut Connectors",
+    image: "/cad/parts/pole-clamp.png",
     category: "Structure",
     specification: "3D-printed pole clamps (ASA)",
     quantity: 6,
@@ -112,7 +122,40 @@ export const parts: Part[] = [
     notes: "Printed Truss Pole Clamp v2 ×6 — replaces Aurora CNC blocks ($40–80 saved)",
   },
   {
+    name: "Truss Shoes",
+    image: "/cad/parts/truss-shoe-skew.png",
+    category: "Structure",
+    specification: "3D-printed double-pocket pole shoes (ASA)",
+    quantity: 3,
+    estimatedCost: "$0",
+    status: "Claimed",
+    notes: "Printed in-house: 2× SKEW + 1× CENTER — bolt to mirror-box walls, receive the pole pairs",
+  },
+  {
+    name: "Bearing Tower Plates",
+    image: "/cad/parts/bearing-tower.png",
+    category: "Structure",
+    specification: "6mm 6061 plates, laser-cut (SendCutSend)",
+    quantity: 2,
+    estimatedCost: "$0 (sponsor credit)",
+    status: "Needed",
+    purchaseUrl: "https://sendcutsend.com",
+    notes: "Carry the altitude bearing hubs above the box top; slotted holes give ±10mm balance adjustment",
+  },
+  {
+    name: "Altitude Bearing Hubs",
+    image: "/cad/parts/alt-hub.png",
+    category: "Structure",
+    specification: '2.75" OD × 2.375" 6061 round bar, faced + drilled',
+    quantity: 2,
+    estimatedCost: "$25–40",
+    status: "Needed",
+    notes: "EZ GOTO normally machines a GSO donor scope's bearing base — our scratch build fabricates its own; Romer offers free machining with the kit (confirm with them)",
+  },
+
+  {
     name: "Heat-Set Insert Kit",
+    image: "/cad/parts/insert-m4.png",
     category: "Structure",
     specification: "Brass M2–M5 assortment (ruthex, 270 pc)",
     quantity: 1,
@@ -123,6 +166,7 @@ export const parts: Part[] = [
   },
   {
     name: "UTA Hardware Set",
+    image: "/cad/parts/m4x50.png",
     category: "Structure",
     specification: "M4×50/M4×35 SS bolts, nuts, M3 collimation screws + compression springs, M5 threaded rod 1m",
     quantity: 1,
@@ -141,6 +185,7 @@ export const parts: Part[] = [
   },
   {
     name: "T-Nuts",
+    image: "/cad/parts/t-nut.png",
     category: "Structure",
     specification: "1/4-20 pronged T-nuts",
     quantity: 16,
@@ -150,6 +195,7 @@ export const parts: Part[] = [
   },
   {
     name: "Dowel Pins",
+    image: "/cad/parts/dowel-pin.png",
     category: "Structure",
     specification: '3/8" steel alignment pins',
     quantity: 16,
@@ -190,6 +236,7 @@ export const parts: Part[] = [
   // ── Bearings ────────────────────────────────────────
   {
     name: "PTFE Altitude Pads",
+    image: "/cad/parts/pad-alt.png",
     category: "Bearings",
     specification: '1" × 1.5" virgin PTFE (medium kit)',
     quantity: 4,
@@ -200,6 +247,7 @@ export const parts: Part[] = [
   },
   {
     name: "PTFE Azimuth Pads",
+    image: "/cad/parts/pad-az.png",
     category: "Bearings",
     specification: '1.5" × 2" virgin PTFE',
     quantity: 3,
@@ -210,6 +258,7 @@ export const parts: Part[] = [
   },
   {
     name: "Ebony Star Laminate",
+    image: "/cad/parts/ebony-star.png",
     category: "Bearings",
     specification: "Wilsonart Ebony Star surface",
     quantity: 1,
@@ -220,6 +269,7 @@ export const parts: Part[] = [
   },
   {
     name: "Pivot Bolt",
+    image: "/cad/parts/pivot-bolt.png",
     category: "Bearings",
     specification: '3/8"-16 × 3" stainless steel',
     quantity: 1,
@@ -240,6 +290,7 @@ export const parts: Part[] = [
   },
   {
     name: "Collimation Bolts",
+    image: "/cad/parts/knob-bolt.png",
     category: "Mirror Cell",
     specification: '1/4"-20 × 4" with knobs',
     quantity: 3,
@@ -260,6 +311,7 @@ export const parts: Part[] = [
   },
   {
     name: "Mirror Clips",
+    image: "/cad/parts/mirror-clip.png",
     category: "Mirror Cell",
     specification: "Spring-loaded retaining clips",
     quantity: 3,
@@ -278,6 +330,7 @@ export const parts: Part[] = [
   },
   {
     name: "Rear Cooling Fan",
+    image: "/cad/parts/fan-80.png",
     category: "Mirror Cell",
     specification: "80mm 12V DC brushless",
     quantity: 1,
@@ -288,6 +341,7 @@ export const parts: Part[] = [
   },
   {
     name: "Side Ventilation Fan",
+    image: "/cad/parts/fan-60.png",
     category: "Mirror Cell",
     specification: "60mm 12V DC brushless",
     quantity: 1,
@@ -337,6 +391,7 @@ export const parts: Part[] = [
   },
   {
     name: "NEMA 23 Stepper (Altitude)",
+    image: "/cad/parts/nema23.png",
     category: "Electronics",
     specification: "1.8° 1.2 N·m bipolar",
     quantity: 1,
@@ -346,6 +401,7 @@ export const parts: Part[] = [
   },
   {
     name: "NEMA 17 Stepper (Azimuth)",
+    image: "/cad/parts/nema17.png",
     category: "Electronics",
     specification: '1.8° bipolar NEMA 17 (EZ GOTO az axis, 10" Dob)',
     quantity: 1,
@@ -395,6 +451,7 @@ export const parts: Part[] = [
   },
   {
     name: "AZ/ALT Gears Kit (Romer Optics)",
+    image: "/cad/parts/sector-gear.png",
     category: "Electronics",
     specification: '12" stainless ALT sector gear + AZ gear & belt (L2.5m, W10mm) + motor slides/brackets',
     quantity: 1,
