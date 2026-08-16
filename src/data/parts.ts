@@ -52,12 +52,12 @@ export const parts: Part[] = [
     fab: "3D Print",
     image: "/cad/parts/secondary-hub.png",
     category: "Optics",
-    specification: "3-vane printed spider + collimating hub (ASA)",
+    specification: "3-vane printed spider + collimating holder (ASA)",
     quantity: 1,
     estimatedCost: "$0",
     status: "Claimed",
     notes:
-      "3D-printed in-house: Spider Vane v2 ×3, Hub Plate v2, collimating Secondary Hub v2 — see Onshape 'Projected Telescope Design v1'. Replaces Protostar purchase ($85–120 saved)",
+      "3D-printed in-house: Spider Vane ×3, Hub Plate ×1, Secondary Holder v5 (offset seat, 6mm spring gap) — see Onshape 'Projected Telescope Design v1'. Secondary Hub v2 is retired. Replaces Protostar purchase ($85–120 saved)",
   },
   {
     name: "Focuser",
@@ -113,7 +113,7 @@ export const parts: Part[] = [
     quantity: 6,
     estimatedCost: "$104",
     status: "Needed",
-    notes: '3× 72" lengths cut to six 635mm poles (6-pole / 3-pair truss)',
+    notes: '3× 72" lengths cut to six 686mm poles (6-pole / 3-pair truss)',
     purchaseUrl: "https://www.onlinemetals.com/en/buy/aluminum/1-od-x-0-058-wall-x-0-884-id-aluminum-round-tube-6061-t6-drawn/pid/4342",
   },
   {
@@ -147,7 +147,19 @@ export const parts: Part[] = [
     quantity: 6,
     estimatedCost: "$0",
     status: "Claimed",
-    notes: "3 per ring × top+bottom — one universal part, clearanced finger joints",
+    notes:
+      "3 per ring × top+bottom — one universal part, half-lap + tongue joints sharing an M4×20 bolt path",
+  },
+  {
+    name: "UTA Standoff Spacers",
+    fab: "3D Print",
+    category: "Structure",
+    specification: "Ø14 × 109 printed spacer over M5 threaded rod (ASA)",
+    quantity: 3,
+    estimatedCost: "$0",
+    status: "Claimed",
+    notes:
+      "Set the gap between the two UTA rings at the C stations; each rides on a 150mm length of M5 rod",
   },
   {
     name: "Mirror Cell v2",
