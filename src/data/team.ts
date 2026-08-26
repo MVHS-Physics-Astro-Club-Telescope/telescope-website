@@ -8,11 +8,11 @@ export interface TeamMember {
 
 export const team: TeamMember[] = [
   {
-    name: "Aryan Khanna",
-    role: "Club President",
-    initials: "AK",
-    color: "#7c3aed",
-    image: "/team/aryan_khanna.jpg",
+    name: "Vidu Senadheera",
+    role: "Mechanical Lead",
+    initials: "VS",
+    color: "#06b6d4",
+    image: "/team/vidu.jpg",
   },
   {
     name: "Eeshan Khandelwal",
@@ -20,20 +20,6 @@ export const team: TeamMember[] = [
     initials: "EK",
     color: "#3b82f6",
     image: "/team/eeshan.jpg",
-  },
-  {
-    name: "Neel Chhatrala",
-    role: "Mechanical Lead",
-    initials: "NC",
-    color: "#f59e0b",
-    image: "/team/neel.jpg",
-  },
-  {
-    name: "Vidu Senadheera",
-    role: "Mechanical Member",
-    initials: "VS",
-    color: "#06b6d4",
-    image: "/team/vidu.jpg",
   },
   {
     name: "David Cho",
@@ -48,6 +34,20 @@ export const team: TeamMember[] = [
     initials: "TS",
     color: "#ec4899",
     image: "/team/tristan.jpg",
+  },
+  {
+    name: "Neel Chhatrala",
+    role: "Mechanical Member",
+    initials: "NC",
+    color: "#f59e0b",
+    image: "/team/neel.jpg",
+  },
+  {
+    name: "Aryan Khanna",
+    role: "Mechanical Member",
+    initials: "AK",
+    color: "#7c3aed",
+    image: "/team/aryan_khanna.jpg",
   },
   {
     name: "Ishaan Sakariya",
