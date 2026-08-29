@@ -33,7 +33,7 @@ export const sponsors: Sponsor[] = [
     name: "Tori Atwell — The Agency RE",
     url: "https://www.theagencyre.com/agent/tori-atwell/",
     description:
-      "Bay Area real estate broker-associate at The Agency. Tori is supporting the project with a direct cash donation, mailed via check to MVHS.",
+      "Bay Area real estate broker-associate at The Agency. Tori is supporting the project with a direct cash donation, mailed via check to the club.",
     type: "Cash",
     cashValue: 100,
     contribution: "$100 cash donation",

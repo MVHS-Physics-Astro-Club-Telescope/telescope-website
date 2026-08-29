@@ -50,3 +50,10 @@
 **Root cause:** The angle parameter is measured from the vertical plane containing the hinge line for X-hinges (use 90−φ for a φ-from-vertical pocket), behaves differently for Y-hinges, and the sketch frame origin is not the global origin.
 **Fix:** X-hinge lines with angle=90−φ work deterministically (probe-verified with marker holes + STL inspection); for a single tilted pocket where slop allows, a plain vertical bore + pinch-closure avoids tilted planes entirely.
 **Prevention:** Never trust a tilted-plane cut on volume delta alone — direction-degenerate volumes match coincidentally (the clamp's sideways pocket matched the expected mm³ within 2%). Always render/STL-inspect any cut whose direction the volume can't distinguish.
+
+## [2026-08-29][playwright-browser-version-mismatch] Playwright's bundled-browser check is version-pinned, not "any chromium"
+- **Phase**: e2e verification for the independence-disclaimer branch
+- **Mistake**: Assumed a populated `~/Library/Caches/ms-playwright/` meant the suite would run. All 39 tests failed with `Executable doesn't exist at .../chromium_headless_shell-1217/...` — the cache holds `chromium_headless_shell-1228`, but this repo's `@playwright/test` pins build 1217.
+- **Root cause**: Playwright resolves an exact browser build number tied to the installed `@playwright/test` version; a newer cached build is not a substitute, and the error text reads like "no browsers installed".
+- **Fix**: Same escape hatch as the 2026-07-05 download-stall lesson — a throwaway in-repo config that spreads the real one and swaps in `projects: [{ name: "chrome", use: { channel: "chrome" } }]`, run with `-c playwright.chrome.config.ts`, then delete it. 39/39 passed against system Chrome.
+- **Prevention**: Read the *build number* in the "Executable doesn't exist" path before trying to install anything. If it differs from what's cached, go straight to `channel: "chrome"` — don't run `playwright install` on this network.

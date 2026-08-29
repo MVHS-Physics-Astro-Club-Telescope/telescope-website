@@ -103,7 +103,7 @@ export default function Navbar() {
           >
             <Mark />
             <span className="font-display text-lg text-starlight">
-              MVHS <em className="text-chart-bright">Astronomy</em>
+              MV <em className="text-chart-bright">Astronomy</em>
             </span>
           </Link>
 

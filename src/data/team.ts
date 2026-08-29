@@ -57,3 +57,18 @@ export const team: TeamMember[] = [
     image: "/team/ishaan.jpg",
   },
 ];
+
+/**
+ * Leadership note rendered under the crew grid (see components/Team.tsx).
+ * Keep in sync with the roles above — it is a public statement of who holds
+ * which role on this project.
+ */
+export const leadershipNote = {
+  heading: "Roles & leadership",
+  body:
+    "This project has no president. Its leads are Vidu Senadheera (Mechanical), " +
+    "Eeshan Khandelwal (Software & Electronics), and Tristan Schaefer (Outreach). " +
+    "Every other member listed above is a general member. Aryan Khanna is a " +
+    "general member and does not hold a president or project-lead role on this " +
+    "project.",
+};

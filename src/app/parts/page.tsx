@@ -8,7 +8,7 @@ import SponsorButton from "@/components/SponsorButton";
 import { parts, getBudgetRange } from "@/data/parts";
 
 export const metadata: Metadata = {
-  title: "Parts List — MVHS Astronomy Telescope Project",
+  title: "Parts List — MV Astronomy Telescope Project",
   description:
     "Complete bill of materials for our student-built autonomous telescope. See what we need and how you can help.",
 };

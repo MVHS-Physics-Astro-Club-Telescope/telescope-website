@@ -18,7 +18,7 @@ export default function SponsorForm({ isOpen, onClose }: SponsorFormProps) {
   const [email, setEmail] = useState("");
   const [organization, setOrganization] = useState("");
   const [message, setMessage] = useState(
-    "Hi,\n\nI'm interested in sponsoring the MVHS Physics & Astronomy Club telescope project. I'd love to learn more about how I can support your team.\n\nLooking forward to hearing from you!"
+    "Hi,\n\nI'm interested in sponsoring the MV Physics & Astronomy Club telescope project. I'd love to learn more about how I can support your team.\n\nLooking forward to hearing from you!"
   );
   const overlayRef = useRef<HTMLDivElement>(null);
 

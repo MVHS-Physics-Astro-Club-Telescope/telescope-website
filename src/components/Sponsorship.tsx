@@ -10,7 +10,7 @@ const benefits = [
   "Shoutout at every community star party we host",
   "Featured on our Instagram (@mvhs_physics_astro_club) and website",
   "Invitation to our First Light event in August 2026",
-  "Tax-deductible donation through our school district",
+  "A permanent listing on our sponsors page",
 ];
 
 export default function Sponsorship() {
@@ -20,7 +20,7 @@ export default function Sponsorship() {
     <section id="support" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Sponsorship · Tax-deductible via MVLA school district"
+          eyebrow="Sponsorship · Independent, student-run, sponsor-funded"
           title="Put your name on the telescope"
           subtitle="Sponsors are engraved on the instrument itself — every star party it ever points at, your name is there."
         />

@@ -2,7 +2,7 @@
 
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
-import { team } from "@/data/team";
+import { team, leadershipNote } from "@/data/team";
 
 export default function Team() {
   return (
@@ -47,6 +47,17 @@ export default function Team() {
             </Reveal>
           ))}
         </ul>
+
+        <Reveal delay={0.1}>
+          <div className="card-atlas tick-corners mt-10 max-w-3xl p-6 sm:p-7">
+            <p className="eyebrow !text-[0.625rem] text-chart/70">
+              {leadershipNote.heading}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-chart-bright/65">
+              {leadershipNote.body}
+            </p>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -6,7 +6,7 @@ test.describe("/observe — Live View preview page", () => {
   });
 
   test("loads with correct title and hero", async ({ page }) => {
-    await expect(page).toHaveTitle(/Live View — MVHS Public Observatory/);
+    await expect(page).toHaveTitle(/Live View — MV Public Observatory/);
     await expect(
       page.getByRole("heading", { level: 1, name: /Live from the night sky/i }),
     ).toBeVisible();
@@ -34,9 +34,9 @@ test.describe("/observe — Live View preview page", () => {
     }
   });
 
-  test("'Tonight at MVHS' widget renders with sky tiles", async ({ page }) => {
+  test("'Tonight at MV' widget renders with sky tiles", async ({ page }) => {
     const widget = page.getByRole("region", {
-      name: /Tonight's sky conditions at MVHS/i,
+      name: /Tonight's sky conditions at MV/i,
     });
     await expect(widget).toBeVisible();
     await expect(widget).toContainText(/Cloud cover/i);

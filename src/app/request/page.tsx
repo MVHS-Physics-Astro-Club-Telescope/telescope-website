@@ -11,7 +11,7 @@ import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
 
 export const metadata: Metadata = {
-  title: "Request a target — MVHS Public Observatory",
+  title: "Request a target — MV Public Observatory",
   description:
     "Tell our student-built robotic telescope what to capture for you. Submit a target, get a high-resolution image emailed back. Coming soon.",
 };
@@ -97,7 +97,7 @@ export default function RequestPage() {
 
           <div className="max-w-3xl">
             <p className="eyebrow mb-5">
-              MVHS Public Observatory · Target queue · Opens Aug 2026
+              MV Public Observatory · Target queue · Opens Aug 2026
             </p>
             <h1 className="mb-5 font-display text-5xl leading-[1.05] text-starlight sm:text-6xl">
               Request a target
