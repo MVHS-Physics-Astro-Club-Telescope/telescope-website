@@ -44,7 +44,7 @@ export const team: TeamMember[] = [
   },
   {
     name: "Aryan Khanna",
-    role: "Mechanical Member",
+    role: "General Member",
     initials: "AK",
     color: "#7c3aed",
     image: "/team/aryan_khanna.jpg",
