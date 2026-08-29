@@ -1,4 +1,9 @@
-export type PartStatus = "Donated" | "Ordered" | "Needed" | "Claimed";
+export type PartStatus =
+  | "Donated"
+  | "Ordered"
+  | "Needed"
+  | "Claimed"
+  | "Superseded";
 export type PartCategory =
   | "Optics"
   | "Structure"
@@ -48,27 +53,28 @@ export const parts: Part[] = [
     purchaseUrl: "https://agenaastro.com/gso-elliptical-secondary-mirror-70-mm.html",
   },
   {
-    name: "Spider + Secondary Holder",
+    name: "Spider + Secondary Holder v5/v6",
     fab: "3D Print",
     image: "/cad/parts/secondary-hub.png",
     category: "Optics",
-    specification: "3-vane printed spider + collimating hub (ASA)",
+    specification: "3 steel-blade vanes + hub plate + bonded-mirror holder (ASA)",
     quantity: 1,
-    estimatedCost: "$0",
+    estimatedCost: "$5 (blades)",
     status: "Claimed",
     notes:
-      "3D-printed in-house: Spider Vane v2 ×3, Hub Plate v2, collimating Secondary Hub v2 — see Onshape 'Projected Telescope Design v1'. Replaces Protostar purchase ($85–120 saved)",
+      "Vanes are now 0.80mm 304 stainless blades (139.5 × 14, laser cut, $1.77/ea at qty 3, $1.67 at qty 6) captured in printed end blocks — a third the thickness of the old printed blade, so a third the diffraction, ~18× the in-plane stiffness and no creep. Hub plate keys each block in a pocket so one bolt per end replaces two. Secondary Holder v6 bonds the mirror to a 45° cup on 3 silicone pads — no clamp across the optical face, no bolts in the light path — and collimates on 1 central M5 pull + 3 M4 push (springs deleted). Spider fastener count 10 → 7; holder 87 → 47 cm³",
   },
   {
     name: "Focuser",
     image: "/cad/parts/focuser-gso.png",
     category: "Optics",
-    specification: '1.25" Crayford single-speed (GSO)',
+    specification: '2" GSO Crayford + Agena Type-3 flat base plate (92×92×8, 76×76 bolts, Ø78.5 bore)',
     quantity: 1,
-    estimatedCost: "$95",
+    estimatedCost: "$125–200",
     status: "Needed",
-    notes: "Donated ToupTek AAF motor provides motorized fine focus",
-    purchaseUrl: "https://agenaastro.com/gso-crayford-focuser-reflector-telescope-single-speed-1-25.html",
+    notes:
+      "The donated ToupTek AAF is a motor only — no drawtube, no base — so a mechanical focuser is still required; the AAF clamps to its 4.2mm knob shaft. The 1.25\" GSO was ruled out: its base is curved for a 176mm tube and GSO sells no flat plate for it. Focuser mount v5 is cut for the flat Type-3 plate. Stock check 2026-08-18: 2\" single-speed ($105) and dual-speed ($140) both out of stock at Agena, no ETA; in-stock substitute is the 2\" Linear Bearing Crayford dual-speed ($180, min height 78.6mm) + flat plate ($20)",
+    purchaseUrl: "https://agenaastro.com/gso-crayford-focuser-reflector-telescope-single-speed-bundle.html",
   },
   {
     name: "Flocking Material",
@@ -113,7 +119,7 @@ export const parts: Part[] = [
     quantity: 6,
     estimatedCost: "$104",
     status: "Needed",
-    notes: '3× 72" lengths cut to six 635mm poles (6-pole / 3-pair truss)',
+    notes: '3× 72" lengths cut to six 686mm poles (6-pole / 3-pair truss)',
     purchaseUrl: "https://www.onlinemetals.com/en/buy/aluminum/1-od-x-0-058-wall-x-0-884-id-aluminum-round-tube-6061-t6-drawn/pid/4342",
   },
   {
@@ -139,15 +145,27 @@ export const parts: Part[] = [
     notes: "Printed in-house: 2× SKEW + 1× CENTER — bolt to mirror-box walls, receive the pole pairs",
   },
   {
-    name: "UTA Ring Segments",
+    name: "UTA Ring Segments v5",
     fab: "3D Print",
     image: "/cad/parts/ring-segment.png",
     category: "Structure",
-    specification: "120° ring segments, Ø337/305 (ASA)",
+    specification: "120° segments, Ø337/304, two variants: BOTTOM ×3 + TOP ×3 (ASA)",
     quantity: 6,
     estimatedCost: "$0",
     status: "Claimed",
-    notes: "3 per ring × top+bottom — one universal part, clearanced finger joints",
+    notes:
+      "Split into BOTTOM (truss clamp stations) and TOP (vane station) so no segment carries a hole nothing bolts to. Staggered radial half-lap joint: outer wall continuous across the seam, faces butt hard, one M4 per joint clamps the lap into a friction joint — verified 0.0000 mm³ interference across a 3-segment ring, and nothing bridges, so the joint prints clean",
+  },
+  {
+    name: "UTA Standoff v5",
+    fab: "3D Print",
+    category: "Structure",
+    specification: "Ø14 × 109.25 pillar, M5 heat-set insert each end (ASA)",
+    quantity: 3,
+    estimatedCost: "$0",
+    status: "Claimed",
+    notes:
+      "Sets the 109.25mm gap between the two UTA rings at the C stations. The M5 through-rod is gone — each ring bolts into the pillar's own threads with an M5×20, so there are no outer nuts or washers to lose",
   },
   {
     name: "Mirror Cell v2",
@@ -161,15 +179,16 @@ export const parts: Part[] = [
     notes: "Printed in-house; SCS flotation triangles sit on top for 9-point support",
   },
   {
-    name: "Focuser Board v2",
+    name: "Focuser Board v4",
     fab: "3D Print",
     image: "/cad/parts/focuser-board.png",
     category: "Structure",
-    specification: "110×96×8 board, Ø58 focuser bore (ASA)",
+    specification: "110×100×8 board + 2 bolt bosses, Ø58 focuser bore (ASA)",
     quantity: 1,
     estimatedCost: "$0",
     status: "Claimed",
-    notes: "Carries the GSO focuser on the UTA ring",
+    notes:
+      "Carries the GSO focuser outside the top UTA ring; plugs register in the ring wall sockets, held by 2× M4x35 + captive nuts",
   },
 
   {
@@ -199,7 +218,7 @@ export const parts: Part[] = [
     name: "Heat-Set Insert Kit",
     image: "/cad/parts/insert-m4.png",
     category: "Structure",
-    specification: "Brass M2–M5 assortment (ruthex, 270 pc)",
+    specification: "Brass M2–M5 assortment (ruthex, 270 pc) + 7 heat-set tips ($42.99)",
     quantity: 1,
     estimatedCost: "$43",
     status: "Needed",
@@ -210,11 +229,12 @@ export const parts: Part[] = [
     name: "UTA Hardware Set",
     image: "/cad/parts/m4x50.png",
     category: "Structure",
-    specification: "M4×50/M4×35 SS bolts, nuts, M3 collimation screws + compression springs, M5 threaded rod 1m",
+    specification:
+      "v5 ledger — 18-8 SS (McMaster, verified 2026-08-18): M4×16 ×12 (91292A118, 100/pk $11.63 — 6 ring joints + 6 vane blocks), M5×20 ×6 (91292A128, 100/pk $19.61 — standoffs), M4×50 ×6 (91292A140, 25/pk $8.56 — truss clamp bolts), Ø2.5×14 dowel pins ×6 (91585A297, 50/pk $13.85 — blade cross-pins), M4 ×12 for the truss pole clamps (length TBD — the clamp is not in the v5 CAD); heat-set inserts 6× M5 + 16× M4",
     quantity: 1,
-    estimatedCost: "$18–25",
+    estimatedCost: "$30–40",
     status: "Needed",
-    notes: "Fastens ring joints, vane feet, pole clamps; springs load the secondary collimation cell",
+    notes: "v5 deleted the threaded rods, collimation springs, M5 nuts and washers — the standoffs and ring joints now bolt straight into heat-set inserts. Do not order the v4 rod/spring/nut set",
   },
   {
     name: "ASA Filament",
@@ -434,14 +454,15 @@ export const parts: Part[] = [
   },
   {
     name: "NEMA 23 Stepper (Altitude)",
-    specification: "23HS30-2804S — 1.8° 1.9 N·m 2.8 A, 8 mm shaft",
-    notes: "8 mm shaft matches the Romer ALT pinion 8 mm bore (previous pick was 6.35 mm — no fit)",
+    specification: "23HS30-2804S2 — 1.8° 1.9 N·m 2.8 A, Φ8 mm × 22 mm shaft",
+    notes:
+      "Must be the -S2 variant: the plain 23HS30-2804S is Φ6.35 mm and will not fit the Romer ALT pinion, whose NEMA 23 option is an 8 mm bore. Verified 2026-08-18: $18.26, in stock",
     image: "/cad/parts/nema23.png",
     category: "Electronics",
     quantity: 1,
     estimatedCost: "$28",
     status: "Needed",
-    purchaseUrl: "https://www.omc-stepperonline.com/nema-23-bipolar-1-8deg-1-9nm-269oz-in-2-8a-3-2v-57x57x76mm-4-wires-23hs30-2804s",
+    purchaseUrl: "https://www.omc-stepperonline.com/nema-23-bipolar-1-9nm-269-06oz-in-2-8a-57x57x76mm-4-wires-8mm-shaft-23hs30-2804s2",
   },
   {
     name: "NEMA 17 Stepper (Azimuth)",
@@ -458,10 +479,9 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "1.8° 0.4 N·m bipolar",
     quantity: 1,
-    estimatedCost: "Donated",
-    status: "Donated",
-    notes: "Superseded by ToupTek AAF electronic auto-focuser",
-    donatedBy: "ToupTek Astro",
+    estimatedCost: "—",
+    status: "Superseded",
+    notes: "Not purchased and not donated — the ToupTek AAF replaced the NEMA 17 + GT2 belt focus drive. Kept as a design record",
     purchaseUrl: "https://www.amazon.com/Stepper-56-2oz-2-Phase-Bipolar-Mounting/dp/B07L86RH8Z",
   },
   {
@@ -506,23 +526,36 @@ export const parts: Part[] = [
     purchaseUrl: "https://romer-optics-llc.myshopify.com/collections/coma-fee-dobsonian/products/az-alt-gears-kit-for-ez-goto",
   },
   {
-    name: "12V Power Supply",
+    name: "24V Motor-Rail PSU",
     category: "Electronics",
-    specification: "12V 10A switching PSU",
+    specification: "24V 14.6A / 350W switching PSU (Mean Well LRS-350-24)",
     quantity: 1,
-    estimatedCost: "$14–20",
+    estimatedCost: "$32",
     status: "Needed",
-    purchaseUrl: "https://www.amazon.com/inShareplus-Universal-Regulated-Switching-Transformer/dp/B07RFGH2ZM",
+    notes:
+      "24V, not 12V: the DM542 drivers require 20–50 VDC and will not run off a 12V rail, and the 2.8A/3.2V NEMA 23 needs the headroom for slew speed. This is the only mains-fed supply in the build — the 12V accessory rail is derived from it by the 24V→12V 10A step-down",
+    purchaseUrl: "https://www.amazon.com/dp/B013ETVO12",
   },
   {
-    name: "Buck Converter",
+    name: "24V → 12V Step-Down (accessory rail)",
     category: "Electronics",
-    specification: "12V → 5V 3A DC-DC",
+    specification: "15–40 VDC in → 12V 10A / 120W sealed buck, fused",
     quantity: 1,
-    estimatedCost: "Donated",
-    status: "Donated",
-    notes: "5V derivation handled by PPB Advance Gen 2 variable output",
-    donatedBy: "Pegasus Astro",
+    estimatedCost: "$20",
+    status: "Needed",
+    notes:
+      "Feeds the Pegasus PPBA, which Pegasus's own manual says wants a ≥6A 12V supply. Measured rail load: ATR585C 12V/3.0A + SV192 dew strip 1.4A + 80mm & 60mm fans ~0.3A + PPBA USB hub (AAF + GPM462C, both 5V USB) ~0.7A ≈ 5.4A, ~6.7A if the Pi also runs off the PPBA instead of its own wall brick. 10A gives real headroom; a 3A LM2596 module does not clear the camera alone. Verified 2026-08-20: $19.99, in stock",
+    purchaseUrl: "https://www.amazon.com/Converter-Transformer-Waterproof-Voltage-Reducer/dp/B08YYKSRJW",
+  },
+  {
+    name: "LM2596 Buck Module",
+    category: "Electronics",
+    specification: "DROK LM2596, DC 4–32V in → 1.25–30V out, 3A max",
+    quantity: 1,
+    estimatedCost: "—",
+    status: "Superseded",
+    notes:
+      "Never donated — this row was zeroed out when Pegasus sent the PPBA. Its 3A ceiling is below the ATR585C's 12V/3A draw on its own, so it cannot carry the accessory rail; use it only as a low-current bench tap if one is bought",
     purchaseUrl: "https://www.amazon.com/DROK-Display-LM2596-Buck-Converter/dp/B0F6SKTP1P",
   },
   {
@@ -549,30 +582,32 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "12-position barrier strip",
     quantity: 1,
-    estimatedCost: "Donated",
-    status: "Donated",
-    notes: "Distribution handled by Pegasus PPB Advance Gen 2",
-    donatedBy: "Pegasus Astro",
+    estimatedCost: "—",
+    status: "Superseded",
+    notes: "Not needed and not donated — 12V distribution is handled by the Pegasus PPBA's four outputs",
     purchaseUrl: "https://www.amazon.com/Position-Screw-Barrier-Strip-Terminal/dp/B01B15M5SC",
   },
   {
     name: "Bulk Capacitors",
     category: "Electronics",
-    specification: "100µF 25V electrolytic",
+    specification: "220µF 50V 105°C electrolytic",
     quantity: 3,
-    estimatedCost: "$5–7",
+    estimatedCost: "$8",
     status: "Needed",
-    purchaseUrl: "https://www.amazon.com/BOJACK-25Voltage-Aluminum-Electrolytic-Capacitors/dp/B07SBW2SNR",
+    notes:
+      "50V, not 25V: the rail is 24V, the LRS-350-24 trims to 28.8V, and stepper deceleration drives energy back up the rail above nominal. A 25V part has no margin. Mounted across V+/GND at each DM542, leads as short as possible, to absorb the driver's current gulps and the regenerative kick on decel. The third sits across the step-down's 24V input, which sees the same rail transients. Verified 2026-08-22: listing live",
+    purchaseUrl: "https://www.amazon.com/105%C2%B0C-Electrolytic-Capacitor-Radial-10x12mm/dp/B010E9RF40",
   },
   {
     name: "TVS Diodes",
     category: "Electronics",
-    specification: "15V bidirectional TVS",
+    specification: "1.5KE33CA — 33V bidirectional, 1500W, DO-201 through-hole",
     quantity: 2,
-    estimatedCost: "$6",
+    estimatedCost: "$8",
     status: "Needed",
-    notes: "SMD DO-214AA — use through-hole 1.5KE15CA if hand-wiring",
-    purchaseUrl: "https://www.amazon.com/SMBJ15CA-SMBJ15CA-E3-Bidirectional-Transient-Suppression/dp/B0BWF2G7QZ",
+    notes:
+      "33V, not 15V: a 15V TVS breaks down near 16.7V, so on the 24V rail it conducts continuously and destroys itself on first power-up. The 1.5KE33CA stands off 28.2V and clamps at 45.7V, which sits above the 28.8V PSU trim ceiling and below the DM542's 50V input limit. One across the 24V rail at each driver. Verified 2026-08-22: listing live",
+    purchaseUrl: "https://www.amazon.com/20-Pieces-1-5KE33CA-DO-201AD-Bidirectional/dp/B079KJ7MXT",
   },
   {
     name: "Wiring Kit",
@@ -582,6 +617,26 @@ export const parts: Part[] = [
     estimatedCost: "$12–16",
     status: "Needed",
     purchaseUrl: "https://www.amazon.com/Electric-Flexible-Silicone-different-Electronic/dp/B07G2JWYDW",
+  },
+  {
+    name: "Dew Heater RCA Adapter",
+    category: "Electronics",
+    specification: "RCA male \u2192 5.5\u00d72.1mm female, 12V",
+    quantity: 1,
+    estimatedCost: "$8\u201312",
+    status: "Needed",
+    notes:
+      "Connector mismatch found 2026-08-24: the PPBA dew outputs are RCA female jacks (Pegasus manual \u00a74.5, 'RCA Female Jack / 5 Amps Each') but the SVBONY SV192 terminates in a 5.5\u00d72.1mm male plug. They do not mate. WATCH THE GENDER \u2014 most astro adapters sold are RCA-male-to-5.5\u00d72.1-MALE (for heaters with a female socket) and are the wrong part here. Needed: RCA male into the PPBA, 5.5\u00d72.1 FEMALE to accept the SV192's plug",
+  },
+  {
+    name: "Fan Power Pigtails",
+    category: "Electronics",
+    specification: "5.5\u00d72.1mm male \u2192 3-pin fan header / bare lead, 12V",
+    quantity: 2,
+    estimatedCost: "$8\u201312",
+    status: "Needed",
+    notes:
+      "Connector mismatch found 2026-08-24: the 80mm and 60mm PC fans terminate in 3-pin fan connectors, but every PPBA 12V and adjustable output is a 2.1mm DC barrel jack (Pegasus manual \u00a74.4 / \u00a74.7). One pigtail per fan. If a fan goes on a PWM dew channel instead, that one needs an RCA male end rather than 5.5\u00d72.1",
   },
   {
     name: "Limit Switches",
@@ -598,10 +653,9 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "IRLZ44N logic-level N-channel",
     quantity: 2,
-    estimatedCost: "Donated",
-    status: "Donated",
-    notes: "PWM control handled by PPB Advance Gen 2 dew heater outputs",
-    donatedBy: "Pegasus Astro",
+    estimatedCost: "—",
+    status: "Superseded",
+    notes: "Not needed and not donated — dew-heater PWM is handled by the Pegasus PPBA's two dew outputs",
     purchaseUrl: "https://www.amazon.com/BOJACK-IRLZ44N-IRLZ44NPBF-N-Channel-Transistor/dp/B0FH6T96BP",
   },
   {
@@ -629,9 +683,10 @@ export const parts: Part[] = [
     category: "Electronics",
     specification: "1N4007 rectifier",
     quantity: 2,
-    estimatedCost: "$2",
-    status: "Needed",
-    notes: "10-pack",
+    estimatedCost: "—",
+    status: "Superseded",
+    notes:
+      "Orphaned with the IRLZ44N MOSFETs. These were the freewheel diodes across the fan and dew-heater loads back when a bare transistor switched them; the PPBA now drives both its quad 12V port and its two PWM dew outputs with its own protected MOSFETs. Nothing in the current design switches an inductive load with an unprotected transistor, so no external flyback is needed",
     purchaseUrl: "https://protosupplies.com/product/1n4007/",
   },
 
@@ -751,7 +806,7 @@ export function getBudgetRange(): { low: number; high: number } {
   let low = 0;
   let high = 0;
   for (const part of parts) {
-    if (part.status === "Donated") continue;
+    if (part.status === "Donated" || part.status === "Superseded") continue;
     // estimatedCost is the LINE-ITEM TOTAL (a single tube of glue, a 50-pack
     // of T-nuts, the kit that contains all 4 PTFE pads, etc.), not per-unit
     // pricing. Quantity is informational — what we need on the build, not
@@ -783,6 +838,7 @@ export function getStatusCounts(): Record<PartStatus, number> {
     Ordered: 0,
     Needed: 0,
     Claimed: 0,
+    Superseded: 0,
   };
   for (const part of parts) {
     counts[part.status]++;

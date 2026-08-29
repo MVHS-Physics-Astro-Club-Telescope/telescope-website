@@ -16,6 +16,7 @@ const statusStyles: Record<PartStatus, string> = {
   Needed: "border-chart/40 text-chart",
   Ordered: "border-chart-bright/60 text-chart-bright",
   Claimed: "border-oiii/50 text-oiii",
+  Superseded: "border-chart/15 text-chart-bright/35",
 };
 
 function StatusChip({ status }: { status: PartStatus }) {
