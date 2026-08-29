@@ -36,7 +36,7 @@ export default function About() {
         {/* Mission statement — an atlas plate inscription */}
         <Reveal>
           <p className="max-w-3xl font-display text-2xl leading-snug text-starlight/90 sm:text-[2rem]">
-            The MVHS Physics &amp; Astronomy Club is seven high-school
+            The MV Physics &amp; Astronomy Club is seven high-school
             students building a research-grade telescope entirely from
             scratch — mechanics, optics, electronics, and software — to
             bring the night sky to the Bay Area through{" "}

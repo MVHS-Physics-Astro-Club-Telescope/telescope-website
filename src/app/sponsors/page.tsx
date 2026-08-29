@@ -17,7 +17,7 @@ import {
 } from "@/data/sponsors";
 
 export const metadata: Metadata = {
-  title: "Our Sponsors — MVHS Astronomy Telescope Project",
+  title: "Our Sponsors — MV Astronomy Telescope Project",
   description:
     "Thank you to the organizations supporting our student-built autonomous telescope. Interested in sponsoring? Get in touch.",
 };

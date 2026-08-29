@@ -27,14 +27,14 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "MVHS Physics & Astronomy Club — Autonomous Telescope Project",
+  title: "MV Physics & Astronomy Club — Autonomous Telescope Project",
   description:
-    "A student-built autonomous telescope bringing the night sky to the Bay Area. Built by 7 high school students at Mountain View High School.",
+    "A student-built autonomous telescope bringing the night sky to the Bay Area. An independent project by 7 high schoolers in Mountain View, California.",
   keywords: [
     "telescope",
     "astronomy",
-    "MVHS",
-    "Mountain View High School",
+    "MV Astronomy",
+    "Mountain View CA",
     "autonomous telescope",
     "star party",
     "STEM",
@@ -42,18 +42,18 @@ export const metadata: Metadata = {
     "Dobsonian",
     "astrophotography",
   ],
-  authors: [{ name: "MVHS Physics & Astronomy Club" }],
+  authors: [{ name: "MV Physics & Astronomy Club" }],
   openGraph: {
-    title: "MVHS Physics & Astronomy Club — Autonomous Telescope Project",
+    title: "MV Physics & Astronomy Club — Autonomous Telescope Project",
     description:
       "A student-built autonomous telescope bringing the night sky to the Bay Area.",
     type: "website",
     locale: "en_US",
-    siteName: "MVHS Astronomy",
+    siteName: "MV Astronomy",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MVHS Physics & Astronomy Club — Autonomous Telescope Project",
+    title: "MV Physics & Astronomy Club — Autonomous Telescope Project",
     description:
       "A student-built autonomous telescope bringing the night sky to the Bay Area.",
   },

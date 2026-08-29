@@ -8,7 +8,7 @@ test.describe("/request — Submit Target preview page", () => {
 
   test("loads with correct title and hero", async ({ page }) => {
     await expect(page).toHaveTitle(
-      /Request a target — MVHS Public Observatory/,
+      /Request a target — MV Public Observatory/,
     );
     await expect(
       page.getByRole("heading", { level: 1, name: /Request a target/i }),

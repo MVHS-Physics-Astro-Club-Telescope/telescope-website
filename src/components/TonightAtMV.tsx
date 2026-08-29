@@ -3,10 +3,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 /**
- * "Tonight at MVHS" widget.
+ * "Tonight at MV" widget.
  *
  * Server component — fetches forecast from 7Timer (free, no key) for the
- * MVHS observatory site (lat 37.366, lon −122.077) and surfaces the four
+ * MV observatory site (lat 37.366, lon −122.077) and surfaces the four
  * numbers a sponsor or visitor cares about: cloud cover, seeing, moon
  * illumination, and sunset time. Falls back gracefully if the API is down.
  */
@@ -186,18 +186,18 @@ function parseInit(init: string): Date {
   return new Date(Date.UTC(y, m, d, h));
 }
 
-export default async function TonightAtMVHS() {
+export default async function TonightAtMV() {
   const f = await fetchForecast();
 
   return (
     <section
-      aria-label="Tonight's sky conditions at MVHS"
+      aria-label="Tonight's sky conditions at MV"
       className="card-atlas tick-corners relative overflow-hidden p-6 sm:p-7"
     >
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
           <p className="eyebrow !text-[0.625rem]">
-            Tonight at MVHS · 37.37°N −122.08°W
+            Tonight at MV · 37.37°N −122.08°W
           </p>
           <h2 className="mt-2 font-display text-xl text-starlight sm:text-2xl">
             What the sky looks like right now
@@ -311,7 +311,7 @@ function Tile({
   );
 }
 
-export function TonightAtMVHSSkeleton() {
+export function TonightAtMVSkeleton() {
   return (
     <section className="card-atlas p-6 sm:p-7">
       <Skeleton className="mb-2 h-3 w-40 rounded-sm" />

@@ -57,13 +57,13 @@ export default function Footer() {
           <div>
             <Link href="/" className="inline-block">
               <span className="font-display text-xl text-starlight">
-                MVHS <em className="text-chart-bright">Astronomy</em>
+                MV <em className="text-chart-bright">Astronomy</em>
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-chart-bright/60">
-              A student-run physics and astronomy club at Mountain View High
-              School, building an autonomous telescope for free community
-              star parties.
+              An independent, student-run physics and astronomy project in
+              Mountain View, California, building an autonomous telescope for
+              free community star parties.
             </p>
             <p className="eyebrow mt-6 !text-[0.625rem]">
               37.3894° N · 122.0819° W · ELEV 32 M
@@ -112,14 +112,22 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-chart/10 pt-8 sm:flex-row">
-          <p className="text-sm text-chart-bright/50">
-            &copy; {new Date().getFullYear()}{" "}MVHS Physics &amp;
-            Astronomy Club. All rights reserved.
+        <div className="mt-12 border-t border-chart/10 pt-8">
+          <p className="max-w-3xl text-xs leading-relaxed text-chart-bright/45">
+            MV Astronomy is an independent student project. It is not
+            affiliated with, endorsed by, or sponsored by Mountain View High
+            School or the Mountain View&ndash;Los Altos Union High School
+            District.
           </p>
-          <p className="font-mono text-[0.625rem] uppercase tracking-[0.18em] text-chart-bright/40">
-            Mountain View High School · Mountain View, CA
-          </p>
+          <div className="mt-7 flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <p className="text-sm text-chart-bright/50">
+              &copy; {new Date().getFullYear()}{" "}MV Physics &amp;
+              Astronomy Club. All rights reserved.
+            </p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-[0.18em] text-chart-bright/40">
+              Mountain View, CA
+            </p>
+          </div>
         </div>
       </div>
     </footer>

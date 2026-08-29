@@ -1,7 +1,9 @@
 # Telescope Website — Project Context
 
 ## What Is This?
-MVHS Physics and Astronomy Club telescope website. Static site showcasing team, equipment specs, build timeline, and sponsorship information.
+MV Physics and Astronomy Club telescope website. Static site showcasing team, equipment specs, build timeline, and sponsorship information.
+
+The project is presented as an **independent student project** — not affiliated with, endorsed by, or sponsored by Mountain View High School or the MVLA district. Public-facing copy says "MV", never "MVHS". The only permitted "mvhs" strings are live external identifiers that cannot be renamed from this repo: the contact email, the Instagram handle, the GitHub org path, and the SendCutSend credit code.
 
 ## Tech Stack
 - Next.js 16.2.2, React 19.2.4, TypeScript

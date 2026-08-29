@@ -9,12 +9,10 @@ import MockLiveView from "@/components/MockLiveView";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
 import TelescopeHUD from "@/components/TelescopeHUD";
-import TonightAtMVHS, {
-  TonightAtMVHSSkeleton,
-} from "@/components/TonightAtMVHS";
+import TonightAtMV, { TonightAtMVSkeleton } from "@/components/TonightAtMV";
 
 export const metadata: Metadata = {
-  title: "Live View — MVHS Public Observatory",
+  title: "Live View — MV Public Observatory",
   description:
     "Watch our student-built telescope point at the cosmos in real time. Live view activates when the telescope captures first light in August 2026.",
 };
@@ -158,13 +156,13 @@ const faqItems = [
   {
     question: "Is this free?",
     answer:
-      "Yes. Always. The MVHS Physics & Astronomy Club is a free, student-run organization, and the public observatory is part of our mission to make astronomy accessible across the Bay Area. Sponsors pay for the hardware so visitors don't have to.",
+      "Yes. Always. The MV Physics & Astronomy Club is a free, student-run organization, and the public observatory is part of our mission to make astronomy accessible across the Bay Area. Sponsors pay for the hardware so visitors don't have to.",
   },
   {
     question: "Who built this?",
     answer: (
       <>
-        Seven high schoolers at Mountain View High School. We&apos;re designing
+        Seven high schoolers in Mountain View, California. We&apos;re designing
         the optics, machining the mount, writing the control software, and
         running the outreach ourselves. See the{" "}
         <Link
@@ -201,7 +199,7 @@ export default function ObservePage() {
           <div className="lg:grid lg:grid-cols-[1fr_minmax(0,420px)] lg:items-center lg:gap-12">
             <div className="max-w-3xl">
               <p className="eyebrow mb-5">
-                MVHS Public Observatory · 37.37°N −122.08°W · First light Aug 2026
+                MV Public Observatory · 37.37°N −122.08°W · First light Aug 2026
               </p>
               <h1 className="mb-5 font-display text-5xl leading-[1.05] text-starlight sm:text-6xl">
                 Live from the night sky
@@ -246,11 +244,11 @@ export default function ObservePage() {
         </div>
       </section>
 
-      {/* Tonight at MVHS — real sky conditions */}
+      {/* Tonight at MV — real sky conditions */}
       <section className="relative -mt-4 pb-16 sm:pb-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <Suspense fallback={<TonightAtMVHSSkeleton />}>
-            <TonightAtMVHS />
+          <Suspense fallback={<TonightAtMVSkeleton />}>
+            <TonightAtMV />
           </Suspense>
         </div>
       </section>

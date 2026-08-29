@@ -31,7 +31,7 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.2, ease }}
               className="eyebrow mb-5"
             >
-              MVHS Physics &amp; Astronomy Club · 37.3894° N, 122.0819° W
+              MV Physics &amp; Astronomy Club · 37.3894° N, 122.0819° W
             </motion.p>
 
             <motion.h1
@@ -49,8 +49,8 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.55, ease }}
               className="mt-6 max-w-xl text-base leading-relaxed text-chart-bright/80 sm:text-lg"
             >
-              Seven students at Mountain View High School are building a
-              10-inch telescope that aims itself. At first light, anyone can
+              Seven high schoolers in Mountain View are building a 10-inch
+              telescope that aims itself. At first light, anyone can
               request a target — the telescope finds it, photographs it, and
               sends the image back.
             </motion.p>
