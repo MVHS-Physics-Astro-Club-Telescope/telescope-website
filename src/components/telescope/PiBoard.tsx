@@ -67,6 +67,8 @@ const AUDIO_BARREL = { x: 54.15, r: 3.0, from: 56.0, to: 58.6, z: 3.0 };
 const toLocal = (x: number, y: number): [number, number] => [(x - BW / 2) * MM, (BH / 2 - y) * MM];
 
 const TEXTURES = ["/textures/pi/pi_albedo.jpg", "/textures/pi/pi_orm.jpg", "/textures/pi/pi_normal.jpg", "/textures/pi/pi_soc.jpg"];
+// start these downloads alongside the studio maps rather than after them
+useTexture.preload(TEXTURES);
 /** Runs before the textures are uploaded: colour maps are sRGB, data maps are linear. */
 function setupTextures(textures: THREE.Texture | THREE.Texture[]) {
   const list = Array.isArray(textures) ? textures : [textures];

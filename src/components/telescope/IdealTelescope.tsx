@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { PI_Z, RING_AZIMUTHS, SHOE_AZIMUTHS, SPEC, rimPoint } from "./spec";
@@ -243,15 +243,17 @@ function ControlBox({ m }: { m: Materials }) {
           <cylinderGeometry args={[0.0025, 0.0025, zInner - piBack, 6]} />
         </mesh>
       ))}
-      <group position={[piX, piY, PI_Z]} rotation={[0, Math.PI, 0]}>
-        <PiBoard m={m} />
-      </group>
+      {/* the boards carry their own textures; the instrument must not wait for them */}
+      <Suspense fallback={null}>
+        <group position={[piX, piY, PI_Z]} rotation={[0, Math.PI, 0]}>
+          <PiBoard m={m} />
+        </group>
+        <StepperDriver m={m} position={[driveX[0], y, zInner]} />
+        <StepperDriver m={m} position={[driveX[1], y, zInner]} />
+      </Suspense>
       {holes.map((p, i) => (
         <Screw key={`s${i}`} position={[p[0], p[1], PI_Z]} dir={[0, 0, -1]} material={m.steel} socket={m.blackMatte} r={0.0022} />
       ))}
-      {/* two DM542 drives, connector edges toward the Pi */}
-      <StepperDriver m={m} position={[driveX[0], y, zInner]} />
-      <StepperDriver m={m} position={[driveX[1], y, zInner]} />
       {/* barrier terminal strip under the Pi, and the wiring */}
       <mesh position={[piX, stripY, zInner - 0.0055]} material={m.plastic} castShadow>
         <boxGeometry args={[0.052, 0.01, 0.011]} />
