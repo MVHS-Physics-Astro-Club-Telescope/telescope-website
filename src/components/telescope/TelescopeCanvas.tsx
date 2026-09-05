@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo, useRef, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer, useTexture } from "@react-three/drei";
+import { Environment, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { createMaterials } from "./materials";
 import { heroSpin, sampleCamera } from "./choreography";
@@ -11,8 +11,8 @@ import IdealTelescope from "./IdealTelescope";
 const UP = new THREE.Vector3(0, 1, 0);
 
 function Stage({ progress, spin }: { progress: RefObject<number>; spin: boolean }) {
-  const [birch, birchRough] = useTexture(["/textures/birch.jpg", "/textures/birch-rough.jpg"]);
-  const m = useMemo(() => createMaterials(birch, birchRough), [birch, birchRough]);
+  const [map, normalMap, roughnessMap] = useTexture(["/textures/wood_diff.jpg", "/textures/wood_nor.jpg", "/textures/wood_rough.jpg"]);
+  const m = useMemo(() => createMaterials({ map, normalMap, roughnessMap }), [map, normalMap, roughnessMap]);
   const group = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
@@ -27,7 +27,7 @@ function Stage({ progress, spin }: { progress: RefObject<number>; spin: boolean 
       </group>
       {/* studio floor: catches the spotlight pool and the shadow */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.0005, 0]} material={m.floor} receiveShadow>
-        <circleGeometry args={[7, 96]} />
+        <circleGeometry args={[7, 128]} />
       </mesh>
     </>
   );
@@ -129,13 +129,8 @@ export default function TelescopeCanvas({
       <Suspense fallback={null}>
         <Stage progress={progress} spin={animate} />
         <Lights />
-        {/* soft environment so metal, glass and varnish have something to reflect */}
-        <Environment resolution={256} frames={1}>
-          <Lightformer form="rect" intensity={1.6} color="#fff1dc" position={[2, 4, 2]} scale={[2.5, 2.5, 1]} target={[0, 0.5, 0]} />
-          <Lightformer form="rect" intensity={0.5} color="#d8e2ff" position={[-3, 2.4, -2]} scale={[4, 3, 1]} target={[0, 0.6, 0]} />
-          <Lightformer form="rect" intensity={0.25} color="#ffffff" position={[0, -3, 0]} rotation-x={Math.PI / 2} scale={[8, 8, 1]} />
-          <Lightformer form="rect" intensity={0.12} color="#ffffff" position={[0, 1, -7]} scale={[12, 6, 1]} />
-        </Environment>
+        {/* a real photo studio for reflections, kept dim so the key spot stays the light */}
+        <Environment files="/hdr/studio.hdr" environmentIntensity={0.42} />
       </Suspense>
       <Rig progress={progress} animate={animate} />
     </Canvas>
