@@ -98,14 +98,6 @@ export default function TelescopeStory() {
       >
         {/* Pinned stage */}
         <div className="sticky top-0 h-svh overflow-hidden">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse 30% 46% at 66% 52%, rgba(243,228,195,0.22), rgba(243,228,195,0.06) 48%, transparent 74%)",
-            }}
-          />
           {mounted && <TelescopeCanvas progress={progress} animate={!reduced} />}
           <div
             aria-hidden="true"
