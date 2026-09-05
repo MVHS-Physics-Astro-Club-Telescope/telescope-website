@@ -1,96 +1,103 @@
 import * as THREE from "three";
 
 /**
- * Material families, keyed by the prefix the build script stamps on every
- * node name ("plywood::Rocker Floor 450sq"). One instance per family,
- * shared across every mesh that uses it.
+ * One material per surface family, shared across the whole model.
+ * Varnished baltic birch, brushed aluminium, powder-coated black,
+ * front-surface mirror, ground glass, and a few rubber and steel bits.
  */
-export type Family =
-  | "plywood"
-  | "aluminum-brushed"
-  | "steel-bright"
-  | "steel-dark"
-  | "black-print"
-  | "black-anodized"
-  | "black-plastic"
-  | "rubber"
-  | "laminate"
-  | "ptfe"
-  | "mirror";
-
 export function createMaterials(birch: THREE.Texture, birchRough: THREE.Texture) {
   birch.wrapS = birch.wrapT = THREE.RepeatWrapping;
   birch.colorSpace = THREE.SRGBColorSpace;
   birch.anisotropy = 8;
+  birch.repeat.set(1.6, 1.6);
   birchRough.wrapS = birchRough.wrapT = THREE.RepeatWrapping;
+  birchRough.repeat.set(1.6, 1.6);
 
-  const m: Record<Family, THREE.Material> = {
-    plywood: new THREE.MeshStandardMaterial({
+  return {
+    plywood: new THREE.MeshPhysicalMaterial({
       map: birch,
       roughnessMap: birchRough,
-      color: "#ffffff",
-      roughness: 0.85,
+      color: "#dccfb6",
+      roughness: 0.58,
+      metalness: 0,
+      clearcoat: 0.35,
+      clearcoatRoughness: 0.4,
+    }),
+    plywoodEdge: new THREE.MeshStandardMaterial({
+      color: "#c8ad82",
+      roughness: 0.8,
       metalness: 0,
     }),
-    "aluminum-brushed": new THREE.MeshStandardMaterial({
-      color: "#c9cdd2",
-      metalness: 0.95,
-      roughness: 0.34,
-    }),
-    "steel-bright": new THREE.MeshStandardMaterial({
-      color: "#aeb2b8",
+    aluminum: new THREE.MeshPhysicalMaterial({
+      color: "#d9dce0",
       metalness: 1,
-      roughness: 0.42,
+      roughness: 0.3,
+      clearcoat: 0.1,
     }),
-    "steel-dark": new THREE.MeshStandardMaterial({
-      color: "#2b2b2e",
-      metalness: 0.9,
-      roughness: 0.48,
+    steel: new THREE.MeshStandardMaterial({
+      color: "#b4b8be",
+      metalness: 1,
+      roughness: 0.45,
     }),
-    "black-print": new THREE.MeshStandardMaterial({
-      color: "#151515",
-      roughness: 0.78,
-      metalness: 0.04,
-    }),
-    "black-anodized": new THREE.MeshStandardMaterial({
-      color: "#17181b",
-      roughness: 0.4,
-      metalness: 0.7,
-    }),
-    "black-plastic": new THREE.MeshStandardMaterial({
-      color: "#101010",
-      roughness: 0.62,
-      metalness: 0.05,
-    }),
-    rubber: new THREE.MeshStandardMaterial({
-      color: "#0c0c0c",
-      roughness: 0.96,
-      metalness: 0,
-    }),
-    laminate: new THREE.MeshStandardMaterial({
-      color: "#0a0a0a",
-      roughness: 0.18,
+    black: new THREE.MeshStandardMaterial({
+      color: "#161616",
+      roughness: 0.55,
       metalness: 0.25,
     }),
+    blackMatte: new THREE.MeshStandardMaterial({
+      color: "#101010",
+      roughness: 0.85,
+      metalness: 0.05,
+    }),
+    anodized: new THREE.MeshPhysicalMaterial({
+      color: "#1c1d20",
+      roughness: 0.32,
+      metalness: 0.85,
+      clearcoat: 0.3,
+    }),
+    accent: new THREE.MeshStandardMaterial({
+      color: "#7a1f1f",
+      roughness: 0.4,
+      metalness: 0.6,
+    }),
+    laminate: new THREE.MeshPhysicalMaterial({
+      color: "#0a0a0a",
+      roughness: 0.12,
+      metalness: 0.1,
+      clearcoat: 0.8,
+    }),
     ptfe: new THREE.MeshStandardMaterial({
-      color: "#e9e9e6",
-      roughness: 0.55,
-      metalness: 0,
+      color: "#ececea",
+      roughness: 0.5,
+    }),
+    rubber: new THREE.MeshStandardMaterial({
+      color: "#0b0b0b",
+      roughness: 0.95,
     }),
     mirror: new THREE.MeshPhysicalMaterial({
       color: "#ffffff",
       metalness: 1,
-      roughness: 0.05,
-      envMapIntensity: 1.8,
+      roughness: 0.03,
+      envMapIntensity: 1.4,
+    }),
+    glass: new THREE.MeshPhysicalMaterial({
+      color: "#dfe4e8",
+      roughness: 0.35,
+      metalness: 0,
+      transmission: 0,
+    }),
+    led: new THREE.MeshStandardMaterial({
+      color: "#1a2a1a",
+      emissive: "#5cf08a",
+      emissiveIntensity: 2.5,
+      roughness: 0.4,
+    }),
+    floor: new THREE.MeshStandardMaterial({
+      color: "#0d0d0d",
+      roughness: 0.92,
+      metalness: 0,
     }),
   };
-  for (const mat of Object.values(m)) mat.side = THREE.DoubleSide;
-  return m;
 }
 
-export function familyOf(name: string): Family | null {
-  const i = name.indexOf("::");
-  if (i < 0) return null;
-  const f = name.slice(0, i) as Family;
-  return f;
-}
+export type Materials = ReturnType<typeof createMaterials>;

@@ -12,13 +12,14 @@ MV Astronomy — the website for an independent student project in Mountain View
 
 ## The 3D telescope
 
-`public/models/telescope.glb` is built from the club's Onshape assembly, not modelled by hand. The pipeline is `scripts/build-telescope-glb.mjs`:
+The home page renders an idealised version of the instrument, drawn clean the way the finished telescope should look under one studio spotlight. It is not a CAD export: `src/components/telescope/IdealTelescope.tsx` builds it from primitives (rounded plywood slabs, extruded bearing arcs and cage rings, brushed-aluminium poles, a front-surface primary, a 45° secondary flat, focuser and camera, drive and control box) using the dimensions in `spec.ts`, which follow the real build (254 mm f/4.48, 6-pole truss, 360 mm mirror box, 508 mm ground board).
 
-1. Export from Onshape (document `6bf936e1f7347f3680c3534f`) with the translation API as glTF: `ASM 00 — FULL TELESCOPE`, plus the part studios whose ASM 00 instances are currently broken in the workspace (Mirror Box v3, Mirror Cell v2, Altitude Bearing Base, Fan 80mm). The direct `/gltf` endpoint returns 400 for this assembly; use `POST .../translations` with `formatName: "GLTF"` and download the `resultExternalDataIds`.
-2. `node scripts/build-telescope-glb.mjs <dir-with-exports>` re-centres the UTA on the optical axis, composes the missing parts at their recorded occurrence transforms, builds the R285 sector gear and the 70 mm secondary flat, stamps a material family onto every node name (`plywood::Rocker Floor 450sq`), joins Onshape's per-face primitives, welds, simplifies (threads and vendor STEPs hardest), Draco-compresses, and writes the GLB plus `src/components/telescope/anchors.json` (world bounding boxes the camera choreography is keyed to).
-3. `src/components/telescope/materials.ts` maps the family prefix to real PBR materials at load time; `choreography.ts` holds the camera keyframes; `TelescopeStory.tsx` pins the canvas and reads scroll progress in the frame loop.
+- `materials.ts` — one material per surface family (varnished birch, aluminium, powder-coat black, mirror, glass, rubber, LED, floor).
+- `TelescopeCanvas.tsx` — the photo-shoot rig: one warm key spot with soft shadows, a cool rim, a faint fill, a low environment for reflections, a dark floor and fog.
+- `choreography.ts` — camera keyframes for the five screens (hero, mechanical, electrical, optics, outro), keyed to the anchor points in `spec.ts`.
+- `TelescopeStory.tsx` — pins the canvas and reads scroll progress inside the frame loop; copy scrolls in normal flow over it.
 
-Refresh after CAD changes: re-export, re-run the script, check the anchors and the four camera beats with a screenshot pass at scroll fractions 0 / 0.28 / 0.55 / 0.8 / 1.
+To change the instrument, edit `spec.ts` or the component and check the five beats with a screenshot pass at scroll fractions 0 / 0.28 / 0.55 / 0.8 / 1 (use `behavior: "instant"` scrolls). A CAD-derived version built from the Onshape assembly exists in git history at `e72f670` if it is ever wanted again.
 
 ## Data
 

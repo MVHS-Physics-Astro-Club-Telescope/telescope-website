@@ -1,30 +1,19 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, type RefObject } from "react";
+import { Suspense, useMemo, useRef, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, Lightformer, useGLTF, useTexture } from "@react-three/drei";
+import { Environment, Lightformer, useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { createMaterials, familyOf } from "./materials";
-import { SCENE_FLOOR_Y, heroSpin, sampleCamera } from "./choreography";
+import { createMaterials } from "./materials";
+import { heroSpin, sampleCamera } from "./choreography";
+import IdealTelescope from "./IdealTelescope";
 
-const MODEL_URL = "/models/telescope.glb";
 const UP = new THREE.Vector3(0, 1, 0);
 
-function Telescope({ progress, spin }: { progress: RefObject<number>; spin: boolean }) {
-  const { scene } = useGLTF(MODEL_URL, "/draco/");
+function Stage({ progress, spin }: { progress: RefObject<number>; spin: boolean }) {
   const [birch, birchRough] = useTexture(["/textures/birch.jpg", "/textures/birch-rough.jpg"]);
-  const materials = useMemo(() => createMaterials(birch, birchRough), [birch, birchRough]);
+  const m = useMemo(() => createMaterials(birch, birchRough), [birch, birchRough]);
   const group = useRef<THREE.Group>(null);
-
-  useEffect(() => {
-    scene.traverse((o) => {
-      if (!(o instanceof THREE.Mesh)) return;
-      const fam = familyOf(o.name);
-      if (fam) o.material = materials[fam];
-      o.castShadow = true;
-      o.receiveShadow = true;
-    });
-  }, [scene, materials]);
 
   useFrame(({ clock }) => {
     if (!group.current) return;
@@ -32,10 +21,15 @@ function Telescope({ progress, spin }: { progress: RefObject<number>; spin: bool
   });
 
   return (
-    <group ref={group}>
-      {/* Z-up metres → Y-up */}
-      <primitive object={scene} rotation={[-Math.PI / 2, 0, 0]} />
-    </group>
+    <>
+      <group ref={group}>
+        <IdealTelescope m={m} />
+      </group>
+      {/* studio floor: catches the spotlight pool and the shadow */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.0005, 0]} material={m.floor} receiveShadow>
+        <circleGeometry args={[7, 96]} />
+      </mesh>
+    </>
   );
 }
 
@@ -51,16 +45,13 @@ function Rig({ progress, animate }: { progress: RefObject<number>; animate: bool
     const p = animate ? (progress.current ?? 0) : 0;
     const shift = sampleCamera(p, pos, look);
     const aspect = size.width / size.height;
-    // Portrait viewports need more distance to keep the instrument in frame,
-    // and the copy sits below the model there rather than beside it.
     if (aspect < 1.1) {
+      // phones: more distance, and aim lower so the subject rides above the copy
       const k = Math.pow(1.1 / aspect, 0.62);
       pos.sub(look).multiplyScalar(k).add(look);
-      // copy sits below the model on phones: aim lower so the subject rides high
       look.setY(look.y - 0.22);
       pos.setY(pos.y - 0.22);
     } else {
-      // slide camera + target along the camera's right axis
       right.subVectors(look, pos).cross(UP).normalize().multiplyScalar(shift);
       pos.add(right);
       look.add(right);
@@ -79,6 +70,43 @@ function Rig({ progress, animate }: { progress: RefObject<number>; animate: bool
   return null;
 }
 
+function Lights() {
+  const key = useRef<THREE.SpotLight>(null);
+  const rim = useRef<THREE.SpotLight>(null);
+  const fill = useRef<THREE.SpotLight>(null);
+  const target = useMemo(() => {
+    const t = new THREE.Object3D();
+    t.position.set(0, 0.55, 0);
+    return t;
+  }, []);
+  return (
+    <>
+      <primitive object={target} />
+      {/* the photo-shoot key: one warm spot from high front-right */}
+      <spotLight
+        ref={key}
+        position={[1.6, 4.6, 2.0]}
+        angle={0.36}
+        penumbra={0.75}
+        decay={1.6}
+        distance={12}
+        intensity={140}
+        color="#fff0d8"
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-bias={-0.00015}
+        shadow-normalBias={0.02}
+        shadow-radius={6}
+        target={target}
+      />
+      {/* cool rim from behind-left so edges separate from the dark */}
+      <spotLight ref={rim} position={[-2.6, 3.2, -2.4]} angle={0.5} penumbra={0.9} decay={1.6} distance={12} intensity={45} color="#dbe4ff" target={target} />
+      {/* faint fill so shadow sides read */}
+      <spotLight ref={fill} position={[-3, 1.4, 2.2]} angle={0.7} penumbra={1} decay={1.6} distance={12} intensity={12} color="#ffffff" target={target} />
+    </>
+  );
+}
+
 export default function TelescopeCanvas({
   progress,
   animate,
@@ -91,41 +119,25 @@ export default function TelescopeCanvas({
   return (
     <Canvas
       dpr={[1, 1.75]}
-      camera={{ fov: 30, near: 0.05, far: 40, position: [1.7, 1, 2.35] }}
-      gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
-      shadows
+      camera={{ fov: 30, near: 0.05, far: 40, position: [2, 1.4, 2.75] }}
+      gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.95 }}
+      shadows="soft"
       frameloop="always"
       style={{ position: "absolute", inset: 0 }}
     >
+      <fog attach="fog" args={["#000000", 3.5, 9]} />
       <Suspense fallback={null}>
-        <Telescope progress={progress} spin={animate} />
+        <Stage progress={progress} spin={animate} />
+        <Lights />
+        {/* soft environment so metal, glass and varnish have something to reflect */}
         <Environment resolution={256} frames={1}>
-          {/* warm key from the upper right */}
-          <Lightformer form="rect" intensity={5} color="#ffedd2" position={[2.4, 3.2, 2.2]} scale={[2.6, 2.6, 1]} target={[0, 0.5, 0]} />
-          {/* cool fill from the left */}
-          <Lightformer form="rect" intensity={1.0} color="#d6e0ff" position={[-3.2, 1.6, -0.6]} scale={[4, 3, 1]} target={[0, 0.5, 0]} />
-          {/* rim from behind */}
-          <Lightformer form="rect" intensity={1.8} color="#ffffff" position={[0.6, 2.4, -3.4]} scale={[5, 2.2, 1]} target={[0, 0.6, 0]} />
-          {/* floor and back wall so mirrors and chrome have something to reflect */}
-          <Lightformer form="rect" intensity={0.5} color="#ffffff" position={[0, -3, 0]} rotation-x={Math.PI / 2} scale={[8, 8, 1]} />
-          <Lightformer form="rect" intensity={0.35} color="#ffffff" position={[0, 1, -6]} scale={[10, 6, 1]} />
+          <Lightformer form="rect" intensity={1.6} color="#fff1dc" position={[2, 4, 2]} scale={[2.5, 2.5, 1]} target={[0, 0.5, 0]} />
+          <Lightformer form="rect" intensity={0.5} color="#d8e2ff" position={[-3, 2.4, -2]} scale={[4, 3, 1]} target={[0, 0.6, 0]} />
+          <Lightformer form="rect" intensity={0.25} color="#ffffff" position={[0, -3, 0]} rotation-x={Math.PI / 2} scale={[8, 8, 1]} />
+          <Lightformer form="rect" intensity={0.12} color="#ffffff" position={[0, 1, -7]} scale={[12, 6, 1]} />
         </Environment>
-        <spotLight
-          position={[2.2, 3.4, 1.8]}
-          angle={0.45}
-          penumbra={0.9}
-          intensity={34}
-          color="#fff3e0"
-          castShadow
-          shadow-mapSize={[2048, 2048]}
-          shadow-bias={-0.0002}
-          shadow-normalBias={0.01}
-        />
-        <ContactShadows position={[0, SCENE_FLOOR_Y - 0.002, 0]} opacity={0.75} scale={3} blur={2.2} far={1.2} resolution={512} frames={1} />
       </Suspense>
       <Rig progress={progress} animate={animate} />
     </Canvas>
   );
 }
-
-useGLTF.preload(MODEL_URL, "/draco/");
