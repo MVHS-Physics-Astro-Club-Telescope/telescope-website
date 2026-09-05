@@ -1,82 +1,78 @@
 import * as THREE from "three";
-import { ANCHORS, type V3 } from "./spec";
+import { ANCHORS, beatProgress, type V3 } from "./spec";
 
 /**
- * Camera choreography for the home-page story, in the scene's world frame
- * (Y-up metres, floor at y = 0). `shift` slides camera and target together
- * along the camera's right axis so the instrument sits beside the copy.
+ * One continuous camera path around the instrument, sampled by scroll
+ * progress. Position and look-target each ride a Catmull-Rom spline
+ * through the waypoints below, so the camera orbits and dives rather than
+ * cutting between poses. `shift` slides camera and target together along
+ * the camera's right axis so the instrument sits beside the copy.
  */
-export type Key = { p: number; pos: V3; look: V3; shift: number };
+type Way = { p: number; pos: V3; look: V3; shift: number };
 
 const whole = ANCHORS.whole;
 const rocker = ANCHORS.rocker;
 const drive = ANCHORS.drive;
-const primary = ANCHORS.primary;
 const secondary = ANCHORS.secondary;
-const focuser = ANCHORS.focuser;
 
-const mix = (a: V3, b: V3, t: number): V3 => [
-  a[0] + (b[0] - a[0]) * t,
-  a[1] + (b[1] - a[1]) * t,
-  a[2] + (b[2] - a[2]) * t,
+const pHero = beatProgress(0);
+const pMech = beatProgress(1);
+const pElec = beatProgress(2);
+const pOpt = beatProgress(3);
+const pOut = beatProgress(4);
+const mid = (a: number, b: number) => (a + b) / 2;
+
+const WAYPOINTS: Way[] = [
+  // hero: three-quarter view from the front right, slightly above
+  { p: pHero, pos: [2.05, whole[1] + 0.75, 2.7], look: [0, whole[1], 0], shift: -0.5 },
+  // drop and swing right as the first beat approaches
+  { p: mid(pHero, pMech), pos: [2.55, whole[1] + 0.3, 1.3], look: [0, whole[1] - 0.15, 0], shift: -0.46 },
+  // mechanical: low and close on the rocker, bearings and truss shoes
+  { p: pMech, pos: [1.75, rocker[1] + 0.5, 0.7], look: [0.02, rocker[1] + 0.12, 0], shift: -0.3 },
+  // continue around the right side to the back
+  { p: mid(pMech, pElec), pos: [0.55, rocker[1] + 0.35, -1.25], look: [0, rocker[1] + 0.12, 0], shift: 0 },
+  // electrical: the drive and control box on the rear-left corner
+  { p: pElec, pos: [drive[0] - 1.1, drive[1] + 0.55, drive[2] - 1.25], look: [drive[0] + 0.08, drive[1] + 0.08, drive[2] - 0.02], shift: 0.16 },
+  // rise up the left side
+  { p: mid(pElec, pOpt), pos: [-1.75, whole[1] + 0.7, 0.15], look: [-0.05, whole[1] + 0.15, 0], shift: 0 },
+  // optics: high on the left-front, looking down into the cage
+  { p: pOpt, pos: [-0.85, secondary[1] + 0.78, 1.05], look: [0.02, secondary[1] - 0.04, 0.03], shift: -0.16 },
+  // cross the front past the focuser and camera
+  { p: mid(pOpt, pOut), pos: [0.65, secondary[1] + 0.62, 1.25], look: [0.08, secondary[1] + 0.02, 0.08], shift: -0.2 },
+  // outro: the whole instrument again from the front left
+  { p: pOut, pos: [-1.85, whole[1] + 0.75, 2.7], look: [0, whole[1] + 0.03, 0], shift: -0.5 },
 ];
 
-/** Screens: hero 0, mechanical 1, electrical 2, optics 3, outro 4 → p = i/4. */
-export const CAMERA_KEYS: Key[] = [
-  // hero — the whole instrument, three-quarter view, slightly above
-  { p: 0.0, pos: [2.0, whole[1] + 0.75, 2.75], look: [0, whole[1] + 0.02, 0], shift: -0.5 },
-  { p: 0.1, pos: [1.85, whole[1] + 0.66, 2.65], look: [0, whole[1] + 0.02, 0], shift: -0.5 },
-  // mechanical — rocker, bearings, mirror box, truss shoes
-  { p: 0.25, pos: [1.3, rocker[1] + 0.55, 1.5], look: [0, rocker[1] + 0.15, 0], shift: -0.42 },
-  { p: 0.35, pos: [1.1, rocker[1] + 0.48, 1.4], look: [0.02, rocker[1] + 0.17, 0], shift: -0.42 },
-  // electrical — altitude motor and the control box on the rear
-  { p: 0.5, pos: [drive[0] - 1.45, drive[1] + 0.55, drive[2] - 0.9], look: mix(drive, rocker, 0.3), shift: 0.22 },
-  { p: 0.6, pos: [drive[0] - 1.3, drive[1] + 0.46, drive[2] - 1.05], look: mix(drive, rocker, 0.25), shift: 0.22 },
-  // optics — down at the secondary and the primary beneath it
-  { p: 0.75, pos: [secondary[0] + 0.7, secondary[1] + 0.62, secondary[2] + 0.95], look: mix(secondary, primary, 0.22), shift: -0.22 },
-  { p: 0.85, pos: [focuser[0] + 0.15, secondary[1] + 0.42, focuser[2] + 0.75], look: mix(secondary, primary, 0.14), shift: -0.22 },
-  // outro — pull back to the whole instrument
-  { p: 1.0, pos: [-1.75, whole[1] + 0.75, 2.75], look: [0, whole[1] + 0.05, 0], shift: -0.5 },
-];
+const posCurve = new THREE.CatmullRomCurve3(WAYPOINTS.map((w) => new THREE.Vector3(...w.pos)), false, "centripetal", 0.5);
+const lookCurve = new THREE.CatmullRomCurve3(WAYPOINTS.map((w) => new THREE.Vector3(...w.look)), false, "centripetal", 0.5);
 
-export const smooth = (t: number) => t * t * (3 - 2 * t);
+const smooth = (t: number) => t * t * (3 - 2 * t);
 
-const tA = new THREE.Vector3();
-const tB = new THREE.Vector3();
-
-/** Returns the sampled lateral shift; fills pos and look. */
-export function sampleCamera(p: number, outPos: THREE.Vector3, outLook: THREE.Vector3): number {
-  const keys = CAMERA_KEYS;
-  if (p <= keys[0].p) {
-    outPos.set(...keys[0].pos);
-    outLook.set(...keys[0].look);
-    return keys[0].shift;
-  }
-  const last = keys[keys.length - 1];
-  if (p >= last.p) {
-    outPos.set(...last.pos);
-    outLook.set(...last.look);
-    return last.shift;
-  }
-  for (let i = 0; i < keys.length - 1; i++) {
-    const a = keys[i];
-    const b = keys[i + 1];
+/** Map scroll progress to the spline parameter, easing within each leg. */
+function toU(p: number): { u: number; shift: number } {
+  const n = WAYPOINTS.length;
+  if (p <= WAYPOINTS[0].p) return { u: 0, shift: WAYPOINTS[0].shift };
+  if (p >= WAYPOINTS[n - 1].p) return { u: 1, shift: WAYPOINTS[n - 1].shift };
+  for (let i = 0; i < n - 1; i++) {
+    const a = WAYPOINTS[i], b = WAYPOINTS[i + 1];
     if (p >= a.p && p <= b.p) {
       const t = smooth((p - a.p) / (b.p - a.p));
-      tA.set(...a.pos);
-      tB.set(...b.pos);
-      outPos.lerpVectors(tA, tB, t);
-      tA.set(...a.look);
-      tB.set(...b.look);
-      outLook.lerpVectors(tA, tB, t);
-      return a.shift + (b.shift - a.shift) * t;
+      return { u: (i + t) / (n - 1), shift: a.shift + (b.shift - a.shift) * t };
     }
   }
-  return 0;
+  return { u: 1, shift: WAYPOINTS[n - 1].shift };
 }
 
-/** Model spin (radians) during the hero, easing out before the first beat. */
+/** Returns the lateral shift; fills pos and look. */
+export function sampleCamera(p: number, outPos: THREE.Vector3, outLook: THREE.Vector3): number {
+  const { u, shift } = toU(p);
+  posCurve.getPoint(u, outPos);
+  lookCurve.getPoint(u, outLook);
+  return shift;
+}
+
+/** Slow idle turn while the hero is on screen, fading out before the first beat. */
 export function heroSpin(p: number, time: number): number {
-  const w = 1 - smooth(THREE.MathUtils.clamp(p / 0.2, 0, 1));
-  return w * (time * 0.1);
+  const w = 1 - smooth(THREE.MathUtils.clamp(p / (pMech * 0.6), 0, 1));
+  return w * time * 0.06;
 }

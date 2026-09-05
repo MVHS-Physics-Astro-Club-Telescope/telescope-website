@@ -12,14 +12,14 @@ MV Astronomy — the website for an independent student project in Mountain View
 
 ## The 3D telescope
 
-The home page renders an idealised version of the instrument, drawn clean the way the finished telescope should look under one studio spotlight. It is not a CAD export: `src/components/telescope/IdealTelescope.tsx` builds it from primitives (rounded plywood slabs, extruded bearing arcs and cage rings, brushed-aluminium poles, a front-surface primary, a 45° secondary flat, focuser and camera, drive and control box) using the dimensions in `spec.ts`, which follow the real build (254 mm f/4.48, 6-pole truss, 360 mm mirror box, 508 mm ground board).
+The home page renders an idealised version of the instrument, drawn the way a finished, well-made telescope looks under one studio spotlight. It is not a CAD export: `src/components/telescope/IdealTelescope.tsx` builds it from primitives (rounded plywood slabs, a rocker with a cradle top edge and a lightening hole, laminate-rimmed bearing arcs, a flocked mirror box, brushed-aluminium poles with thumb-knob clamps, a baffled cage, a front-surface primary, a 45° secondary flat, focuser and camera, drive and control box) using the dimensions in `spec.ts`, which follow the real build (254 mm f/4.48, 6-pole truss, 360 mm mirror box, 508 mm ground board). The plywood is a photographed maple veneer (diffuse, normal, roughness) and the reflections come from a real photo-studio HDRI; both are CC0 from Poly Haven and live in `public/textures` and `public/hdr`.
 
 - `materials.ts` — one material per surface family (varnished birch, aluminium, powder-coat black, mirror, glass, rubber, LED, floor).
 - `TelescopeCanvas.tsx` — the photo-shoot rig: one warm key spot with soft shadows, a cool rim, a faint fill, a low environment for reflections, a dark floor and fog.
-- `choreography.ts` — camera keyframes for the five screens (hero, mechanical, electrical, optics, outro), keyed to the anchor points in `spec.ts`.
+- `choreography.ts` — one continuous Catmull-Rom camera path (position and look-target) around the instrument: front → low around the rocker → behind to the drive → up the left side into the cage → back out. `spec.ts` also holds the story layout (`SCREENS`), so the DOM beats and the camera waypoints share the same scroll positions.
 - `TelescopeStory.tsx` — pins the canvas and reads scroll progress inside the frame loop; copy scrolls in normal flow over it.
 
-To change the instrument, edit `spec.ts` or the component and check the five beats with a screenshot pass at scroll fractions 0 / 0.28 / 0.55 / 0.8 / 1 (use `behavior: "instant"` scrolls). A CAD-derived version built from the Onshape assembly exists in git history at `e72f670` if it is ever wanted again.
+To change the instrument, edit `spec.ts` or the component and check the beats with a screenshot pass at the scroll fractions `beatProgress()` reports (0, 0.227, 0.5, 0.773, 1 with the current layout; use `behavior: "instant"` scrolls). A CAD-derived version built from the Onshape assembly exists in git history at `e72f670` if it is ever wanted again.
 
 ## Data
 

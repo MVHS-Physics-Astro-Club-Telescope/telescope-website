@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion, MotionConfig } from "framer-motion";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
+import { SCREENS, STORY_HEIGHT } from "./spec";
 
 const TelescopeCanvas = dynamic(() => import("./TelescopeCanvas"), { ssr: false });
 
@@ -44,8 +45,6 @@ const BEATS: Beat[] = [
     side: "left",
   },
 ];
-
-const SCREENS = BEATS.length + 2; // hero + beats + outro
 
 export default function TelescopeStory() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -94,7 +93,7 @@ export default function TelescopeStory() {
         ref={sectionRef}
         aria-label="The telescope"
         className="relative"
-        style={{ height: `${SCREENS * 100}svh` }}
+        style={{ height: `${STORY_HEIGHT * 100}svh` }}
       >
         {/* Pinned stage */}
         <div className="sticky top-0 h-svh overflow-hidden">
@@ -138,8 +137,13 @@ export default function TelescopeStory() {
             </div>
           </div>
 
-          {BEATS.map((b) => (
-            <div key={b.id} id={b.id} className="flex h-svh items-end pb-16 sm:items-center sm:pb-0">
+          {BEATS.map((b, i) => (
+            <div
+              key={b.id}
+              id={b.id}
+              className="flex items-end sm:items-center sm:pb-0"
+              style={{ height: `${SCREENS[i + 1] * 100}svh`, paddingBottom: `var(--beat-pb, ${((SCREENS[i + 1] - 1) * 100) / 2 + 8}svh)` }}
+            >
               <div
                 className={`mx-auto flex w-full max-w-6xl px-5 sm:px-8 ${
                   b.side === "right" && !reduced ? "justify-end" : "justify-start"

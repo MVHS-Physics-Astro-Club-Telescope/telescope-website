@@ -226,6 +226,11 @@ body {
 }
 a:hover .logo-mono { opacity: 1; }
 
+/* story beats sit centred on wide screens; the phone padding is inline */
+@media (min-width: 640px) {
+  :root { --beat-pb: 0px; }
+}
+
 /* ─── Soft pulse for "offline" dot ─────────────────── */
 @keyframes soft-pulse {
   0%, 100% { opacity: 1; }
