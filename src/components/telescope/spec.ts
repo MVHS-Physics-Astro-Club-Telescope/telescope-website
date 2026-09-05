@@ -31,9 +31,9 @@ export const SPEC = {
   secondary: { y: 1.1, a: 0.0495, b: 0.035 },
   focuserAzimuth: Math.PI / 4,
   /** Control box on the rear of the rocker; lid faces −z. */
-  enclosure: { w: 0.2, h: 0.11, d: 0.046, x: -0.03, y: 0.145, zFace: -0.23 },
-  /** Raspberry Pi 4 inside it, component side facing −z. */
-  pi: { w: 0.085, h: 0.056, x: -0.065, y: 0.145 },
+  enclosure: { w: 0.28, h: 0.145, d: 0.05, x: -0.03, y: 0.15, zFace: -0.23 },
+  /** Raspberry Pi 4 inside it, component side facing −z, ports toward −x. */
+  pi: { w: 0.085, h: 0.056, x: -0.115, y: 0.15 },
 } as const;
 
 const c = Math.cos;
@@ -52,9 +52,14 @@ export const RING_AZIMUTHS = [-Math.PI / 6, Math.PI / 2, (7 * Math.PI) / 6];
 
 export type V3 = [number, number, number];
 
-/** Pi board plane and its processor, in world space. */
-export const PI_Z = SPEC.enclosure.zFace - 0.012; // PCB face
-export const CHIP: V3 = [SPEC.pi.x - 0.012, SPEC.pi.y + 0.004, PI_Z - 0.0025];
+/**
+ * Pi board plane and its processor, in world space. The board is built in
+ * its own frame (see PiBoard.tsx) and turned to face the lid, so its local
+ * +x runs toward world −x; the BCM2711 lid sits 13.0 mm left of and 4.3 mm
+ * above the board centre in the photo, 1.5 mm proud of the PCB.
+ */
+export const PI_Z = SPEC.enclosure.zFace - 0.012; // PCB component face
+export const CHIP: V3 = [SPEC.pi.x + 0.013, SPEC.pi.y + 0.0043, PI_Z - 0.0015];
 
 /** Anchor points the camera choreography is keyed to. */
 export const ANCHORS = {

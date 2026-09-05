@@ -51,6 +51,7 @@ export function createMaterials(brushed: BrushedMaps) {
     }),
     chrome: new THREE.MeshPhysicalMaterial({ color: "#e2e4e8", metalness: 1, roughness: 0.12 }),
     steel: new THREE.MeshStandardMaterial({ color: "#a9adb3", metalness: 1, roughness: 0.38 }),
+    brass: new THREE.MeshPhysicalMaterial({ color: "#c9a85c", metalness: 1, roughness: 0.4 }),
     black: new THREE.MeshPhysicalMaterial({
       color: "#141414",
       roughness: 0.5,
@@ -82,12 +83,8 @@ export function createMaterials(brushed: BrushedMaps) {
     led: new THREE.MeshStandardMaterial({ color: "#1a2a1a", emissive: "#5cf08a", emissiveIntensity: 3, roughness: 0.4 }),
     ledRed: new THREE.MeshStandardMaterial({ color: "#2a1a1a", emissive: "#ff3b30", emissiveIntensity: 2.5, roughness: 0.4 }),
     // electronics
-    pcb: new THREE.MeshPhysicalMaterial({ color: "#134a2c", roughness: 0.55, metalness: 0.05, clearcoat: 0.5, clearcoatRoughness: 0.35 }),
-    chip: new THREE.MeshStandardMaterial({ color: "#101012", roughness: 0.35, metalness: 0.3 }),
-    chipCap: new THREE.MeshStandardMaterial({ color: "#b8bcc2", roughness: 0.3, metalness: 1 }),
     tin: new THREE.MeshStandardMaterial({ color: "#a6aab0", roughness: 0.38, metalness: 1 }),
     plastic: new THREE.MeshStandardMaterial({ color: "#111111", roughness: 0.6, metalness: 0.05 }),
-    heatsink: new THREE.MeshStandardMaterial({ color: "#2a2c30", roughness: 0.5, metalness: 0.8 }),
     wireRed: new THREE.MeshStandardMaterial({ color: "#b3201f", roughness: 0.6 }),
     wireBlack: new THREE.MeshStandardMaterial({ color: "#151515", roughness: 0.6 }),
     lid: new THREE.MeshPhysicalMaterial({
