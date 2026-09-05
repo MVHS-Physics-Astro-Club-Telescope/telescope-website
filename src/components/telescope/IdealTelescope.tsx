@@ -3,11 +3,14 @@
 import { useMemo } from "react";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
-import { RING_AZIMUTHS, SHOE_AZIMUTHS, SPEC, rimPoint } from "./spec";
+import { PI_Z, RING_AZIMUTHS, SHOE_AZIMUTHS, SPEC, rimPoint } from "./spec";
 import { boxUV, type Materials } from "./materials";
 
 type V3 = [number, number, number];
 const S = SPEC;
+const Y = new THREE.Vector3(0, 1, 0);
+const q = (dir: V3) => new THREE.Quaternion().setFromUnitVectors(Y, new THREE.Vector3(...dir).normalize());
+const Q = { px: q([1, 0, 0]), nx: q([-1, 0, 0]), pz: q([0, 0, 1]), nz: q([0, 0, -1]) };
 
 /* ── small geometry helpers ─────────────────────────────────────── */
 
@@ -18,7 +21,7 @@ function Rod({ from, to, r, material, segments = 28 }: { from: V3; to: V3; r: nu
     const t = new THREE.Vector3(...to);
     const d = t.clone().sub(f);
     const len = d.length();
-    const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+    const quat = new THREE.Quaternion().setFromUnitVectors(Y, d.normalize());
     return { pos: f.add(t).multiplyScalar(0.5), quat, len };
   }, [from, to]);
   return (
@@ -28,17 +31,32 @@ function Rod({ from, to, r, material, segments = 28 }: { from: V3; to: V3; r: nu
   );
 }
 
-function usePly(w: number, h: number, d: number, r = 0.0035) {
-  return useMemo(() => boxUV(new RoundedBoxGeometry(w, h, d, 4, r)), [w, h, d, r]);
+function useSheet(w: number, h: number, d: number, r = 0.0015) {
+  return useMemo(() => boxUV(new RoundedBoxGeometry(w, h, d, 3, r)), [w, h, d, r]);
 }
 
-/** Rounded plywood slab with world-scale grain. */
-function Slab({ size, position, rotation, material, radius }: { size: V3; position: V3; rotation?: V3; material: THREE.Material; radius?: number }) {
-  const geo = usePly(size[0], size[1], size[2], radius);
+/** Machined plate with a small chamfer and brushed grain at world scale. */
+function Plate({ size, position, rotation, material, radius }: { size: V3; position: V3; rotation?: V3; material: THREE.Material; radius?: number }) {
+  const geo = useSheet(size[0], size[1], size[2], radius);
   return <mesh geometry={geo} position={position} rotation={rotation} material={material} castShadow receiveShadow />;
 }
 
-function extrude(shape: THREE.Shape, depth: number, bevel = 0.002) {
+/** Socket-head cap screw, axis along `dir`, head sitting on the surface. */
+function Screw({ position, dir, material, socket, r = 0.0035 }: { position: V3; dir: V3; material: THREE.Material; socket: THREE.Material; r?: number }) {
+  const quat = useMemo(() => q(dir), [dir]);
+  return (
+    <group position={position} quaternion={quat}>
+      <mesh position={[0, 0.0015, 0]} material={material} castShadow>
+        <cylinderGeometry args={[r, r, 0.003, 24]} />
+      </mesh>
+      <mesh position={[0, 0.0031, 0]} material={socket}>
+        <cylinderGeometry args={[r * 0.45, r * 0.45, 0.0006, 6]} />
+      </mesh>
+    </group>
+  );
+}
+
+function extrude(shape: THREE.Shape, depth: number, bevel = 0.0012) {
   return new THREE.ExtrudeGeometry(shape, {
     depth,
     bevelEnabled: bevel > 0,
@@ -64,18 +82,14 @@ function useRingGeometry(rIn: number, rOut: number, h: number) {
   }, [rIn, rOut, h]);
 }
 
-/**
- * Rocker side wall, drawn in the (z, y) plane and extruded along x: a plate
- * whose top edge is the concave cradle the bearing rides in, with a round
- * lightening hole low in the middle.
- */
+/** Rocker side plate: cradle top edge plus a round lightening hole, extruded along x. */
 function useRockerSideGeometry() {
-  const { floorY, ply, wallDepth, cradleR, cutout } = S.rocker;
+  const { floorY, plate, wallDepth, cradleR, cutout } = S.rocker;
   return useMemo(() => {
     const hz = wallDepth / 2;
-    const cy = S.altAxisY - floorY; // axis height in shape space
-    const th0 = -Math.acos(hz / cradleR); // angle of the +z end, below the axis
-    const th1 = -Math.PI - th0; // the −z end
+    const cy = S.altAxisY - floorY;
+    const th0 = -Math.acos(hz / cradleR);
+    const th1 = -Math.PI - th0;
     const shape = new THREE.Shape();
     shape.moveTo(-hz, 0);
     shape.lineTo(hz, 0);
@@ -89,16 +103,16 @@ function useRockerSideGeometry() {
     const hole = new THREE.Path();
     hole.absarc(0, cutout.y - floorY, cutout.r, 0, Math.PI * 2, true);
     shape.holes.push(hole);
-    const g = extrude(shape, ply, 0.002);
-    g.rotateY(-Math.PI / 2); // shape x → world z, thickness → −x
-    g.translate(ply / 2, 0, 0);
+    const g = extrude(shape, plate, 0.0012);
+    g.rotateY(-Math.PI / 2);
+    g.translate(plate / 2, 0, 0);
     return boxUV(g);
-  }, [floorY, ply, wallDepth, cradleR, cutout]);
+  }, [floorY, plate, wallDepth, cradleR, cutout]);
 }
 
-/** Front board of the rocker with a half-round hand cutout at the top. */
+/** Front plate of the rocker with a half-round hand cutout at the top. */
 function useRockerFrontGeometry(width: number) {
-  const { ply, front } = S.rocker;
+  const { plate, front } = S.rocker;
   return useMemo(() => {
     const shape = new THREE.Shape();
     const hw = width / 2;
@@ -109,15 +123,15 @@ function useRockerFrontGeometry(width: number) {
     shape.absarc(0, front.h, front.handleR, 0, Math.PI, true);
     shape.lineTo(-hw, front.h);
     shape.closePath();
-    const g = extrude(shape, ply, 0.002);
-    g.translate(0, 0, -ply / 2);
+    const g = extrude(shape, plate, 0.0012);
+    g.translate(0, 0, -plate / 2);
     return boxUV(g);
-  }, [width, ply, front]);
+  }, [width, plate, front]);
 }
 
 /** Altitude bearing: a half-disc below the axis with a short plate above it. */
 function useBearingGeometry() {
-  const { r, ply, top } = S.bearing;
+  const { r, plate, top } = S.bearing;
   const up = top - S.altAxisY;
   return useMemo(() => {
     const shape = new THREE.Shape();
@@ -126,26 +140,26 @@ function useBearingGeometry() {
     shape.absarc(0, 0, r, Math.PI, Math.PI * 2, false);
     shape.lineTo(r, up);
     shape.closePath();
-    const g = extrude(shape, ply, 0.002);
+    const g = extrude(shape, plate, 0.0012);
     g.rotateY(Math.PI / 2);
-    g.translate(-ply / 2, 0, 0);
+    g.translate(-plate / 2, 0, 0);
     return boxUV(g);
-  }, [r, ply, up]);
+  }, [r, plate, up]);
 }
 
-/** Laminate rim glued to the running edge of a bearing. */
+/** Laminate rim bonded to the running edge of a bearing. */
 function useBearingRimGeometry() {
-  const { r, ply, rim } = S.bearing;
+  const { r, plate, rim } = S.bearing;
   return useMemo(() => {
     const shape = new THREE.Shape();
     shape.absarc(0, 0, r + 0.0015, Math.PI, Math.PI * 2, false);
     shape.absarc(0, 0, r - rim, Math.PI * 2, Math.PI, true);
     shape.closePath();
-    const g = extrude(shape, ply + 0.003, 0);
+    const g = extrude(shape, plate + 0.003, 0);
     g.rotateY(Math.PI / 2);
-    g.translate(-(ply + 0.003) / 2, 0, 0);
+    g.translate(-(plate + 0.003) / 2, 0, 0);
     return g;
-  }, [r, ply, rim]);
+  }, [r, plate, rim]);
 }
 
 /** Smooth altitude sector: an arc plate on the outer face of one bearing. */
@@ -186,6 +200,157 @@ function Knob({ position, quaternion, material }: { position: V3; quaternion?: T
   );
 }
 
+/* ── Raspberry Pi 4, component side facing −z ────────────────────── */
+
+function PiBoard({ m }: { m: Materials }) {
+  // local frame: origin at PCB centre, PCB in the x–y plane, parts extend toward −z
+  const t = 0.0016;
+  const part = (w: number, h: number, d: number, x: number, y: number, mat: THREE.Material, extra = 0) => (
+    <mesh position={[x, y, -(t / 2 + d / 2 + extra)]} material={mat} castShadow>
+      <boxGeometry args={[w, h, d]} />
+    </mesh>
+  );
+  return (
+    <group>
+      <mesh material={m.pcb} castShadow receiveShadow>
+        <boxGeometry args={[S.pi.w, S.pi.h, t]} />
+      </mesh>
+      {/* processor with its metal lid, and the RAM beside it */}
+      {part(0.015, 0.015, 0.0011, -0.012, 0.004, m.chip)}
+      {part(0.0125, 0.0125, 0.0004, -0.012, 0.004, m.chipCap, 0.0011)}
+      {part(0.011, 0.013, 0.001, 0.006, 0.004, m.chip)}
+      {/* GPIO header along the top edge */}
+      {part(0.051, 0.005, 0.0085, -0.0135, 0.0245, m.plastic)}
+      {Array.from({ length: 20 }, (_, i) => (
+        <group key={i}>
+          {part(0.0006, 0.0006, 0.006, -0.0135 - 0.02413 + i * 0.00254, 0.0245 + 0.00127, m.tin, 0.0085)}
+          {part(0.0006, 0.0006, 0.006, -0.0135 - 0.02413 + i * 0.00254, 0.0245 - 0.00127, m.tin, 0.0085)}
+        </group>
+      ))}
+      {/* USB stacks and Ethernet on the right end */}
+      {part(0.0175, 0.0135, 0.0155, 0.037, 0.018, m.tin)}
+      {part(0.0175, 0.0135, 0.0155, 0.037, 0.0025, m.tin)}
+      {part(0.021, 0.016, 0.0135, 0.0355, -0.018, m.tin)}
+      {/* USB-C, two micro-HDMI, audio jack along the bottom edge */}
+      {part(0.009, 0.0075, 0.0032, -0.033, -0.026, m.tin)}
+      {part(0.0065, 0.0075, 0.003, -0.017, -0.026, m.tin)}
+      {part(0.0065, 0.0075, 0.003, -0.004, -0.026, m.tin)}
+      <mesh position={[0.012, -0.026, -(t / 2 + 0.003)]} rotation={[Math.PI / 2, 0, 0]} material={m.plastic}>
+        <cylinderGeometry args={[0.003, 0.003, 0.0075, 20]} />
+      </mesh>
+      {/* wireless can, PMIC, camera and display connectors */}
+      {part(0.0125, 0.0105, 0.0018, -0.035, 0.014, m.tin)}
+      {part(0.006, 0.006, 0.0009, -0.03, -0.01, m.chip)}
+      {part(0.0025, 0.022, 0.0055, 0.019, -0.006, m.plastic)}
+      {part(0.0025, 0.022, 0.0055, -0.0405, -0.004, m.plastic)}
+      {/* status LEDs at the left edge */}
+      {part(0.0016, 0.001, 0.0008, -0.039, 0.0215, m.ledRed)}
+      {part(0.0016, 0.001, 0.0008, -0.039, 0.0185, m.led)}
+      {/* passives */}
+      {[[-0.02, -0.012], [-0.006, -0.016], [0.0, 0.016], [-0.024, 0.016], [0.012, 0.012]].map(([x, y], i) => (
+        <group key={i}>{part(0.002, 0.001, 0.0008, x, y, m.chip)}</group>
+      ))}
+      {[[0.024, 0.02], [-0.03, 0.0]].map(([x, y], i) => (
+        <mesh key={i} position={[x, y, -(t / 2 + 0.003)]} rotation={[Math.PI / 2, 0, 0]} material={m.plastic}>
+          <cylinderGeometry args={[0.0032, 0.0032, 0.006, 16]} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+/** Small stepper-driver module with a finned heatsink. */
+function DriverModule({ m, position }: { m: Materials; position: V3 }) {
+  return (
+    <group position={position}>
+      <mesh material={m.pcb} castShadow>
+        <boxGeometry args={[0.04, 0.03, 0.0016]} />
+      </mesh>
+      <mesh position={[0, 0.002, -0.0035]} material={m.chip}>
+        <boxGeometry args={[0.02, 0.02, 0.005]} />
+      </mesh>
+      {[-0.008, -0.004, 0, 0.004, 0.008].map((x) => (
+        <mesh key={x} position={[x, 0.002, -0.0105]} material={m.heatsink} castShadow>
+          <boxGeometry args={[0.0018, 0.02, 0.009]} />
+        </mesh>
+      ))}
+      <mesh position={[0, -0.011, -0.004]} material={m.plastic}>
+        <boxGeometry args={[0.03, 0.004, 0.006]} />
+      </mesh>
+      {[-0.017, 0.017].map((x) => (
+        <mesh key={x} position={[x, 0.012, -0.0025]} material={m.plastic}>
+          <boxGeometry args={[0.004, 0.004, 0.003]} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+/** Control box on the rear of the rocker: dark anodised shell, smoked lid, boards on standoffs. */
+function ControlBox({ m }: { m: Materials }) {
+  const { w, h, d, x, y, zFace } = S.enclosure;
+  const wall = 0.004;
+  const zBack = zFace - wall / 2;
+  const zLid = zFace - d + 0.001;
+  const zMid = zFace - d / 2;
+  const lidGeo = useMemo(() => new RoundedBoxGeometry(w - 0.006, h - 0.006, 0.002, 2, 0.001), [w, h]);
+  const piX = S.pi.x, piY = S.pi.y;
+  const standoffs: V3[] = [
+    [piX - 0.029, piY - 0.0245, 0],
+    [piX + 0.029, piY - 0.0245, 0],
+    [piX - 0.029, piY + 0.0245, 0],
+    [piX + 0.029, piY + 0.0245, 0],
+  ];
+  return (
+    <group>
+      {/* shell */}
+      <Plate size={[w, h, wall]} position={[x, y, zBack]} material={m.aluDark} radius={0.001} />
+      <Plate size={[w, wall, d]} position={[x, y + h / 2 - wall / 2, zMid]} material={m.aluDark} radius={0.001} />
+      <Plate size={[w, wall, d]} position={[x, y - h / 2 + wall / 2, zMid]} material={m.aluDark} radius={0.001} />
+      <Plate size={[wall, h, d]} position={[x - w / 2 + wall / 2, y, zMid]} material={m.aluDark} radius={0.001} />
+      <Plate size={[wall, h, d]} position={[x + w / 2 - wall / 2, y, zMid]} material={m.aluDark} radius={0.001} />
+      {/* lid: smoked acrylic on four screws */}
+      <mesh geometry={lidGeo} position={[x, y, zLid]} material={m.lid} />
+      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sy], i) => (
+        <Screw key={i} position={[x + sx * (w / 2 - 0.007), y + sy * (h / 2 - 0.007), zLid - 0.001]} dir={[0, 0, -1]} material={m.steel} socket={m.blackMatte} r={0.0028} />
+      ))}
+      {/* cable gland and a power lead out of the side */}
+      <mesh position={[x - w / 2 - 0.005, y - 0.03, zMid]} rotation={[0, 0, Math.PI / 2]} material={m.plastic}>
+        <cylinderGeometry args={[0.006, 0.006, 0.012, 20]} />
+      </mesh>
+      <Rod from={[x - w / 2 - 0.011, y - 0.03, zMid]} to={[x - w / 2 - 0.05, y - 0.075, zMid + 0.02]} r={0.0035} material={m.rubber} segments={12} />
+      {/* boards */}
+      {standoffs.map((p, i) => (
+        <mesh key={i} position={[p[0], p[1], (zFace - wall + PI_Z + 0.0008) / 2]} rotation={[Math.PI / 2, 0, 0]} material={m.tin}>
+          <cylinderGeometry args={[0.0025, 0.0025, Math.abs(PI_Z + 0.0008 - (zFace - wall)), 12]} />
+        </mesh>
+      ))}
+      <group position={[piX, piY, PI_Z]}>
+        <PiBoard m={m} />
+      </group>
+      {standoffs.map((p, i) => (
+        <Screw key={`s${i}`} position={[p[0], p[1], PI_Z - 0.0008]} dir={[0, 0, -1]} material={m.tin} socket={m.blackMatte} r={0.0022} />
+      ))}
+      <DriverModule m={m} position={[x + 0.045, y + 0.03, PI_Z]} />
+      <DriverModule m={m} position={[x + 0.045, y - 0.012, PI_Z]} />
+      {/* terminal block and wiring */}
+      <mesh position={[x + 0.045, y - 0.043, PI_Z - 0.006]} material={m.plastic} castShadow>
+        <boxGeometry args={[0.05, 0.009, 0.011]} />
+      </mesh>
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <mesh key={i} position={[x + 0.045 - 0.02 + i * 0.008, y - 0.043, PI_Z - 0.0115]} rotation={[Math.PI / 2, 0, 0]} material={m.tin}>
+          <cylinderGeometry args={[0.0015, 0.0015, 0.001, 8]} />
+        </mesh>
+      ))}
+      <Rod from={[x + 0.029, y - 0.043, PI_Z - 0.012]} to={[x + 0.032, y - 0.024, PI_Z - 0.012]} r={0.0012} material={m.wireRed} segments={8} />
+      <Rod from={[x + 0.037, y - 0.043, PI_Z - 0.012]} to={[x + 0.036, y - 0.024, PI_Z - 0.012]} r={0.0012} material={m.wireBlack} segments={8} />
+      <Rod from={[x + 0.061, y - 0.043, PI_Z - 0.012]} to={[x + 0.058, y + 0.018, PI_Z - 0.012]} r={0.0012} material={m.wireRed} segments={8} />
+      <Rod from={[x + 0.069, y - 0.043, PI_Z - 0.012]} to={[x + 0.062, y + 0.018, PI_Z - 0.012]} r={0.0012} material={m.wireBlack} segments={8} />
+      <Rod from={[piX + 0.03, piY + 0.0245, PI_Z - 0.014]} to={[x + 0.028, y + 0.03, PI_Z - 0.012]} r={0.0012} material={m.wireBlack} segments={8} />
+    </group>
+  );
+}
+
 /* ── the instrument ─────────────────────────────────────────────── */
 
 export default function IdealTelescope({ m }: { m: Materials }) {
@@ -193,27 +358,27 @@ export default function IdealTelescope({ m }: { m: Materials }) {
   const bearingGeo = useBearingGeometry();
   const bearingRimGeo = useBearingRimGeometry();
   const rockerSideGeo = useRockerSideGeometry();
-  const rockerFrontGeo = useRockerFrontGeometry(S.rocker.wallX * 2 - S.rocker.ply);
+  const rockerFrontGeo = useRockerFrontGeometry(S.rocker.wallX * 2 - S.rocker.plate);
   const secondaryGeo = useEllipseGeometry(S.secondary.a, S.secondary.b, 0.0012);
   const secondaryBackGeo = useEllipseGeometry(S.secondary.a + 0.003, S.secondary.b + 0.003, 0.008);
   const sectorGeo = useSectorGeometry(S.bearing.r - 0.014, 0.028, 0.005);
   const motorGeo = useMemo(() => new RoundedBoxGeometry(0.076, 0.057, 0.057, 3, 0.004), []);
   const azMotorGeo = useMemo(() => new RoundedBoxGeometry(0.042, 0.048, 0.042, 3, 0.003), []);
-  const enclosureGeo = useMemo(() => new RoundedBoxGeometry(0.15, 0.07, 0.03, 3, 0.004), []);
   const shoeGeo = useMemo(() => new RoundedBoxGeometry(0.07, 0.06, 0.03, 2, 0.003), []);
   const clampGeo = useMemo(() => new RoundedBoxGeometry(0.032, 0.05, 0.064, 2, 0.003), []);
   const focuserBodyGeo = useMemo(() => new RoundedBoxGeometry(0.064, 0.05, 0.05, 2, 0.004), []);
 
   const boxTop = S.mirrorBox.top;
   const half = S.mirrorBox.half;
-  const ply = S.mirrorBox.ply;
+  const pl = S.mirrorBox.plate;
   const boxH = boxTop - S.mirrorBox.bottom;
+  const rp = S.rocker.plate;
 
   const poles = useMemo(() => {
     const out: { from: V3; to: V3 }[] = [];
     const ringR = S.cage.rIn - 0.004;
     SHOE_AZIMUTHS.forEach((az, i) => {
-      const [sx, sz] = rimPoint(az, half - ply / 2);
+      const [sx, sz] = rimPoint(az, half - pl / 2);
       for (const t of [RING_AZIMUTHS[i], RING_AZIMUTHS[(i + 1) % 3]]) {
         out.push({
           from: [sx, boxTop - 0.02, sz],
@@ -222,23 +387,24 @@ export default function IdealTelescope({ m }: { m: Materials }) {
       }
     });
     return out;
-  }, [half, ply, boxTop]);
+  }, [half, pl, boxTop]);
 
   const fDir = useMemo(() => new THREE.Vector3(Math.cos(S.focuserAzimuth), 0, Math.sin(S.focuserAzimuth)), []);
   const fSide = useMemo(() => new THREE.Vector3(-fDir.z, 0, fDir.x), [fDir]);
   const focuserY = (S.cage.lowerY + S.cage.upperY) / 2;
-  const fQuat = useMemo(() => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), fDir), [fDir]);
+  const fQuat = useMemo(() => new THREE.Quaternion().setFromUnitVectors(Y, fDir), [fDir]);
   const secondaryQuat = useMemo(() => {
-    const n = fDir.clone().add(new THREE.Vector3(0, 1, 0)).normalize();
+    const n = fDir.clone().add(Y).normalize();
     return new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), n);
   }, [fDir]);
-  const knobSideQuat = useMemo(() => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), fSide), [fSide]);
-  const knobSideQuatNeg = useMemo(() => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), fSide.clone().negate()), [fSide]);
-  const xKnobQuat = useMemo(() => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(-1, 0, 0)), []);
+  const knobSideQuat = useMemo(() => new THREE.Quaternion().setFromUnitVectors(Y, fSide), [fSide]);
+  const knobSideQuatNeg = useMemo(() => new THREE.Quaternion().setFromUnitVectors(Y, fSide.clone().negate()), [fSide]);
 
   const padZ = S.rocker.cradleR * Math.sin(S.pad.angle);
   const padY = S.altAxisY - S.rocker.cradleR * Math.cos(S.pad.angle);
-  const fp = (d: number): V3 => [fDir.x * d, 0, fDir.z * d];
+  const fp = (dd: number): V3 => [fDir.x * dd, 0, fDir.z * dd];
+  const rockerBottom = S.rocker.floorY;
+  const rockerInnerW = S.rocker.wallX * 2 - rp;
 
   return (
     <group>
@@ -251,29 +417,42 @@ export default function IdealTelescope({ m }: { m: Materials }) {
           </mesh>
         );
       })}
-      <mesh position={[0, S.groundBoard.y + S.groundBoard.h / 2, 0]} material={m.plywood} castShadow receiveShadow>
+      <mesh position={[0, S.groundBoard.y + S.groundBoard.h / 2, 0]} material={m.alu} castShadow receiveShadow>
         <cylinderGeometry args={[S.groundBoard.r, S.groundBoard.r, S.groundBoard.h, 160]} />
       </mesh>
       <mesh position={[0, S.groundBoard.y + S.groundBoard.h + S.azBearing.h / 2, 0]} material={m.laminate} receiveShadow>
         <cylinderGeometry args={[S.azBearing.r, S.azBearing.r, S.azBearing.h, 160]} />
       </mesh>
 
-      {/* ── Rocker box ───────────────────────────────────────── */}
-      <Slab size={[S.rocker.wallX * 2 + S.rocker.ply, S.rocker.ply, S.rocker.wallDepth]} position={[0, S.rocker.floorY + S.rocker.ply / 2, 0]} material={m.plywood} />
+      {/* ── Rocker box: machined aluminium plates ────────────── */}
+      <Plate size={[S.rocker.wallX * 2 + rp, rp, S.rocker.wallDepth]} position={[0, rockerBottom + rp / 2, 0]} material={m.alu} />
       {[-1, 1].map((sgn) => (
-        <mesh key={sgn} geometry={rockerSideGeo} position={[sgn * S.rocker.wallX, S.rocker.floorY, 0]} material={m.plywood} castShadow receiveShadow />
+        <mesh key={sgn} geometry={rockerSideGeo} position={[sgn * S.rocker.wallX, rockerBottom, 0]} material={m.alu} castShadow receiveShadow />
       ))}
       {[-1, 1].map((sgn) => (
         <mesh
           key={sgn}
           geometry={rockerFrontGeo}
-          position={[0, S.rocker.floorY + S.rocker.ply, sgn * (S.rocker.wallDepth / 2 - S.rocker.ply / 2)]}
+          position={[0, rockerBottom + rp, sgn * (S.rocker.wallDepth / 2 - rp / 2)]}
           rotation={[0, sgn < 0 ? Math.PI : 0, 0]}
-          material={m.plywood}
+          material={m.alu}
           castShadow
           receiveShadow
         />
       ))}
+      {/* fastener rows: side plates to floor, front plates to sides */}
+      {[-1, 1].flatMap((sx) =>
+        [-0.17, -0.06, 0.06, 0.17].map((z) => (
+          <Screw key={`${sx}${z}`} position={[sx * (S.rocker.wallX + rp / 2), rockerBottom + 0.02, z]} dir={[sx, 0, 0]} material={m.black} socket={m.blackMatte} />
+        )),
+      )}
+      {[-1, 1].flatMap((sz) =>
+        [-1, 1].flatMap((sx) =>
+          [0.03, 0.09].map((yy) => (
+            <Screw key={`${sz}${sx}${yy}`} position={[sx * (S.rocker.wallX + rp / 2), rockerBottom + rp + yy, sz * (S.rocker.wallDepth / 2 - 0.012)]} dir={[sx, 0, 0]} material={m.black} socket={m.blackMatte} />
+          )),
+        ),
+      )}
       {/* PTFE pads in the cradle */}
       {[-1, 1].flatMap((sx) =>
         [-1, 1].map((sz) => (
@@ -282,22 +461,31 @@ export default function IdealTelescope({ m }: { m: Materials }) {
           </mesh>
         )),
       )}
-      {/* azimuth pivot bolt head */}
-      <mesh position={[0, S.rocker.floorY + S.rocker.ply + 0.004, 0]} material={m.steel}>
+      {/* azimuth pivot */}
+      <mesh position={[0, rockerBottom + rp + 0.004, 0]} material={m.steel}>
         <cylinderGeometry args={[0.012, 0.012, 0.008, 32]} />
       </mesh>
+      <ControlBox m={m} />
 
-      {/* ── Mirror box: birch outside, flocked black inside ──── */}
-      <Slab size={[half * 2, ply, half * 2]} position={[0, S.mirrorBox.bottom + ply / 2, 0]} material={m.plywood} radius={0.005} />
+      {/* ── Mirror box: dark anodised outside, flocked inside ── */}
+      <Plate size={[half * 2, pl, half * 2]} position={[0, S.mirrorBox.bottom + pl / 2, 0]} material={m.aluDark} radius={0.002} />
       {[-1, 1].map((sgn) => (
-        <Slab key={`x${sgn}`} size={[ply, boxH, half * 2]} position={[sgn * (half - ply / 2), (boxTop + S.mirrorBox.bottom) / 2, 0]} material={m.plywood} radius={0.005} />
+        <Plate key={`x${sgn}`} size={[pl, boxH, half * 2]} position={[sgn * (half - pl / 2), (boxTop + S.mirrorBox.bottom) / 2, 0]} material={m.aluDark} radius={0.002} />
       ))}
       {[-1, 1].map((sgn) => (
-        <Slab key={`z${sgn}`} size={[half * 2 - ply * 2, boxH, ply]} position={[0, (boxTop + S.mirrorBox.bottom) / 2, sgn * (half - ply / 2)]} material={m.plywood} radius={0.005} />
+        <Plate key={`z${sgn}`} size={[half * 2 - pl * 2, boxH, pl]} position={[0, (boxTop + S.mirrorBox.bottom) / 2, sgn * (half - pl / 2)]} material={m.aluDark} radius={0.002} />
       ))}
       <mesh position={[0, (boxTop + S.mirrorBox.bottom) / 2 - 0.004, 0]} material={m.flock}>
-        <boxGeometry args={[half * 2 - ply * 2 - 0.001, boxH - 0.008, half * 2 - ply * 2 - 0.001]} />
+        <boxGeometry args={[half * 2 - pl * 2 - 0.001, boxH - 0.008, half * 2 - pl * 2 - 0.001]} />
       </mesh>
+      {/* corner fasteners on the side plates */}
+      {[-1, 1].flatMap((sx) =>
+        [-1, 1].flatMap((sz) =>
+          [0.03, 0.15, 0.27].map((yy) => (
+            <Screw key={`${sx}${sz}${yy}`} position={[sx * half, S.mirrorBox.bottom + yy, sz * (half - 0.012)]} dir={[sx, 0, 0]} material={m.steel} socket={m.blackMatte} r={0.003} />
+          )),
+        ),
+      )}
       {/* carry handle on the front */}
       <mesh position={[0, boxTop - 0.09, half + 0.012]} material={m.steel} castShadow>
         <torusGeometry args={[0.055, 0.006, 16, 48, Math.PI]} />
@@ -308,28 +496,26 @@ export default function IdealTelescope({ m }: { m: Materials }) {
         </mesh>
       ))}
 
-      {/* altitude bearings with laminate rims, spacers and bolts */}
+      {/* altitude bearings: aluminium arcs with laminate rims and spacers */}
       {[-1, 1].map((sgn) => (
         <group key={sgn} position={[sgn * S.bearing.x, S.altAxisY, 0]}>
-          <mesh geometry={bearingGeo} material={m.plywood} castShadow receiveShadow />
+          <mesh geometry={bearingGeo} material={m.alu} castShadow receiveShadow />
           <mesh geometry={bearingRimGeo} material={m.laminate} castShadow />
-          {[[-0.1, -0.16], [0.1, -0.16], [-0.1, 0.0], [0.1, 0.0]].map(([z, y], i) => (
-            <mesh key={i} position={[sgn * (S.bearing.ply / 2 + 0.002), y, z]} rotation={[0, 0, Math.PI / 2]} material={m.steel}>
-              <cylinderGeometry args={[0.006, 0.006, 0.004, 24]} />
-            </mesh>
+          {[[-0.1, -0.16], [0.1, -0.16], [-0.1, 0.0], [0.1, 0.0]].map(([z, yy], i) => (
+            <Screw key={i} position={[sgn * (S.bearing.plate / 2), yy, z]} dir={[sgn, 0, 0]} material={m.black} socket={m.blackMatte} r={0.0045} />
           ))}
         </group>
       ))}
       {[-1, 1].flatMap((sgn) =>
         [-0.1, 0.1].map((z) => (
-          <mesh key={`${sgn}${z}`} position={[sgn * (half + (S.bearing.x - S.bearing.ply / 2 - half) / 2), S.altAxisY - 0.07, z]} material={m.black}>
-            <boxGeometry args={[S.bearing.x - S.bearing.ply / 2 - half, 0.1, 0.06]} />
+          <mesh key={`${sgn}${z}`} position={[sgn * (half + (S.bearing.x - S.bearing.plate / 2 - half) / 2), S.altAxisY - 0.07, z]} material={m.black}>
+            <boxGeometry args={[S.bearing.x - S.bearing.plate / 2 - half, 0.1, 0.06]} />
           </mesh>
         )),
       )}
 
       {/* mirror cell and primary */}
-      <mesh position={[0, S.mirrorBox.bottom + ply + 0.012, 0]} material={m.blackMatte} receiveShadow>
+      <mesh position={[0, S.mirrorBox.bottom + pl + 0.012, 0]} material={m.blackMatte} receiveShadow>
         <cylinderGeometry args={[0.142, 0.142, 0.024, 96]} />
       </mesh>
       <mesh position={[0, S.primary.y + S.primary.h / 2, 0]} material={m.glass} castShadow receiveShadow>
@@ -349,7 +535,7 @@ export default function IdealTelescope({ m }: { m: Materials }) {
 
       {/* ── Truss ────────────────────────────────────────────── */}
       {SHOE_AZIMUTHS.map((az, i) => {
-        const [sx, sz] = rimPoint(az, half - ply / 2);
+        const [sx, sz] = rimPoint(az, half - pl / 2);
         const rot: V3 = [0, -az + Math.PI / 2, 0];
         return (
           <group key={i} position={[sx, boxTop - 0.035, sz]} rotation={rot}>
@@ -365,15 +551,14 @@ export default function IdealTelescope({ m }: { m: Materials }) {
       {RING_AZIMUTHS.map((az, i) => (
         <group key={i} position={[Math.cos(az) * (S.cage.rIn - 0.004), S.cage.lowerY - 0.014, Math.sin(az) * (S.cage.rIn - 0.004)]} rotation={[0, -az, 0]}>
           <mesh geometry={clampGeo} material={m.black} castShadow />
-          <Knob position={[-0.024, -0.02, 0.018]} quaternion={xKnobQuat} material={m.black} />
-          <Knob position={[-0.024, -0.02, -0.018]} quaternion={xKnobQuat} material={m.black} />
+          <Knob position={[-0.024, -0.02, 0.018]} quaternion={Q.nx} material={m.black} />
+          <Knob position={[-0.024, -0.02, -0.018]} quaternion={Q.nx} material={m.black} />
         </group>
       ))}
 
       {/* ── Upper cage ───────────────────────────────────────── */}
       <mesh geometry={ringGeo} position={[0, S.cage.lowerY, 0]} material={m.black} castShadow receiveShadow />
       <mesh geometry={ringGeo} position={[0, S.cage.upperY, 0]} material={m.black} castShadow receiveShadow />
-      {/* light baffle between the rings */}
       <mesh position={[0, (S.cage.lowerY + S.cage.upperY) / 2 + S.cage.h / 2, 0]} material={m.flock}>
         <cylinderGeometry args={[S.cage.rIn + 0.0005, S.cage.rIn + 0.0005, S.cage.upperY - S.cage.lowerY - S.cage.h, 128, 1, true]} />
       </mesh>
@@ -383,7 +568,6 @@ export default function IdealTelescope({ m }: { m: Materials }) {
           <Rod key={i} from={[Math.cos(az) * r, S.cage.lowerY + S.cage.h / 2, Math.sin(az) * r]} to={[Math.cos(az) * r, S.cage.upperY - S.cage.h / 2, Math.sin(az) * r]} r={0.01} material={m.black} />
         );
       })}
-      {/* spider, hub, secondary holder with its three collimation screws, and the flat */}
       {SHOE_AZIMUTHS.map((az, i) => {
         const len = S.cage.rIn - S.spider.hubR + 0.004;
         const midR = S.spider.hubR + len / 2 - 0.002;
@@ -434,9 +618,9 @@ export default function IdealTelescope({ m }: { m: Materials }) {
         </mesh>
       </group>
 
-      {/* ── Drive and electronics ────────────────────────────── */}
-      <mesh geometry={sectorGeo} position={[-(S.bearing.x + S.bearing.ply / 2 + 0.004), S.altAxisY, 0]} material={m.anodized} castShadow />
-      <group position={[-(S.rocker.wallX + S.rocker.ply / 2), S.altAxisY - S.bearing.r - 0.03, 0.02]}>
+      {/* ── Drive ────────────────────────────────────────────── */}
+      <mesh geometry={sectorGeo} position={[-(S.bearing.x + S.bearing.plate / 2 + 0.004), S.altAxisY, 0]} material={m.anodized} castShadow />
+      <group position={[-(S.rocker.wallX + rp / 2), S.altAxisY - S.bearing.r - 0.03, 0.02]}>
         <mesh geometry={motorGeo} position={[-0.048, 0, 0]} material={m.anodized} castShadow />
         <mesh position={[-0.006, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={m.steel}>
           <cylinderGeometry args={[0.019, 0.019, 0.006, 40]} />
@@ -445,14 +629,13 @@ export default function IdealTelescope({ m }: { m: Materials }) {
           <cylinderGeometry args={[0.012, 0.012, 0.012, 32]} />
         </mesh>
       </group>
-      <group position={[-0.08, S.rocker.floorY + 0.06, -(S.rocker.wallDepth / 2 + 0.016)]}>
-        <mesh geometry={enclosureGeo} material={m.anodized} castShadow />
-        <mesh position={[0.058, 0.02, -0.016]} rotation={[Math.PI / 2, 0, 0]} material={m.led}>
-          <cylinderGeometry args={[0.0025, 0.0025, 0.002, 12]} />
+      <mesh geometry={azMotorGeo} position={[0.16, rockerBottom - 0.028, 0.14]} material={m.anodized} castShadow />
+      {/* keep the inner width honest for the front plate geometry */}
+      <group visible={false}>
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[rockerInnerW, 0.001, 0.001]} />
         </mesh>
-        <Rod from={[-0.06, -0.035, 0]} to={[-0.06, -0.06, 0.04]} r={0.003} material={m.rubber} segments={12} />
       </group>
-      <mesh geometry={azMotorGeo} position={[0.16, S.rocker.floorY - 0.028, 0.14]} material={m.anodized} castShadow />
     </group>
   );
 }
