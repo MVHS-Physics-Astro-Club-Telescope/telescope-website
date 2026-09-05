@@ -8,6 +8,9 @@ import type { Materials } from "./materials";
 
 type V3 = [number, number, number];
 
+const LABEL = "/textures/dm542_label.jpg";
+useTexture.preload(LABEL);
+
 function setupLabel(t: THREE.Texture | THREE.Texture[]) {
   const tex = Array.isArray(t) ? t[0] : t;
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -21,7 +24,7 @@ function setupLabel(t: THREE.Texture | THREE.Texture[]) {
  * wall with its back at `position` and its face toward −z.
  */
 export default function StepperDriver({ m, position, alarm = false }: { m: Materials; position: V3; alarm?: boolean }) {
-  const label = useTexture("/textures/dm542_label.jpg", setupLabel);
+  const label = useTexture(LABEL, setupLabel);
   const W = 0.0755, H = 0.118, D = 0.033, GAP = 0.002;
   const [x, y, zBack] = position;
   const zc = zBack - GAP - D / 2;
