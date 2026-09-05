@@ -101,3 +101,10 @@
 **Root cause:** three 0.185 removed the soft variant; `shadow-radius` only ever applied to `PCFShadowMap`/VSM anyway.
 **Fix:** `shadows="percentage"` (PCF) with `shadow-radius` on the key light.
 **Prevention:** Read the browser console in the screenshot pass, not only the terminal.
+
+## [2026-09-05][reduced-motion-scroll-story] Don't freeze a scroll-driven scene under prefers-reduced-motion
+
+**Mistake:** The story camera held the hero framing whenever `prefers-reduced-motion: reduce` was on. Eeshan has macOS "Reduce motion" enabled, so on his own Mac the scroll story "wasn't working" while every headless capture looked fine.
+**Root cause:** Treated scroll-linked camera travel like autoplay animation. It is user-driven; the setting is meant to remove motion the user did not initiate.
+**Fix:** The camera always follows scroll; under reduced motion it tracks 1:1 (no easing), the LED flicker holds steady, and framer-motion's `reducedMotion="user"` still makes the copy appear without transitions.
+**Prevention:** Before verifying "works for me", run one capture with `page.emulateMedia({ reducedMotion: "reduce" })` — and when someone says a page is broken, check their `matchMedia` flags first.
