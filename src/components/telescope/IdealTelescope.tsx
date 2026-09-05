@@ -5,6 +5,8 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { PI_Z, RING_AZIMUTHS, SHOE_AZIMUTHS, SPEC, rimPoint } from "./spec";
 import { boxUV, type Materials } from "./materials";
+import PiBoard, { PI_HOLES } from "./PiBoard";
+import StepperDriver from "./StepperDriver";
 
 type V3 = [number, number, number];
 const S = SPEC;
@@ -200,107 +202,23 @@ function Knob({ position, quaternion, material }: { position: V3; quaternion?: T
   );
 }
 
-/* ── Raspberry Pi 4, component side facing −z ────────────────────── */
+/* ── Control box: Pi 4, two DM542 drives, a terminal strip ─────────── */
 
-function PiBoard({ m }: { m: Materials }) {
-  // local frame: origin at PCB centre, PCB in the x–y plane, parts extend toward −z
-  const t = 0.0016;
-  const part = (w: number, h: number, d: number, x: number, y: number, mat: THREE.Material, extra = 0) => (
-    <mesh position={[x, y, -(t / 2 + d / 2 + extra)]} material={mat} castShadow>
-      <boxGeometry args={[w, h, d]} />
-    </mesh>
-  );
-  return (
-    <group>
-      <mesh material={m.pcb} castShadow receiveShadow>
-        <boxGeometry args={[S.pi.w, S.pi.h, t]} />
-      </mesh>
-      {/* processor with its metal lid, and the RAM beside it */}
-      {part(0.015, 0.015, 0.0011, -0.012, 0.004, m.chip)}
-      {part(0.0125, 0.0125, 0.0004, -0.012, 0.004, m.chipCap, 0.0011)}
-      {part(0.011, 0.013, 0.001, 0.006, 0.004, m.chip)}
-      {/* GPIO header along the top edge */}
-      {part(0.051, 0.005, 0.0085, -0.0135, 0.0245, m.plastic)}
-      {Array.from({ length: 20 }, (_, i) => (
-        <group key={i}>
-          {part(0.0006, 0.0006, 0.006, -0.0135 - 0.02413 + i * 0.00254, 0.0245 + 0.00127, m.tin, 0.0085)}
-          {part(0.0006, 0.0006, 0.006, -0.0135 - 0.02413 + i * 0.00254, 0.0245 - 0.00127, m.tin, 0.0085)}
-        </group>
-      ))}
-      {/* USB stacks and Ethernet on the right end */}
-      {part(0.0175, 0.0135, 0.0155, 0.037, 0.018, m.tin)}
-      {part(0.0175, 0.0135, 0.0155, 0.037, 0.0025, m.tin)}
-      {part(0.021, 0.016, 0.0135, 0.0355, -0.018, m.tin)}
-      {/* USB-C, two micro-HDMI, audio jack along the bottom edge */}
-      {part(0.009, 0.0075, 0.0032, -0.033, -0.026, m.tin)}
-      {part(0.0065, 0.0075, 0.003, -0.017, -0.026, m.tin)}
-      {part(0.0065, 0.0075, 0.003, -0.004, -0.026, m.tin)}
-      <mesh position={[0.012, -0.026, -(t / 2 + 0.003)]} rotation={[Math.PI / 2, 0, 0]} material={m.plastic}>
-        <cylinderGeometry args={[0.003, 0.003, 0.0075, 20]} />
-      </mesh>
-      {/* wireless can, PMIC, camera and display connectors */}
-      {part(0.0125, 0.0105, 0.0018, -0.035, 0.014, m.tin)}
-      {part(0.006, 0.006, 0.0009, -0.03, -0.01, m.chip)}
-      {part(0.0025, 0.022, 0.0055, 0.019, -0.006, m.plastic)}
-      {part(0.0025, 0.022, 0.0055, -0.0405, -0.004, m.plastic)}
-      {/* status LEDs at the left edge */}
-      {part(0.0016, 0.001, 0.0008, -0.039, 0.0215, m.ledRed)}
-      {part(0.0016, 0.001, 0.0008, -0.039, 0.0185, m.led)}
-      {/* passives */}
-      {[[-0.02, -0.012], [-0.006, -0.016], [0.0, 0.016], [-0.024, 0.016], [0.012, 0.012]].map(([x, y], i) => (
-        <group key={i}>{part(0.002, 0.001, 0.0008, x, y, m.chip)}</group>
-      ))}
-      {[[0.024, 0.02], [-0.03, 0.0]].map(([x, y], i) => (
-        <mesh key={i} position={[x, y, -(t / 2 + 0.003)]} rotation={[Math.PI / 2, 0, 0]} material={m.plastic}>
-          <cylinderGeometry args={[0.0032, 0.0032, 0.006, 16]} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-/** Small stepper-driver module with a finned heatsink. */
-function DriverModule({ m, position }: { m: Materials; position: V3 }) {
-  return (
-    <group position={position}>
-      <mesh material={m.pcb} castShadow>
-        <boxGeometry args={[0.04, 0.03, 0.0016]} />
-      </mesh>
-      <mesh position={[0, 0.002, -0.0035]} material={m.chip}>
-        <boxGeometry args={[0.02, 0.02, 0.005]} />
-      </mesh>
-      {[-0.008, -0.004, 0, 0.004, 0.008].map((x) => (
-        <mesh key={x} position={[x, 0.002, -0.0105]} material={m.heatsink} castShadow>
-          <boxGeometry args={[0.0018, 0.02, 0.009]} />
-        </mesh>
-      ))}
-      <mesh position={[0, -0.011, -0.004]} material={m.plastic}>
-        <boxGeometry args={[0.03, 0.004, 0.006]} />
-      </mesh>
-      {[-0.017, 0.017].map((x) => (
-        <mesh key={x} position={[x, 0.012, -0.0025]} material={m.plastic}>
-          <boxGeometry args={[0.004, 0.004, 0.003]} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-/** Control box on the rear of the rocker: dark anodised shell, smoked lid, boards on standoffs. */
+/** Dark anodised shell on the rear of the rocker, smoked lid, boards on standoffs. */
 function ControlBox({ m }: { m: Materials }) {
   const { w, h, d, x, y, zFace } = S.enclosure;
   const wall = 0.004;
   const zBack = zFace - wall / 2;
+  const zInner = zFace - wall;
   const zLid = zFace - d + 0.001;
   const zMid = zFace - d / 2;
   const lidGeo = useMemo(() => new RoundedBoxGeometry(w - 0.006, h - 0.006, 0.002, 2, 0.001), [w, h]);
   const piX = S.pi.x, piY = S.pi.y;
-  const standoffs: V3[] = [
-    [piX - 0.029, piY - 0.0245, 0],
-    [piX + 0.029, piY - 0.0245, 0],
-    [piX - 0.029, piY + 0.0245, 0],
-    [piX + 0.029, piY + 0.0245, 0],
-  ];
+  // the board faces the lid, so its local +x lands at world −x
+  const holes: V3[] = PI_HOLES.map(([hx, hy]) => [piX - hx, piY + hy, 0]);
+  const piBack = PI_Z + 0.0016;
+  const stripY = y - 0.058;
+  const driveX = [x + 0.012, x + 0.094];
   return (
     <group>
       {/* shell */}
@@ -314,39 +232,48 @@ function ControlBox({ m }: { m: Materials }) {
       {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sy], i) => (
         <Screw key={i} position={[x + sx * (w / 2 - 0.007), y + sy * (h / 2 - 0.007), zLid - 0.001]} dir={[0, 0, -1]} material={m.steel} socket={m.blackMatte} r={0.0028} />
       ))}
-      {/* cable gland and a power lead out of the side */}
-      <mesh position={[x - w / 2 - 0.005, y - 0.03, zMid]} rotation={[0, 0, Math.PI / 2]} material={m.plastic}>
+      {/* cable gland and a lead out of the side */}
+      <mesh position={[x + w / 2 + 0.005, y - 0.045, zMid]} rotation={[0, 0, Math.PI / 2]} material={m.plastic}>
         <cylinderGeometry args={[0.006, 0.006, 0.012, 20]} />
       </mesh>
-      <Rod from={[x - w / 2 - 0.011, y - 0.03, zMid]} to={[x - w / 2 - 0.05, y - 0.075, zMid + 0.02]} r={0.0035} material={m.rubber} segments={12} />
-      {/* boards */}
-      {standoffs.map((p, i) => (
-        <mesh key={i} position={[p[0], p[1], (zFace - wall + PI_Z + 0.0008) / 2]} rotation={[Math.PI / 2, 0, 0]} material={m.tin}>
-          <cylinderGeometry args={[0.0025, 0.0025, Math.abs(PI_Z + 0.0008 - (zFace - wall)), 12]} />
+      <Rod from={[x + w / 2 + 0.011, y - 0.045, zMid]} to={[x + w / 2 + 0.05, y - 0.09, zMid + 0.02]} r={0.0035} material={m.rubber} segments={12} />
+      {/* Raspberry Pi 4 on brass standoffs through its four mounting holes */}
+      {holes.map((p, i) => (
+        <mesh key={i} position={[p[0], p[1], (zInner + piBack) / 2]} rotation={[Math.PI / 2, 0, 0]} material={m.brass}>
+          <cylinderGeometry args={[0.0025, 0.0025, zInner - piBack, 6]} />
         </mesh>
       ))}
-      <group position={[piX, piY, PI_Z]}>
+      <group position={[piX, piY, PI_Z]} rotation={[0, Math.PI, 0]}>
         <PiBoard m={m} />
       </group>
-      {standoffs.map((p, i) => (
-        <Screw key={`s${i}`} position={[p[0], p[1], PI_Z - 0.0008]} dir={[0, 0, -1]} material={m.tin} socket={m.blackMatte} r={0.0022} />
+      {holes.map((p, i) => (
+        <Screw key={`s${i}`} position={[p[0], p[1], PI_Z]} dir={[0, 0, -1]} material={m.steel} socket={m.blackMatte} r={0.0022} />
       ))}
-      <DriverModule m={m} position={[x + 0.045, y + 0.03, PI_Z]} />
-      <DriverModule m={m} position={[x + 0.045, y - 0.012, PI_Z]} />
-      {/* terminal block and wiring */}
-      <mesh position={[x + 0.045, y - 0.043, PI_Z - 0.006]} material={m.plastic} castShadow>
-        <boxGeometry args={[0.05, 0.009, 0.011]} />
+      {/* two DM542 drives, connector edges toward the Pi */}
+      <StepperDriver m={m} position={[driveX[0], y, zInner]} />
+      <StepperDriver m={m} position={[driveX[1], y, zInner]} />
+      {/* barrier terminal strip under the Pi, and the wiring */}
+      <mesh position={[piX, stripY, zInner - 0.0055]} material={m.plastic} castShadow>
+        <boxGeometry args={[0.052, 0.01, 0.011]} />
       </mesh>
       {[0, 1, 2, 3, 4, 5].map((i) => (
-        <mesh key={i} position={[x + 0.045 - 0.02 + i * 0.008, y - 0.043, PI_Z - 0.0115]} rotation={[Math.PI / 2, 0, 0]} material={m.tin}>
-          <cylinderGeometry args={[0.0015, 0.0015, 0.001, 8]} />
+        <mesh key={i} position={[piX - 0.02 + i * 0.008, stripY, zInner - 0.0113]} rotation={[Math.PI / 2, 0, 0]} material={m.steel}>
+          <cylinderGeometry args={[0.0017, 0.0017, 0.0008, 10]} />
         </mesh>
       ))}
-      <Rod from={[x + 0.029, y - 0.043, PI_Z - 0.012]} to={[x + 0.032, y - 0.024, PI_Z - 0.012]} r={0.0012} material={m.wireRed} segments={8} />
-      <Rod from={[x + 0.037, y - 0.043, PI_Z - 0.012]} to={[x + 0.036, y - 0.024, PI_Z - 0.012]} r={0.0012} material={m.wireBlack} segments={8} />
-      <Rod from={[x + 0.061, y - 0.043, PI_Z - 0.012]} to={[x + 0.058, y + 0.018, PI_Z - 0.012]} r={0.0012} material={m.wireRed} segments={8} />
-      <Rod from={[x + 0.069, y - 0.043, PI_Z - 0.012]} to={[x + 0.062, y + 0.018, PI_Z - 0.012]} r={0.0012} material={m.wireBlack} segments={8} />
-      <Rod from={[piX + 0.03, piY + 0.0245, PI_Z - 0.014]} to={[x + 0.028, y + 0.03, PI_Z - 0.012]} r={0.0012} material={m.wireBlack} segments={8} />
+      {/* power: strip → drives along the bottom of the box; signal: header → P1 on the nearest drive */}
+      <Rod from={[piX + 0.02, stripY, zInner - 0.012]} to={[driveX[0] - 0.045, y - 0.042, zInner - 0.02]} r={0.0012} material={m.wireRed} segments={8} />
+      <Rod from={[piX + 0.012, stripY, zInner - 0.012]} to={[driveX[0] - 0.045, y - 0.037, zInner - 0.02]} r={0.0012} material={m.wireBlack} segments={8} />
+      <Rod from={[driveX[1] - 0.045, y - 0.042, zInner - 0.02]} to={[driveX[0] + 0.03, y - 0.066, zInner - 0.014]} r={0.0012} material={m.wireRed} segments={8} />
+      <Rod from={[driveX[0] + 0.03, y - 0.066, zInner - 0.014]} to={[piX + 0.02, stripY, zInner - 0.012]} r={0.0012} material={m.wireRed} segments={8} />
+      {[0, 1, 2].map((i) => (
+        <Rod key={i} from={[piX + 0.03425 - i * 0.00254, piY + (i % 2 ? 0.0255 : 0.023), PI_Z - 0.0085]} to={[driveX[0] - 0.045, y + 0.02 + i * 0.005, zInner - 0.02]} r={0.0006} material={i === 1 ? m.wireRed : m.wireBlack} segments={8} />
+      ))}
+      {[0, 1].map((i) => (
+        <Rod key={i} from={[piX + 0.03425 - (i + 4) * 0.00254, piY + (i % 2 ? 0.0255 : 0.023), PI_Z - 0.0085]} to={[driveX[1] - 0.045, y + 0.02 + i * 0.005, zInner - 0.02]} r={0.0006} material={i === 0 ? m.wireBlack : m.wireRed} segments={8} />
+      ))}
+      <Rod from={[driveX[1] - 0.045, y - 0.03, zInner - 0.02]} to={[x + w / 2, y - 0.045, zMid]} r={0.0016} material={m.wireBlack} segments={8} />
+      <Rod from={[driveX[0] - 0.045, y - 0.025, zInner - 0.02]} to={[x + w / 2, y - 0.045, zMid]} r={0.0016} material={m.wireRed} segments={8} />
     </group>
   );
 }

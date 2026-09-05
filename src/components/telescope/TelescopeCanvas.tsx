@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo, useRef, type RefObject } from "react";
+import { Suspense, useEffect, useMemo, useRef, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -16,10 +16,14 @@ function Stage({ progress }: { progress: RefObject<number> }) {
   const m = useMemo(() => createMaterials({ normalMap, roughnessMap }), [normalMap, roughnessMap]);
 
   // The control-box lid dissolves as the camera closes on the electronics.
+  const lid = useRef(m.lid);
+  useEffect(() => {
+    lid.current = m.lid;
+  }, [m]);
   useFrame(() => {
     const open = lidOpen(progress.current ?? 0);
-    m.lid.opacity = LID_OPACITY * (1 - open);
-    m.lid.visible = open < 0.999;
+    lid.current.opacity = LID_OPACITY * (1 - open);
+    lid.current.visible = open < 0.999;
   });
 
   return (
@@ -121,7 +125,7 @@ export default function TelescopeCanvas({
       dpr={[1, 1.75]}
       camera={{ fov: 30, near: 0.03, far: 40, position: [2, 1.4, 2.75] }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.95 }}
-      shadows="soft"
+      shadows="percentage"
       frameloop="always"
       style={{ position: "absolute", inset: 0 }}
     >

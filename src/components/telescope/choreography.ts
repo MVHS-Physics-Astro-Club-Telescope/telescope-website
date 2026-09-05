@@ -37,8 +37,8 @@ const WAYPOINTS: Way[] = [
   { p: lerp(P.mech, P.elec, 0.62), pos: [0.9, rocker[1] + 0.5, -1.5], look: [box[0], box[1] + 0.05, box[2]], shift: 0.05 },
   // close on the box lid
   { p: lerp(P.mech, P.elec, 0.85), pos: [box[0] + 0.12, box[1] + 0.16, box[2] - 0.48], look: [box[0], box[1], box[2]], shift: 0.03 },
-  // electrical: through the lid, onto the processor
-  { p: P.elec, pos: [chip[0] - 0.06, chip[1] + 0.06, chip[2] - 0.125], look: [chip[0] + 0.012, chip[1] - 0.002, chip[2]], shift: 0.03 },
+  // electrical: through the lid, onto the processor; the board's far end recedes under the copy
+  { p: P.elec, pos: [chip[0] + 0.05, chip[1] + 0.062, chip[2] - 0.185], look: [chip[0] - 0.024, chip[1] - 0.006, chip[2]], shift: 0.03 },
   // back out and up the left side
   { p: lerp(P.elec, P.opt, 0.35), pos: [-0.9, 0.55, -1.3], look: [-0.05, 0.4, -0.1], shift: 0 },
   { p: lerp(P.elec, P.opt, 0.68), pos: [-1.75, whole[1] + 0.75, 0.2], look: [-0.05, whole[1] + 0.2, 0], shift: 0 },

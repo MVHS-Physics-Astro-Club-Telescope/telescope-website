@@ -80,3 +80,24 @@
 - **Root cause**: the site sets `html { scroll-behavior: smooth }`; each scrollTo animates from the previous position and the story's camera damping compounds it.
 - **Fix**: `window.scrollTo({ top, behavior: "instant" })` in scripts; log `window.scrollY` next to the requested value.
 - **Prevention**: Any scripted scroll capture on this site passes `behavior: "instant"` and asserts the achieved scrollY.
+
+## [2026-09-05][photo-textured-pcb] A real photograph beats any free Pi model
+
+**Mistake:** Modelled the Raspberry Pi from primitives (three passes) and then went looking for a "real" glTF; every free Sketchfab/GitHub Pi 4 is untextured CAD.
+**Root cause:** PCB realism is almost entirely the silkscreen/trace/pad texture, which no free mesh carries.
+**Fix:** Rectify a high-res CC photo (Commons, `Raspberry Pi 4 Model B - Top.jpg`) with a homography through the four mounting holes (known mm positions), then map the photo by *position* onto the PCB cap and the +z face of each package box (`photoUV()` in `PiBoard.tsx`); derive roughness/metalness (ORM) and a normal map from the photo.
+**Prevention:** For any real product in the scene, look for a rectifiable photo before a mesh. Two gotchas: (1) a board built with local +x → world +x and viewed from −z is *mirrored* — rotate the group π about y; (2) mm rectangles measured on a 5 mm grid overlay are accurate enough (±0.3 mm) for package footprints.
+
+## [2026-09-05][react-hooks-immutability] Never mutate hook results in render or in useFrame
+
+**Mistake:** Set `texture.colorSpace` inside `useMemo` and `material.opacity` inside `useFrame` on an object returned by `useMemo`; `react-hooks/immutability` fails lint (also on `main`'s `TelescopeCanvas.tsx`).
+**Root cause:** The React compiler lint treats hook return values and hook-callback captures as frozen.
+**Fix:** Configure textures in drei's `useTexture(urls, onLoad)` callback (it runs in a layout effect before the GPU upload); keep per-frame mutable objects behind `useRef` (`lid.current.opacity = …`, `<meshStandardMaterial ref={act} />`).
+**Prevention:** Run `npm run lint` before every PR, not just `eslint <changed dirs>`.
+
+## [2026-09-05][three-soft-shadows] three r185 deprecates PCFSoftShadowMap
+
+**Mistake:** `<Canvas shadows="soft">` logged `PCFSoftShadowMap has been deprecated` on every frame.
+**Root cause:** three 0.185 removed the soft variant; `shadow-radius` only ever applied to `PCFShadowMap`/VSM anyway.
+**Fix:** `shadows="percentage"` (PCF) with `shadow-radius` on the key light.
+**Prevention:** Read the browser console in the screenshot pass, not only the terminal.

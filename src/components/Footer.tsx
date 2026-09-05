@@ -70,7 +70,14 @@ export default function Footer() {
             with, endorsed by, or sponsored by Mountain View High School or the
             Mountain View&ndash;Los Altos Union High School District.
           </p>
-          <p className="mt-4">&copy; {new Date().getFullYear()} MV Astronomy</p>
+          <p className="mt-4">
+            &copy; {new Date().getFullYear()} MV Astronomy. Raspberry Pi board
+            photograph by{" "}
+            <a href="https://commons.wikimedia.org/wiki/File:Raspberry_Pi_4_Model_B_-_Top.jpg" className="link" target="_blank" rel="noopener noreferrer">
+              Laserlicht
+            </a>
+            , CC BY-SA 4.0.
+          </p>
         </div>
       </div>
     </footer>
