@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { boxUV, type Materials } from "./materials";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 /**
  * Raspberry Pi 4 Model B, photo-textured. The PCB and every package top
@@ -165,12 +166,14 @@ export default function PiBoard({ m }: { m: Materials }) {
   const pcb = usePcbGeometry();
   const sideOf = (s: Side) => (s === "metal" ? mats.metal : s === "plastic" ? mats.plastic : s === "cream" ? mats.cream : mats.lid);
 
-  // the activity LED flickers like a board that is actually doing something
+  // the activity LED flickers like a board that is actually doing something (steady under reduced motion)
+  const reduced = usePrefersReducedMotion();
   const act = useRef<THREE.MeshStandardMaterial>(null);
   useFrame(({ clock }) => {
+    if (!act.current) return;
     const t = clock.elapsedTime;
-    const on = Math.sin(t * 7.3) + Math.sin(t * 3.1) + Math.sin(t * 13.7) > 0.9;
-    if (act.current) act.current.emissiveIntensity = on ? 2.6 : 0.15;
+    const on = reduced || Math.sin(t * 7.3) + Math.sin(t * 3.1) + Math.sin(t * 13.7) > 0.9;
+    act.current.emissiveIntensity = on ? 2.6 : 0.15;
   });
 
   const pinGeo = useMemo(() => new THREE.BoxGeometry(0.64 * MM, 0.64 * MM, HEADER_PINS.len * MM), []);

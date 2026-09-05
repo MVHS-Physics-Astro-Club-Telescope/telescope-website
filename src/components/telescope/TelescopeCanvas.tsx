@@ -37,7 +37,7 @@ function Stage({ progress }: { progress: RefObject<number> }) {
   );
 }
 
-function Rig({ progress, animate }: { progress: RefObject<number>; animate: boolean }) {
+function Rig({ progress, reducedMotion }: { progress: RefObject<number>; reducedMotion: boolean }) {
   const { camera, size } = useThree();
   const pos = useMemo(() => new THREE.Vector3(), []);
   const look = useMemo(() => new THREE.Vector3(), []);
@@ -46,7 +46,7 @@ function Rig({ progress, animate }: { progress: RefObject<number>; animate: bool
   const first = useRef(true);
 
   useFrame((_, dt) => {
-    const p = animate ? (progress.current ?? 0) : 0;
+    const p = progress.current ?? 0;
     const shift = sampleCamera(p, pos, look);
     const aspect = size.width / size.height;
     if (aspect < 1.1) {
@@ -67,7 +67,8 @@ function Rig({ progress, animate }: { progress: RefObject<number>; animate: bool
       curLook.copy(look);
       first.current = false;
     } else {
-      const l = 1 - Math.exp(-dt * 7);
+      // scroll-linked, so the camera always follows; reduced motion drops the easing so it tracks 1:1
+      const l = reducedMotion ? 1 : 1 - Math.exp(-dt * 7);
       camera.position.lerp(pos, l);
       curLook.lerp(look, l);
     }
@@ -113,12 +114,12 @@ function Lights() {
 
 export default function TelescopeCanvas({
   progress,
-  animate,
+  reducedMotion,
 }: {
   /** 0..1 through the story; read every frame, never re-renders React */
   progress: RefObject<number>;
-  /** false under prefers-reduced-motion: hold the hero framing */
-  animate: boolean;
+  /** prefers-reduced-motion: the camera still follows the scroll, without easing */
+  reducedMotion: boolean;
 }) {
   return (
     <Canvas
@@ -136,7 +137,7 @@ export default function TelescopeCanvas({
         {/* a real photo studio for reflections, kept dim so the key spot stays the light */}
         <Environment files="/hdr/studio.hdr" environmentIntensity={0.42} />
       </Suspense>
-      <Rig progress={progress} animate={animate} />
+      <Rig progress={progress} reducedMotion={reducedMotion} />
     </Canvas>
   );
 }

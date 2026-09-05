@@ -97,7 +97,7 @@ export default function TelescopeStory() {
       >
         {/* Pinned stage */}
         <div className="sticky top-0 h-svh overflow-hidden">
-          {mounted && <TelescopeCanvas progress={progress} animate={!reduced} />}
+          {mounted && <TelescopeCanvas progress={progress} reducedMotion={reduced} />}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-t from-black via-black/70 to-transparent sm:hidden"
@@ -146,7 +146,7 @@ export default function TelescopeStory() {
             >
               <div
                 className={`mx-auto flex w-full max-w-6xl px-5 sm:px-8 ${
-                  b.side === "right" && !reduced ? "justify-end" : "justify-start"
+                  b.side === "right" ? "justify-end" : "justify-start"
                 }`}
               >
                 <motion.div
