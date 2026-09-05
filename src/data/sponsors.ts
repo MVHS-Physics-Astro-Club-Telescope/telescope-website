@@ -1,158 +1,167 @@
-export type SponsorType = "Cash" | "Equipment" | "Service" | "Materials";
+export type SponsorType =
+  | "Cash"
+  | "Equipment"
+  | "Fabrication"
+  | "Materials"
+  | "Service";
 
 export interface Sponsor {
   name: string;
-  /** Path to logo file in /public/sponsors/. Only set if we have an actual,
-   *  usable logo file (verified). Otherwise the card renders with a clean
-   *  text wordmark. */
+  /** Logo under /public/sponsors/. Only set when we hold a usable file. */
   logo?: string;
   url?: string;
-  description: string;
   type: SponsorType;
-  /** Direct cash given to the project. Only Cash-type sponsors have non-zero
-   *  values here. Service credits, equipment, vouchers, and store credits
-   *  are NOT counted toward cash totals — they're tracked as in-kind. */
-  cashValue: number;
-  /** Display string for the contribution (e.g. "$500 fabrication credit",
-   *  "DWARF mini telescope"). */
+  /** One line: what they gave. */
   contribution: string;
+  /** Direct cash received. In-kind support is never counted here. */
+  cashValue: number;
 }
 
+/**
+ * Every organisation that has given the project cash, hardware, or a
+ * usable credit. Reconciled 2026-09-05 against the club's donor ledger
+ * ("Sponsors Who Gave Money or Parts", compiled 2026-08-24 from the club
+ * inbox). Ordered by group, then by what they gave.
+ */
 export const sponsors: Sponsor[] = [
-  // ── CASH SPONSORS ──────────────────────────────────────────────────────
+  // ── Cash ──────────────────────────────────────────────────────────────
+  {
+    name: "Tri-Valley Stargazers",
+    url: "https://trivalleystargazers.org",
+    type: "Cash",
+    contribution: "$500 grant",
+    cashValue: 500,
+  },
   {
     name: "Crave Yoga",
+    logo: "/sponsors/crave-yoga.png",
     url: "https://craveyoga-mv.com",
-    description:
-      "Mountain View community yoga studio. Helena McLoughlin and Crave Yoga submitted a direct cash donation to the project via our sponsor form.",
     type: "Cash",
+    contribution: "$250 donation",
     cashValue: 250,
-    contribution: "$250 cash donation",
   },
   {
-    name: "Tori Atwell — The Agency RE",
+    name: "Tori Atwell · The Agency",
+    logo: "/sponsors/the-agency.svg",
     url: "https://www.theagencyre.com/agent/tori-atwell/",
-    description:
-      "Bay Area real estate broker-associate at The Agency. Tori is supporting the project with a direct cash donation, mailed via check to the club.",
     type: "Cash",
+    contribution: "$100 donation",
     cashValue: 100,
-    contribution: "$100 cash donation",
   },
 
-  // ── EQUIPMENT DONORS ───────────────────────────────────────────────────
+  // ── Equipment ─────────────────────────────────────────────────────────
   {
-    name: "Pacific Holographic",
+    name: "Pacific Holographics",
     logo: "/sponsors/pacific-holographics.png",
     url: "http://pacholo.com",
-    description:
-      "Pacific Holographic specializes in precision holographic optical elements. They donated the 254mm (10\") f/4.48 parabolic primary mirror that anchors our entire optical design.",
     type: "Equipment",
+    contribution: "254 mm f/4.48 parabolic primary mirror",
     cashValue: 0,
-    contribution: "254mm primary mirror",
   },
+  {
+    name: "ToupTek Astro",
+    logo: "/sponsors/touptek-astro.png",
+    url: "https://www.touptekastro.com",
+    type: "Equipment",
+    contribution: "ATR585C cooled camera, GPM462C guide camera, AAF autofocuser",
+    cashValue: 0,
+  },
+  {
+    name: "Unistellar",
+    logo: "/sponsors/unistellar.svg",
+    url: "https://www.unistellar.com",
+    type: "Equipment",
+    contribution: "eQuinox 2 smart telescope for outreach",
+    cashValue: 0,
+  },
+  {
+    name: "Pegasus Astro",
+    logo: "/sponsors/pegasus-astro.png",
+    url: "https://pegasusastro.com",
+    type: "Equipment",
+    contribution: "Pocket Powerbox Advance Gen 2",
+    cashValue: 0,
+  },
+  {
+    name: "DWARFLAB",
+    logo: "/sponsors/dwarflab.svg",
+    url: "https://dwarflab.com",
+    type: "Equipment",
+    contribution: "DWARF mini smart telescope for outreach",
+    cashValue: 0,
+  },
+  {
+    name: "Celestron",
+    logo: "/sponsors/celestron.png",
+    url: "https://www.celestron.com",
+    type: "Equipment",
+    contribution: "X-Cel LX 25 mm and 12 mm eyepieces",
+    cashValue: 0,
+  },
+  {
+    name: "Thames & Kosmos",
+    logo: "/sponsors/thames-kosmos.svg",
+    url: "https://thamesandkosmos.com",
+    type: "Equipment",
+    contribution: "Plasma ball and planetarium projector for outreach",
+    cashValue: 0,
+  },
+
+  // ── Fabrication & materials ───────────────────────────────────────────
   {
     name: "SendCutSend",
     logo: "/sponsors/sendcutsend.svg",
     url: "https://sendcutsend.com",
-    description:
-      "Online laser cutting, waterjet cutting, and metal fabrication. SendCutSend issued a $500 fabrication credit (code MVHSTELE500) we'll use to manufacture our truss connectors, mirror cell, and other precision metal parts.",
-    type: "Equipment",
+    type: "Fabrication",
+    contribution: "$500 laser-cutting credit",
     cashValue: 0,
-    contribution: "$500 fabrication credit",
   },
   {
-    name: "Unistellar",
-    url: "https://www.unistellar.com",
-    description:
-      "Maker of smart, app-driven telescopes. Brice Rocton and Unistellar are donating a complete smart telescope to power our community star parties and outreach events.",
-    type: "Equipment",
+    name: "PCBWay",
+    logo: "/sponsors/pcbway.png",
+    url: "https://www.pcbway.com",
+    type: "Fabrication",
+    contribution: "PCB fabrication for the control electronics",
     cashValue: 0,
-    contribution: "Smart telescope",
   },
-  {
-    name: "DWARFLAB",
-    url: "https://dwarflab.com",
-    description:
-      "Maker of the DWARF series of compact smart telescopes. DWARFLAB is shipping a DWARF mini smart telescope for the club's outreach program.",
-    type: "Equipment",
-    cashValue: 0,
-    contribution: "DWARF mini telescope",
-  },
-  {
-    name: "Pegasus Astro",
-    url: "https://pegasusastro.com",
-    description:
-      "Athens-based maker of premium telescope automation hardware. Dimitris Diakoumakos and the Pegasus team donated a Pocket Powerbox Advance Gen 2 — consolidating power distribution, USB hub, dew heater control, and environmental sensing into one weather-resistant unit for our observatory electronics.",
-    type: "Equipment",
-    cashValue: 0,
-    contribution: "Pocket Powerbox Advance Gen 2",
-  },
-  {
-    name: "ToupTek Astro",
-    url: "https://www.touptekastro.com",
-    description:
-      "Astronomy camera and accessory manufacturer. ToupTek delivered three units — the GPM462C guide camera (Sony IMX462), the AAF electronic auto-focuser, and the ATR585C cooled deep-sky imaging camera (Sony IMX585, 8.3MP, TEC cooled) — now physically in hand and directly enabling our autonomous imaging pipeline.",
-    type: "Equipment",
-    cashValue: 0,
-    contribution: "GPM462C + AAF + ATR585C (cooled DSO camera)",
-  },
-  {
-    name: "Thames & Kosmos",
-    url: "https://thamesandkosmos.com",
-    description:
-      "Educational science kit publisher. Samantha Levinson and the Thames & Kosmos team are sending an in-kind product donation in support of the club's STEM outreach.",
-    type: "Equipment",
-    cashValue: 0,
-    contribution: "Educational kit (in-kind)",
-  },
-
-  // ── MATERIALS PARTNERS ─────────────────────────────────────────────────
   {
     name: "RAFT",
     logo: "/sponsors/raft.png",
     url: "https://raft.net",
-    description:
-      "Resource Area for Teaching — a Bay Area nonprofit providing hands-on STEM materials to educators and youth programs. Nancy McIntyre extended us a RAFT membership and a $50 store credit toward build supplies.",
     type: "Materials",
+    contribution: "Membership and $50 materials credit",
     cashValue: 0,
-    contribution: "$50 store credit + membership",
   },
 
-  // ── SERVICE PARTNERS ───────────────────────────────────────────────────
+  // ── Services ──────────────────────────────────────────────────────────
   {
     name: "Copy Factory",
     logo: "/sponsors/copy-factory.png",
     url: "https://www.copyfactory.com",
-    description:
-      "Palo Alto print shop. Todd at Copy Factory is providing in-kind printing services for our outreach flyers, star-party handouts, and event materials — drop-by anytime.",
     type: "Service",
+    contribution: "Printing for outreach and star parties",
     cashValue: 0,
-    contribution: "Printing services (in-kind)",
   },
   {
-    name: "Fogarty Winery",
+    name: "Thomas Fogarty Winery",
+    logo: "/sponsors/fogarty-winery.png",
     url: "http://www.fogartywinery.com",
-    description:
-      "Estate winery in Woodside, established 1981. Heather Carrie and the Fogarty team are supporting the project with a tour voucher and event hospitality for our team and partners.",
     type: "Service",
+    contribution: "Vineyard tour and tasting, fundraiser prize",
     cashValue: 0,
-    contribution: "Tour voucher + hospitality",
   },
+];
+
+export const sponsorGroups: { type: SponsorType; heading: string }[] = [
+  { type: "Cash", heading: "Cash" },
+  { type: "Equipment", heading: "Equipment" },
+  { type: "Fabrication", heading: "Fabrication" },
+  { type: "Materials", heading: "Materials" },
+  { type: "Service", heading: "Services" },
 ];
 
 export function getTotalCashRaised(): number {
   return sponsors.reduce((sum, s) => sum + s.cashValue, 0);
-}
-
-/** Backwards-compat alias used by older imports. */
-export const getTotalRaised = getTotalCashRaised;
-
-export function getCashSponsorCount(): number {
-  return sponsors.filter((s) => s.type === "Cash").length;
-}
-
-export function getInKindSponsorCount(): number {
-  return sponsors.filter((s) => s.type !== "Cash").length;
 }
 
 export function getSponsorsByType(type: SponsorType): Sponsor[] {

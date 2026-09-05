@@ -1,74 +1,73 @@
 export interface TeamMember {
   name: string;
   role: string;
-  initials: string;
-  color: string;
+  /** "lead" members are listed first and carry a named responsibility. */
+  tier: "lead" | "member";
   image?: string;
 }
 
+/**
+ * Roster as of 2026-09-05. Order is leads first, then members.
+ * Roles are a public statement of who holds what on this project —
+ * keep `leadershipNote` below in sync when they change.
+ */
 export const team: TeamMember[] = [
   {
     name: "Vidu Senadheera",
-    role: "Mechanical Lead",
-    initials: "VS",
-    color: "#06b6d4",
+    role: "Co-Mechanical Lead",
+    tier: "lead",
     image: "/team/vidu.jpg",
   },
   {
-    name: "Eeshan Khandelwal",
-    role: "Software & Electronics Lead",
-    initials: "EK",
-    color: "#3b82f6",
-    image: "/team/eeshan.jpg",
-  },
-  {
     name: "David Cho",
-    role: "Mechanical Member",
-    initials: "DC",
-    color: "#10b981",
+    role: "Co-Mechanical Lead",
+    tier: "lead",
     image: "/team/david.jpg",
   },
   {
-    name: "Tristan Schaefer",
-    role: "Outreach",
-    initials: "TS",
-    color: "#ec4899",
-    image: "/team/tristan.jpg",
+    name: "Eeshan Khandelwal",
+    role: "Electronics & Software Lead",
+    tier: "lead",
+    image: "/team/eeshan.jpg",
   },
   {
     name: "Neel Chhatrala",
-    role: "Mechanical Member",
-    initials: "NC",
-    color: "#f59e0b",
+    role: "Electronics Lead",
+    tier: "lead",
     image: "/team/neel.jpg",
   },
   {
     name: "Aryan Khanna",
-    role: "General Member",
-    initials: "AK",
-    color: "#7c3aed",
+    role: "Physics Calculation Lead",
+    tier: "lead",
     image: "/team/aryan_khanna.jpg",
   },
   {
+    name: "Tristan Schaefer",
+    role: "Outreach Lead",
+    tier: "lead",
+    image: "/team/tristan.jpg",
+  },
+  {
     name: "Ishaan Sakariya",
-    role: "Mechanical & Software Member",
-    initials: "IS",
-    color: "#f97316",
+    role: "Mechanical",
+    tier: "member",
     image: "/team/ishaan.jpg",
+  },
+  {
+    name: "Dominic Reouk",
+    role: "Mechanical",
+    tier: "member",
+    image: "/team/dominic.jpg",
   },
 ];
 
 /**
- * Leadership note rendered under the crew grid (see components/Team.tsx).
- * Keep in sync with the roles above — it is a public statement of who holds
- * which role on this project.
+ * Rendered under the crew grid. A public statement of who holds which
+ * role on this project — keep in sync with the roster above.
  */
-export const leadershipNote = {
-  heading: "Roles & leadership",
-  body:
-    "This project has no president. Its leads are Vidu Senadheera (Mechanical), " +
-    "Eeshan Khandelwal (Software & Electronics), and Tristan Schaefer (Outreach). " +
-    "Every other member listed above is a general member. Aryan Khanna is a " +
-    "general member and does not hold a president or project-lead role on this " +
-    "project.",
-};
+export const leadershipNote =
+  "This project has no president. Its leads are Vidu Senadheera and David Cho " +
+  "(Mechanical), Eeshan Khandelwal (Electronics & Software), Neel Chhatrala " +
+  "(Electronics), Aryan Khanna (Physics Calculations), and Tristan Schaefer " +
+  "(Outreach). Ishaan Sakariya and Dominic Reouk are mechanical members.";

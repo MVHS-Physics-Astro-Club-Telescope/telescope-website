@@ -35,7 +35,7 @@ export const parts: Part[] = [
     estimatedCost: "Donated",
     status: "Donated",
     notes: "Generously donated — the heart of our telescope",
-    donatedBy: "Pacific Holographic",
+    donatedBy: "Pacific Holographics",
   },
   {
     name: "Secondary Mirror",

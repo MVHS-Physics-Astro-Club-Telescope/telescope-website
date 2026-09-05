@@ -78,12 +78,10 @@ test.describe("/request — bundled a11y audit fix regressions", () => {
     page,
   }) => {
     const submit = page.getByRole("button", { name: /Submit request/i });
-    await expect(submit).toBeDisabled();
+    await expect(submit).toHaveAttribute("aria-disabled", "true");
     await submit.focus();
     // Tooltip popup is rendered in a portal — just look for its text anywhere.
-    await expect(
-      page.getByText(/Locks open at first light · August 2026/i),
-    ).toBeVisible();
+    await expect(page.getByText(/Locks open at first light/i)).toBeVisible();
   });
 
   test("invalid email shows aria-invalid + inline error on blur, valid email clears it", async ({
@@ -104,12 +102,12 @@ test.describe("/request — bundled a11y audit fix regressions", () => {
     await expect(emailInput).toHaveAttribute("aria-invalid", "false");
   });
 
-  test("filter radiogroup uses the visible Label, not an aria-label", async ({
+  test("filter radiogroup uses the visible label, not an aria-label", async ({
     page,
   }) => {
     const group = page.locator("#target-chips");
     await expect(group).toHaveAttribute("role", "radiogroup");
-    // The visible <Label htmlFor="target-chips"> already names the group, so
+    // The visible <label htmlFor="target-chips"> already names the group, so
     // we should NOT also have an aria-label fighting with it.
     await expect(group).not.toHaveAttribute("aria-label", /.+/);
   });

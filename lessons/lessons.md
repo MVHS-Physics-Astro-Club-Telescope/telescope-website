@@ -57,3 +57,26 @@
 - **Root cause**: Playwright resolves an exact browser build number tied to the installed `@playwright/test` version; a newer cached build is not a substitute, and the error text reads like "no browsers installed".
 - **Fix**: Same escape hatch as the 2026-07-05 download-stall lesson — a throwaway in-repo config that spreads the real one and swaps in `projects: [{ name: "chrome", use: { channel: "chrome" } }]`, run with `-c playwright.chrome.config.ts`, then delete it. 39/39 passed against system Chrome.
 - **Prevention**: Read the *build number* in the "Executable doesn't exist" path before trying to install anything. If it differs from what's cached, go straight to `channel: "chrome"` — don't run `playwright install` on this network.
+
+## [2026-09-05][onshape-gltf-direct-400] The assembly `/gltf` endpoint rejects this document; the translation API works
+- **Phase**: exporting ASM 00 for the 3D home page
+- **Mistake**: Three parameter variants of `GET /assemblies/d/…/e/…/gltf` (with and without tolerances, both Accept headers) all returned `400 An illegal argument was provided`.
+- **Fix**: `POST /assemblies/…/translations` with `{formatName:"GLTF", storeInDocument:false, resolution:"medium"}`, poll `/translations/{id}` until `DONE`, download `resultExternalDataIds[0]` from `/documents/d/{did}/externaldata/{id}`. Same route works for part studios. Output is JSON glTF with a base64 buffer, Z-up, metres.
+- **Prevention**: Go straight to the translation route for glTF; keep the direct endpoint for nothing.
+
+## [2026-09-05][onshape-broken-instances-vanish] Broken assembly instances are silently omitted from the export
+- **Mistake**: The exported ASM 00 had no mirror box, no mirror cell, no altitude hubs, no sector gear, and the model looked "almost right" for a while — the primary mirror floated in a rocker box.
+- **Root cause**: Students regenerated those part studios (Sept 1); the ASM 00 instances now carry `partId: ""` (and the Mirror Box v2 instance has no element at all). Not hidden, not suppressed — just unresolvable, so the exporter drops them without a warning. The UTA sub-assembly is also placed 115 mm off the optical axis in X and Y.
+- **Fix**: `scripts/build-telescope-glb.mjs` composes the missing parts from their own studio exports at the occurrence transforms ASM 00 still records, and shifts the UTA back onto the axis. Flagged to Eeshan for the CAD leads.
+- **Prevention**: After any export, diff `rootAssembly.instances` (count, names, empty `partId`) against the glTF node list before trusting the model.
+
+## [2026-09-05][per-face-primitives-block-simplify] Onshape glTF splits every part into per-face primitives; join before simplifying
+- **Mistake**: `simplifyPrimitive` with aggressive ratios barely moved the count (794k → 708k). Each threaded screw was 200+ tiny primitives of a few hundred triangles that the size-class rules skipped.
+- **Fix**: assign one material per mesh, strip `TEXCOORD_0` from everything but the textured plywood so attributes match, `joinPrimitives(mesh.listPrimitives())`, then weld and simplify. 794k → 97k unique triangles, 2.8M → 230k rendered, 450 KB Draco GLB.
+- **Prevention**: Run `gltf-transform inspect` and look at `meshPrimitives` per mesh before designing any simplification pass.
+
+## [2026-09-05][smooth-scroll-screenshots] `scroll-behavior: smooth` skews scripted screenshots
+- **Mistake**: Playwright `window.scrollTo(0, y)` followed by a 1.8 s wait produced screenshots one beat late — the first "f=0" frame showed the mechanical beat.
+- **Root cause**: the site sets `html { scroll-behavior: smooth }`; each scrollTo animates from the previous position and the story's camera damping compounds it.
+- **Fix**: `window.scrollTo({ top, behavior: "instant" })` in scripts; log `window.scrollY` next to the requested value.
+- **Prevention**: Any scripted scroll capture on this site passes `behavior: "instant"` and asserts the achieved scrollY.
