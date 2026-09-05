@@ -10,63 +10,20 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import {
-  Globe,
-  Moon,
-  Search,
-  Sparkles,
-  Stars,
-  Telescope,
-  Lock,
-  ChevronRight,
-  Star,
-  Orbit,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  Target,
-  TargetType,
-  targets as ALL_TARGETS,
-  tierOf,
-} from "@/data/targets";
+import { Target, targets as ALL_TARGETS, tierOf } from "@/data/targets";
 
 type ChipKey = "all" | "Moon" | "Planet" | "Galaxy" | "Nebula" | "Cluster";
 
-const CHIPS: { key: ChipKey; label: string; icon: React.ReactNode }[] = [
-  { key: "all", label: "All", icon: <Sparkles className="h-3.5 w-3.5" /> },
-  { key: "Moon", label: "Moon", icon: <Moon className="h-3.5 w-3.5" /> },
-  { key: "Planet", label: "Planets", icon: <Globe className="h-3.5 w-3.5" /> },
-  { key: "Galaxy", label: "Galaxies", icon: <Orbit className="h-3.5 w-3.5" /> },
-  { key: "Nebula", label: "Nebulae", icon: <Sparkles className="h-3.5 w-3.5" /> },
-  {
-    key: "Cluster",
-    label: "Clusters",
-    icon: <Stars className="h-3.5 w-3.5" />,
-  },
+const CHIPS: { key: ChipKey; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "Moon", label: "Moon" },
+  { key: "Planet", label: "Planets" },
+  { key: "Galaxy", label: "Galaxies" },
+  { key: "Nebula", label: "Nebulae" },
+  { key: "Cluster", label: "Clusters" },
 ];
-
-function iconFor(type: TargetType) {
-  switch (type) {
-    case "Moon":
-      return <Moon className="h-4 w-4" />;
-    case "Planet":
-      return <Globe className="h-4 w-4" />;
-    case "Galaxy":
-      return <Orbit className="h-4 w-4" />;
-    case "Nebula":
-      return <Sparkles className="h-4 w-4" />;
-    case "Star Cluster":
-      return <Stars className="h-4 w-4" />;
-    case "Double Star":
-      return <Star className="h-4 w-4" />;
-    default:
-      return <Telescope className="h-4 w-4" />;
-  }
-}
 
 function matchesChip(t: Target, chip: ChipKey): boolean {
   if (chip === "all") return true;
@@ -75,43 +32,22 @@ function matchesChip(t: Target, chip: ChipKey): boolean {
 }
 
 /**
- * Target picker rebuilt as a command-palette pattern (cmdk).
- * - Trigger button opens a popover-style command. ⌘K / Ctrl-K from anywhere
- *   on the page also opens it.
- * - Filter chips above the trigger narrow the catalog (Moon / Planets /
- *   Galaxies / Nebulae / Clusters).
- * - Inside the palette, results are grouped into "Easy targets" and
- *   "Challenging targets" by magnitude. Each item carries a Lucide icon
- *   matching its object type.
- * - Selecting a target populates an inline preview card with badges for
- *   tier and type, plus magnitude / best month.
- * - Submit is permanently disabled (telescope under construction); the
- *   button surfaces a tooltip explaining why.
- *
- * Accessibility: cmdk handles roving tabindex, listbox role, and search
- * filtering. The trigger button is a real button with aria-keyshortcuts,
- * and the dialog announces the kbd legend in plain text inside the panel.
+ * Preview of the request flow. A command palette (⌘K) over the curated
+ * catalog, filter chips, an email field, and a submit button that stays
+ * locked until the telescope is online.
  */
 export default function MockTargetPicker() {
   const [open, setOpen] = useState(false);
   const [chip, setChip] = useState<ChipKey>("all");
   const [selected, setSelected] = useState<Target | null>(null);
   const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState<string>("");
+  const [emailError, setEmailError] = useState("");
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const previewId = useId();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const chipRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Focus restoration happens in onExitComplete on the dialog's
-  // AnimatePresence — after the exit animation fully unmounts the dialog —
-  // so nothing inside the dialog can steal focus back mid-teardown.
-  function closeAndRestoreFocus() {
-    setOpen(false);
-  }
-
-  // ⌘K / Ctrl-K to open the palette from anywhere on the page; Escape closes.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -119,9 +55,7 @@ export default function MockTargetPicker() {
         setOpen((v) => !v);
         return;
       }
-      if (e.key === "Escape") {
-        setOpen(false);
-      }
+      if (e.key === "Escape") setOpen(false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -129,13 +63,9 @@ export default function MockTargetPicker() {
 
   function validateEmail(v: string) {
     if (!v) return "";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
-      return "That doesn't look like a valid email.";
-    }
-    return "";
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? "" : "That doesn't look like a valid email.";
   }
 
-  // Filtered + grouped catalog for the palette
   const { easy, challenging } = useMemo(() => {
     const filtered = ALL_TARGETS.filter((t) => matchesChip(t, chip));
     return {
@@ -146,13 +76,10 @@ export default function MockTargetPicker() {
 
   function pick(t: Target) {
     setSelected(t);
-    closeAndRestoreFocus();
+    setOpen(false);
   }
 
-  function onChipKeyDown(
-    e: React.KeyboardEvent<HTMLButtonElement>,
-    index: number,
-  ) {
+  function onChipKeyDown(e: React.KeyboardEvent<HTMLButtonElement>, index: number) {
     const last = CHIPS.length - 1;
     let next = -1;
     switch (e.key) {
@@ -174,31 +101,18 @@ export default function MockTargetPicker() {
         return;
     }
     e.preventDefault();
-    const target = CHIPS[next];
-    setChip(target.key);
+    setChip(CHIPS[next].key);
     chipRefs.current[next]?.focus();
   }
 
   return (
-    <div className="card-atlas tick-corners relative overflow-hidden p-6 sm:p-8 space-y-6">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
-      />
-
-      {/* Filter chips */}
+    <div className="space-y-8">
+      {/* Filter */}
       <div>
-        <Label
-          htmlFor="target-chips"
-          className="block font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-chart/85 mb-3"
-        >
+        <label htmlFor="target-chips" className="label block">
           Filter
-        </Label>
-        <div
-          id="target-chips"
-          role="radiogroup"
-          className="flex flex-wrap gap-2"
-        >
+        </label>
+        <div id="target-chips" role="radiogroup" className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
           {CHIPS.map((c, i) => {
             const active = chip === c.key;
             return (
@@ -214,21 +128,10 @@ export default function MockTargetPicker() {
                 onKeyDown={(e) => onChipKeyDown(e, i)}
                 onClick={() => setChip(c.key)}
                 className={cn(
-                  "group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm border font-mono text-xs uppercase tracking-[0.08em] transition-all duration-150",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass/50",
-                  active
-                    ? "border-brass/50 bg-brass/10 text-brass-bright"
-                    : "border-chart/15 bg-deep text-chart-bright/70 hover:border-chart/35 hover:text-starlight/95 hover:-translate-y-px",
+                  "nav-link text-[0.9375rem]",
+                  active && "text-ink underline decoration-1 underline-offset-[6px]",
                 )}
               >
-                <span
-                  className={cn(
-                    "transition-colors",
-                    active ? "text-brass-bright" : "text-chart/70 group-hover:text-chart-bright/85",
-                  )}
-                >
-                  {c.icon}
-                </span>
                 {c.label}
               </button>
             );
@@ -236,15 +139,11 @@ export default function MockTargetPicker() {
         </div>
       </div>
 
-      {/* Target picker trigger */}
+      {/* Trigger */}
       <div>
-        <Label
-          htmlFor="target-search"
-          className="block font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-chart/85 mb-2"
-        >
+        <label htmlFor="target-search" className="label block">
           Target
-        </Label>
-
+        </label>
         <button
           id="target-search"
           ref={triggerRef}
@@ -254,72 +153,43 @@ export default function MockTargetPicker() {
           aria-expanded={open}
           aria-controls="target-command-dialog"
           aria-keyshortcuts="Meta+K Control+K"
-          className="group relative flex w-full items-center gap-3 px-4 py-3 rounded-sm bg-deep border border-chart/15 text-left text-sm text-chart-bright/60 hover:border-chart/35 hover:bg-raised/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass/50 focus-visible:border-brass/50 transition-colors"
+          className="field mt-3 flex items-center justify-between gap-3 text-left"
         >
-          <Search className="h-4 w-4 text-chart/70 shrink-0" />
-          <span className="flex-1 truncate">
-            {selected
-              ? selected.name
-              : "Search targets — Andromeda, M42, Saturn…"}
+          <span className={cn("truncate", selected ? "text-ink" : "text-ink-3")}>
+            {selected ? selected.name : "Search targets: Andromeda, M42, Saturn…"}
           </span>
-          <kbd className="hidden sm:inline-flex h-6 items-center gap-0.5 rounded-sm border border-chart/20 bg-void px-1.5 font-mono text-[10px] font-medium text-chart-bright/65">
-            <span className="text-[11px]">⌘</span>K
-          </kbd>
+          <kbd className="hidden shrink-0 font-mono text-[0.75rem] text-ink-3 sm:inline">⌘K</kbd>
         </button>
       </div>
 
-      {/* Preview card */}
+      {/* Preview */}
       <AnimatePresence mode="wait">
         {selected && (
           <motion.div
             key={selected.id}
             id={previewId}
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
+            exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden rounded-sm border border-chart/12 bg-deep p-5"
+            className="border-t border-line pt-5"
           >
-            <div
-              aria-hidden="true"
-              className="chart-rule pointer-events-none absolute inset-x-0 top-0"
-            />
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-brass/10 border border-brass/30 text-brass-bright">
-                  {iconFor(selected.type)}
-                </span>
-                <h3 className="font-display text-lg text-starlight truncate">
-                  {selected.name}
-                </h3>
-              </div>
-              <div className="flex flex-wrap gap-1.5 shrink-0">
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    "h-5 rounded-sm border px-2 py-0 font-mono text-[10px] uppercase tracking-[0.12em]",
-                    tierOf(selected) === "easy"
-                      ? "border-oiii/35 bg-oiii/10 text-oiii"
-                      : "border-brass/40 bg-brass/10 text-brass-bright",
-                  )}
-                >
-                  {tierOf(selected) === "easy" ? "Easy" : "Challenging"}
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="h-5 rounded-sm border-chart/20 bg-chart/8 px-2 py-0 font-mono text-[10px] uppercase tracking-[0.12em] text-chart-bright/75"
-                >
-                  {selected.type}
-                </Badge>
-              </div>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+              <h3 className="font-display text-2xl text-ink">{selected.name}</h3>
+              <p className="text-[0.8125rem] text-ink-3">
+                {tierOf(selected) === "easy" ? "Easy" : "Challenging"} · {selected.type}
+              </p>
             </div>
-            <p className="text-sm text-chart-bright/70 leading-relaxed mb-4">
-              {selected.description}
-            </p>
-            <dl className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-              <Stat label="Magnitude" value={String(selected.magnitude)} />
-              <Stat label="Best month" value={selected.bestMonth} />
-              <Stat label="Next window" value="TBD · live data soon" muted />
+            <p className="prose-tight mt-2 text-[0.9375rem]">{selected.description}</p>
+            <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-2 text-[0.875rem]">
+              <div>
+                <dt className="label">Magnitude</dt>
+                <dd className="mt-1 font-mono text-ink">{String(selected.magnitude)}</dd>
+              </div>
+              <div>
+                <dt className="label">Best month</dt>
+                <dd className="mt-1 font-mono text-ink">{selected.bestMonth}</dd>
+              </div>
             </dl>
           </motion.div>
         )}
@@ -327,13 +197,10 @@ export default function MockTargetPicker() {
 
       {/* Email */}
       <div>
-        <Label
-          htmlFor="target-email"
-          className="block font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-chart/85 mb-2"
-        >
+        <label htmlFor="target-email" className="label block">
           Where should we send the image?
-        </Label>
-        <Input
+        </label>
+        <input
           id="target-email"
           type="email"
           autoComplete="email"
@@ -341,70 +208,52 @@ export default function MockTargetPicker() {
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
-            // Clear stale errors as the user fixes the value.
             if (emailError) setEmailError(validateEmail(e.target.value));
           }}
           onBlur={(e) => setEmailError(validateEmail(e.target.value))}
           aria-invalid={!!emailError}
           aria-describedby={emailError ? "target-email-error" : undefined}
-          className="h-12 px-4 rounded-sm bg-deep border border-chart/15 text-[15px] text-starlight/95 placeholder:text-chart-bright/35 focus-visible:border-brass/50 focus-visible:ring-2 focus-visible:ring-brass/25"
+          className="field mt-3"
         />
         {emailError && (
-          <p
-            id="target-email-error"
-            role="alert"
-            className="mt-1.5 text-xs text-halpha"
-          >
+          <p id="target-email-error" role="alert" className="mt-2 text-[0.8125rem] text-bad">
             {emailError}
           </p>
         )}
       </div>
 
-      {/* Submit (disabled with explanation) */}
-      <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3">
+      {/* Submit, locked */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <TooltipProvider delay={150}>
           <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
             <TooltipTrigger
               render={
                 <button
                   type="button"
-                  // Use aria-disabled (not the native `disabled` attribute)
-                  // so the button remains in the focus order and can show
-                  // its tooltip on keyboard focus (WCAG 1.4.13). We
-                  // suppress activation in onClick instead.
                   aria-disabled="true"
-                  aria-label="Submit request — submissions open at first light, August 2026"
+                  aria-label="Submit request — submissions open at first light"
                   title="Submissions open when telescope goes online"
                   onClick={(e) => e.preventDefault()}
                   onFocus={() => setTooltipOpen(true)}
                   onBlur={() => setTooltipOpen(false)}
                   onMouseEnter={() => setTooltipOpen(true)}
                   onMouseLeave={() => setTooltipOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 px-7 h-11 shrink-0 rounded-sm border border-chart/15 bg-raised/70 text-sm font-medium text-starlight/45 cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass/80"
+                  className="btn shrink-0"
                 >
-                  <Lock className="h-4 w-4" aria-hidden="true" />
                   Submit request
                 </button>
               }
             />
-            <TooltipContent
-              side="top"
-              className="rounded-sm border-chart/20 bg-panel font-mono text-xs text-starlight/90"
-            >
-              Locks open at first light · August 2026
+            <TooltipContent side="top" className="rounded-md border border-line bg-[#0a0a0a] px-3 py-1.5 text-[0.8125rem] text-ink">
+              Locks open at first light
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <p className="text-xs text-chart-bright/60 leading-relaxed">
-          Submissions open when the telescope goes online. Drop your email
-          below and we&apos;ll let you know.
-        </p>
+        <p className="text-[0.875rem] text-ink-3">Submissions open when the telescope goes online.</p>
       </div>
 
-      {/* Command palette dialog (cmdk inline overlay) */}
-      <AnimatePresence
-        onExitComplete={() => triggerRef.current?.focus({ preventScroll: true })}
-      >
+      {/* Palette */}
+      <AnimatePresence onExitComplete={() => triggerRef.current?.focus({ preventScroll: true })}>
         {open && (
           <motion.div
             id="target-command-dialog"
@@ -417,73 +266,51 @@ export default function MockTargetPicker() {
             transition={{ duration: 0.15 }}
             className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[12vh] sm:pt-[18vh]"
           >
-            {/* Backdrop */}
             <button
               type="button"
               aria-label="Close target search"
-              onClick={closeAndRestoreFocus}
-              className="absolute inset-0 bg-void/80 cursor-default"
+              onClick={() => setOpen(false)}
+              className="absolute inset-0 cursor-default bg-black/80"
             />
-
             <motion.div
-              initial={{ opacity: 0, scale: 0.97, y: -6 }}
+              initial={{ opacity: 0, scale: 0.98, y: -6 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98, y: -4 }}
+              exit={{ opacity: 0, scale: 0.99, y: -4 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="tick-corners relative w-full max-w-xl rounded-md border border-chart/20 bg-panel shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] overflow-hidden"
+              className="relative w-full max-w-xl overflow-hidden rounded-xl border border-line bg-[#0a0a0a] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)]"
             >
               <CommandRoot
                 loop
-                className="bg-transparent rounded-md"
-                // Use our own filter that also matches aliases
+                className="rounded-xl bg-transparent"
                 filter={(value, search) => {
                   if (!search) return 1;
-                  const q = search.trim().toLowerCase();
-                  if (value.toLowerCase().includes(q)) return 1;
-                  return 0;
+                  return value.toLowerCase().includes(search.trim().toLowerCase()) ? 1 : 0;
                 }}
               >
-                <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-chart/12">
-                  <Search className="h-4 w-4 text-chart/70 shrink-0" />
+                <div className="flex items-center gap-3 border-b border-line px-4 pb-3 pt-4">
                   <CommandInput
                     autoFocus
-                    placeholder="Type to search — Andromeda, M42, Saturn…"
-                    className="flex-1 bg-transparent border-0 outline-none text-[15px] text-starlight/95 placeholder:text-chart-bright/35 focus-visible:ring-0 [&_[data-slot=input-group]]:!border-0 [&_[data-slot=input-group]]:!bg-transparent [&_[data-slot=input-group]]:!shadow-none [&_[data-slot=input-group]]:!h-auto [&_[data-slot=input-group-addon]]:hidden"
+                    placeholder="Type to search: Andromeda, M42, Saturn…"
+                    className="flex-1 border-0 bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-3 focus-visible:ring-0 [&_[data-slot=input-group]]:!h-auto [&_[data-slot=input-group]]:!border-0 [&_[data-slot=input-group]]:!bg-transparent [&_[data-slot=input-group]]:!shadow-none [&_[data-slot=input-group-addon]]:hidden"
                   />
-                  <kbd className="hidden sm:inline-flex h-6 items-center gap-0.5 rounded-sm border border-chart/20 bg-void px-1.5 font-mono text-[10px] font-medium text-chart-bright/60">
-                    Esc
-                  </kbd>
+                  <kbd className="hidden font-mono text-[0.75rem] text-ink-3 sm:inline">Esc</kbd>
                 </div>
 
                 <CommandList className="max-h-[60vh] py-2">
                   <CommandEmpty className="px-6 py-10 text-center">
-                    <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-sm bg-chart/8 border border-chart/15 text-chart-bright/60">
-                      <Telescope className="h-4 w-4" />
-                    </div>
-                    <p className="text-sm text-starlight/85 font-medium">
-                      Nothing in the catalog matches that.
-                    </p>
-                    <p className="mt-1 text-xs text-chart-bright/60">
-                      Try a Messier number (e.g. M42), a planet, or a common name.
-                    </p>
+                    <p className="text-[0.9375rem] text-ink">Nothing in the catalog matches that.</p>
+                    <p className="mt-1 text-[0.8125rem] text-ink-3">Try a Messier number, a planet, or a common name.</p>
                   </CommandEmpty>
 
                   {easy.length > 0 && (
-                    <CommandGroup
-                      heading="Easy targets · naked-eye class"
-                      className="px-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.18em] [&_[cmdk-group-heading]]:text-chart/85"
-                    >
+                    <CommandGroup heading="Easy" className="px-2 [&_[cmdk-group-heading]]:label [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2">
                       {easy.map((t) => (
                         <PaletteItem key={t.id} t={t} onPick={pick} />
                       ))}
                     </CommandGroup>
                   )}
-
                   {challenging.length > 0 && (
-                    <CommandGroup
-                      heading="Challenging targets · stacked exposures"
-                      className="px-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.18em] [&_[cmdk-group-heading]]:text-chart/85"
-                    >
+                    <CommandGroup heading="Challenging" className="px-2 [&_[cmdk-group-heading]]:label [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2">
                       {challenging.map((t) => (
                         <PaletteItem key={t.id} t={t} onPick={pick} />
                       ))}
@@ -491,20 +318,9 @@ export default function MockTargetPicker() {
                   )}
                 </CommandList>
 
-                <div className="flex items-center justify-between gap-3 border-t border-chart/12 px-4 py-2 text-[11px] text-chart-bright/55">
-                  <div className="flex items-center gap-2 font-mono">
-                    <Kbd>↑</Kbd>
-                    <Kbd>↓</Kbd>
-                    <span>navigate</span>
-                    <span className="text-chart/40">·</span>
-                    <Kbd>↵</Kbd>
-                    <span>select</span>
-                  </div>
-                  <span className="font-mono">
-                    {(easy.length + challenging.length).toString().padStart(2, "0")}
-                    {" "}
-                    targets
-                  </span>
+                <div className="flex items-center justify-between gap-3 border-t border-line px-4 py-2 text-[0.75rem] text-ink-3">
+                  <span className="font-mono">↑↓ navigate · ↵ select</span>
+                  <span className="font-mono">{easy.length + challenging.length} targets</span>
                 </div>
               </CommandRoot>
             </motion.div>
@@ -518,65 +334,21 @@ export default function MockTargetPicker() {
 function PaletteItem({ t, onPick }: { t: Target; onPick: (t: Target) => void }) {
   return (
     <CommandItem
-      // cmdk's `value` is what gets matched. Combine name + aliases so the
-      // typeahead finds "andromeda" inside "m31" entry.
       value={[t.name, ...t.aliases].join(" ")}
       onSelect={() => onPick(t)}
       className={cn(
-        "group flex cursor-pointer items-center gap-3 rounded-sm px-3 py-2.5 text-sm",
-        "data-selected:bg-raised/70 data-[selected=true]:bg-raised/70 aria-selected:bg-raised/70",
-        "text-starlight/85 data-selected:text-starlight aria-selected:text-starlight",
+        "group flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-[0.9375rem] text-ink-2",
+        "data-selected:bg-white/8 data-[selected=true]:bg-white/8 aria-selected:bg-white/8",
+        "data-selected:text-ink aria-selected:text-ink",
       )}
     >
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-deep border border-chart/12 text-chart-bright/70 group-data-selected:text-brass-bright group-aria-selected:text-brass-bright">
-        {iconFor(t.type)}
-      </span>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-medium truncate">{t.name}</span>
-        </div>
-        <p className="text-[11px] text-chart-bright/55 truncate">
+        <span className="truncate">{t.name}</span>
+        <p className="truncate text-[0.75rem] text-ink-3">
           mag {t.magnitude} · best in {t.bestMonth}
         </p>
       </div>
-      <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-chart/70 hidden sm:inline">
-        {t.type}
-      </span>
-      <ChevronRight className="h-4 w-4 text-brass/60 opacity-0 -translate-x-1 transition-all group-aria-selected:opacity-100 group-aria-selected:translate-x-0 group-data-selected:opacity-100 group-data-selected:translate-x-0" />
+      <span className="hidden text-[0.75rem] text-ink-3 sm:inline">{t.type}</span>
     </CommandItem>
-  );
-}
-
-function Kbd({ children }: { children: React.ReactNode }) {
-  return (
-    <kbd className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-sm border border-chart/20 bg-void px-1 text-[10px] text-chart-bright/70">
-      {children}
-    </kbd>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  muted,
-}: {
-  label: string;
-  value: string;
-  muted?: boolean;
-}) {
-  return (
-    <div>
-      <dt className="text-[10px] font-mono uppercase tracking-[0.15em] text-chart/70 mb-1">
-        {label}
-      </dt>
-      <dd
-        className={cn(
-          "text-sm font-mono",
-          muted ? "text-chart-bright/55 italic" : "text-starlight/90",
-        )}
-      >
-        {value}
-      </dd>
-    </div>
   );
 }

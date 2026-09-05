@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
-import { Archivo, IBM_Plex_Mono, Instrument_Serif } from "next/font/google";
+import { IBM_Plex_Mono, Instrument_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 
-const archivo = Archivo({
+const body = Instrument_Sans({
   variable: "--font-body",
   subsets: ["latin"],
   display: "swap",
 });
 
-const plexMono = IBM_Plex_Mono({
+const data = IBM_Plex_Mono({
   variable: "--font-data",
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
 });
 
-const instrumentSerif = Instrument_Serif({
+const display = Instrument_Serif({
   variable: "--font-display",
   subsets: ["latin"],
   weight: "400",
@@ -26,10 +26,16 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
+const description =
+  "A 10-inch telescope that aims itself, designed and built by eight high-school students in Mountain View, California.";
+
 export const metadata: Metadata = {
-  title: "MV Physics & Astronomy Club — Autonomous Telescope Project",
-  description:
-    "A student-built autonomous telescope bringing the night sky to the Bay Area. An independent project by 7 high schoolers in Mountain View, California.",
+  metadataBase: new URL("https://www.mvhsastro.org"),
+  title: {
+    default: "MV Astronomy",
+    template: "%s — MV Astronomy",
+  },
+  description,
   keywords: [
     "telescope",
     "astronomy",
@@ -37,25 +43,22 @@ export const metadata: Metadata = {
     "Mountain View CA",
     "autonomous telescope",
     "star party",
-    "STEM",
-    "physics club",
     "Dobsonian",
     "astrophotography",
   ],
-  authors: [{ name: "MV Physics & Astronomy Club" }],
   openGraph: {
-    title: "MV Physics & Astronomy Club — Autonomous Telescope Project",
-    description:
-      "A student-built autonomous telescope bringing the night sky to the Bay Area.",
+    title: "MV Astronomy",
+    description,
     type: "website",
     locale: "en_US",
     siteName: "MV Astronomy",
+    images: [{ url: "/og.jpg", width: 1600, height: 900, alt: "The MV Astronomy telescope" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MV Physics & Astronomy Club — Autonomous Telescope Project",
-    description:
-      "A student-built autonomous telescope bringing the night sky to the Bay Area.",
+    title: "MV Astronomy",
+    description,
+    images: ["/og.jpg"],
   },
 };
 
@@ -67,19 +70,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${plexMono.variable} ${instrumentSerif.variable} h-full antialiased`}
+      className={`${body.variable} ${data.variable} ${display.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-void text-starlight">
+      <body className="flex min-h-full flex-col bg-bg text-ink">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
-        <Toaster
-          position="bottom-right"
-          theme="dark"
-          richColors
-          closeButton
-          offset={20}
-        />
+        <Toaster position="bottom-right" theme="dark" closeButton offset={20} />
       </body>
     </html>
   );

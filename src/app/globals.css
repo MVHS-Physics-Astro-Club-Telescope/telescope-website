@@ -1,65 +1,57 @@
 @import "tailwindcss";
 
 /*
- * ── THE STAR ATLAS ──────────────────────────────────────────────
- * Design language: 19th-century celestial cartography, set in the
- * dark. Engraved hairline chart rules, mono RA/Dec annotations,
- * a serif display face, and a brass accent drawn from the
- * instrument itself. Dark-only, sponsor-facing.
+ * ── MV Astronomy ─────────────────────────────────────────────
+ * One black room, one instrument, one warm light on it.
+ * Everything else is type and hairlines.
  */
 @theme inline {
-  /* Atlas palette */
-  --color-void: #05070F;        /* page — the sky itself */
-  --color-deep: #0A101D;        /* recessed panel */
-  --color-panel: #0E1526;       /* card surface */
-  --color-raised: #16203A;      /* hover / active surface */
-  --color-chart: #8FA5C9;       /* engraved chart-line blue — annotations */
-  --color-chart-bright: #B7C7E4;
-  --color-starlight: #EDF1FA;   /* primary text */
-  --color-brass: #D9A85C;       /* the instrument — accent */
-  --color-brass-bright: #F0C880;
-  --color-halpha: #E4584E;      /* hydrogen-alpha — live/alert only */
-  --color-oiii: #5FBFA8;        /* doubly-ionized oxygen — success only */
+  --color-bg: #000000;
+  --color-ink: #f4f3ef;
+  --color-ink-2: rgba(244, 243, 239, 0.62);
+  --color-ink-3: rgba(244, 243, 239, 0.4);
+  --color-line: rgba(244, 243, 239, 0.14);
+  --color-line-strong: rgba(244, 243, 239, 0.3);
+  --color-glow: #f3e4c3;
+  --color-ok: #7fc9a9;
+  --color-warn: #e0a15d;
+  --color-bad: #e06b62;
 
-  /* Base semantic pair — used by the shadcn/ui primitives */
-  --color-background: #05070F;
-  --color-foreground: #EDF1FA;
+  /* shadcn primitive tokens (dark only) */
+  --color-background: #000000;
+  --color-foreground: #f4f3ef;
+  --color-card: #000000;
+  --color-card-foreground: #f4f3ef;
+  --color-popover: #0a0a0a;
+  --color-popover-foreground: #f4f3ef;
+  --color-primary: #f4f3ef;
+  --color-primary-foreground: #000000;
+  --color-secondary: #111111;
+  --color-secondary-foreground: #f4f3ef;
+  --color-muted: #0d0d0d;
+  --color-muted-foreground: rgba(244, 243, 239, 0.6);
+  --color-accent: #141414;
+  --color-accent-foreground: #f4f3ef;
+  --color-destructive: #e06b62;
+  --color-destructive-foreground: #ffffff;
+  --color-border: rgba(244, 243, 239, 0.14);
+  --color-input: rgba(244, 243, 239, 0.2);
+  --color-ring: rgba(244, 243, 239, 0.5);
 
   --font-sans: var(--font-body);
   --font-mono: var(--font-data);
-
-  /* shadcn semantic tokens — dark theme only */
-  --color-card: #0E1526;
-  --color-card-foreground: rgba(237, 241, 250, 0.95);
-  --color-popover: #0C1220;
-  --color-popover-foreground: rgba(237, 241, 250, 0.95);
-  --color-primary: #D9A85C;
-  --color-primary-foreground: #171008;
-  --color-secondary: #16203A;
-  --color-secondary-foreground: rgba(237, 241, 250, 0.9);
-  --color-muted: #101829;
-  --color-muted-foreground: rgba(183, 199, 228, 0.62);
-  --color-destructive: #E4584E;
-  --color-destructive-foreground: #ffffff;
-  --color-border: rgba(143, 165, 201, 0.15);
-  /* shadcn convention re-purposed: --color-input is the input BORDER.
-     Always give <Input> an explicit background (bg-deep). */
-  --color-input: rgba(143, 165, 201, 0.18);
-  --color-ring: rgba(217, 168, 92, 0.55);
 
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 6px;
   --radius-xl: 8px;
 
-  /* Animations used by shadcn/cmdk/base-ui */
   --animate-accordion-down: accordion-down 220ms cubic-bezier(0.32, 0.72, 0, 1);
   --animate-accordion-up: accordion-up 220ms cubic-bezier(0.32, 0.72, 0, 1);
   --animate-in: enter 150ms cubic-bezier(0.16, 1, 0.3, 1);
   --animate-out: exit 100ms cubic-bezier(0.4, 0, 1, 1);
 }
 
-/* ─── Keyframes (referenced by tokens above) ───────── */
 @keyframes accordion-down {
   from { height: 0; opacity: 0; }
   to { height: var(--accordion-panel-height); opacity: 1; }
@@ -69,15 +61,13 @@
   to { height: 0; opacity: 0; }
 }
 @keyframes enter {
-  from { opacity: 0; transform: scale(0.96); }
+  from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
 @keyframes exit {
   from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.96); }
+  to { opacity: 0; transform: scale(0.98); }
 }
-
-/* shadcn data-state animation hooks (subset of tw-animate-css) */
 @keyframes fade-in-0 { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fade-out-0 { from { opacity: 1; } to { opacity: 0; } }
 @keyframes zoom-in-95 { from { transform: scale(.95); } to { transform: scale(1); } }
@@ -96,271 +86,152 @@
 
 /* ─── Base ─────────────────────────────────────────── */
 html {
-  scroll-behavior: smooth;
   color-scheme: dark;
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
 body {
-  background: #05070F;
-  color: #EDF1FA;
+  background: #000;
+  color: #f4f3ef;
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI",
     system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Site-wide sky wash — barely-there indigo gradient, no nebula neon */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 120% 70% at 50% -25%, rgba(43, 58, 94, 0.22), transparent 62%),
-    radial-gradient(ellipse 80% 55% at 100% 110%, rgba(24, 32, 56, 0.35), transparent 65%);
+  font-feature-settings: "ss01", "cv11";
 }
 
 /* ─── Type roles ───────────────────────────────────── */
-.font-display,
-.font-heading {
+.font-display {
   font-family: var(--font-display), Georgia, "Times New Roman", serif;
   font-weight: 400;
-  letter-spacing: 0.005em;
+  letter-spacing: -0.012em;
+  line-height: 1.02;
 }
-
 .font-mono {
-  font-family: var(--font-data), ui-monospace, SFMono-Regular, "SF Mono",
-    Menlo, Consolas, monospace;
+  font-family: var(--font-data), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-/* Chart annotation — the mono eyebrow used above every heading */
-.eyebrow {
-  font-family: var(--font-data), ui-monospace, monospace;
-  font-size: 0.6875rem;
-  letter-spacing: 0.22em;
+/* Small caps label — the only "system" voice on the site */
+.label {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(143, 165, 201, 0.85);
+  color: var(--color-ink-3);
 }
 
-/* ─── Engraved chart rules ─────────────────────────── */
-.chart-rule {
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(143, 165, 201, 0.35) 12%,
-    rgba(143, 165, 201, 0.35) 88%,
-    transparent
-  );
+/* Measure for running copy */
+.prose-tight {
+  max-width: 34rem;
+  color: var(--color-ink-2);
+  line-height: 1.6;
 }
 
-/* Corner survey ticks — the atlas card signature */
-.tick-corners {
-  --tick: rgba(143, 165, 201, 0.4);
-  --tick-len: 12px;
-  background-image:
-    linear-gradient(var(--tick), var(--tick)),
-    linear-gradient(var(--tick), var(--tick)),
-    linear-gradient(var(--tick), var(--tick)),
-    linear-gradient(var(--tick), var(--tick)),
-    linear-gradient(var(--tick), var(--tick)),
-    linear-gradient(var(--tick), var(--tick)),
-    linear-gradient(var(--tick), var(--tick)),
-    linear-gradient(var(--tick), var(--tick));
-  background-repeat: no-repeat;
-  background-size:
-    var(--tick-len) 1px, 1px var(--tick-len),
-    var(--tick-len) 1px, 1px var(--tick-len),
-    var(--tick-len) 1px, 1px var(--tick-len),
-    var(--tick-len) 1px, 1px var(--tick-len);
-  background-position:
-    top left, top left,
-    top right, top right,
-    bottom left, bottom left,
-    bottom right, bottom right;
+/* ─── Links & buttons ──────────────────────────────── */
+.link {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 200ms ease;
 }
-.tick-corners-brass {
-  --tick: rgba(217, 168, 92, 0.55);
-}
+.link:hover { text-decoration-color: var(--color-ink); }
 
-/* Atlas panel — the standard card */
-.card-atlas {
-  background: #0E1526;
-  border: 1px solid rgba(143, 165, 201, 0.14);
-  border-radius: 4px;
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-ink);
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  transition: border-color 200ms ease, background-color 200ms ease, color 200ms ease, transform 200ms ease;
 }
-
-/* ─── Buttons ──────────────────────────────────────── */
-/* .btn-brass — primary CTA: the instrument's brass */
-.btn-brass {
-  background: linear-gradient(180deg, #EABE79 0%, #D9A85C 55%, #C08F42 100%);
-  color: #171008;
-  font-weight: 600;
-  border: 1px solid rgba(240, 200, 128, 0.6);
-  border-radius: 3px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 235, 200, 0.55),
-    0 1px 3px rgba(0, 0, 0, 0.35);
-  transition: box-shadow 0.25s ease, transform 0.25s ease, filter 0.25s ease;
+.btn:hover { border-color: var(--color-ink); }
+.btn:active { transform: scale(0.985); }
+.btn-solid {
+  background: var(--color-ink);
+  color: #000;
+  border-color: var(--color-ink);
 }
-.btn-brass:hover {
-  filter: brightness(1.06);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 235, 200, 0.55),
-    0 1px 3px rgba(0, 0, 0, 0.35),
-    0 0 26px rgba(217, 168, 92, 0.35);
-  transform: translateY(-1px);
-}
-.btn-brass:active {
-  transform: translateY(0);
-}
-.btn-brass:disabled {
-  background: #2A3244;
-  color: rgba(237, 241, 250, 0.45);
-  border-color: rgba(143, 165, 201, 0.15);
-  box-shadow: none;
+.btn-solid:hover { background: #fff; border-color: #fff; }
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  color: var(--color-ink-3);
+  border-color: var(--color-line);
+  background: transparent;
   cursor: not-allowed;
-  filter: none;
   transform: none;
 }
-
-/* .btn-line — secondary CTA: engraved outline */
-.btn-line {
-  background: rgba(14, 21, 38, 0.6);
-  color: rgba(237, 241, 250, 0.92);
-  border: 1px solid rgba(143, 165, 201, 0.35);
-  border-radius: 3px;
-  transition: border-color 0.25s ease, color 0.25s ease,
-    box-shadow 0.25s ease, transform 0.25s ease, background 0.25s ease;
-}
-.btn-line:hover {
-  border-color: rgba(217, 168, 92, 0.65);
-  color: #F0C880;
-  background: rgba(22, 32, 58, 0.7);
-  box-shadow: 0 0 22px rgba(217, 168, 92, 0.14);
-  transform: translateY(-1px);
-}
-.btn-line:active {
-  transform: translateY(0);
-}
-.btn-line:disabled {
-  background: #131a2b;
-  color: rgba(237, 241, 250, 0.4);
-  border-color: rgba(143, 165, 201, 0.12);
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
+.btn:focus-visible, .link:focus-visible, .nav-link:focus-visible {
+  outline: 1.5px solid var(--color-ink);
+  outline-offset: 3px;
 }
 
-.btn-brass:focus-visible,
-.btn-line:focus-visible {
-  outline: 2px solid rgba(240, 200, 128, 0.9);
-  outline-offset: 2px;
-}
-
-/* ─── Nav link — engraved underline ────────────────── */
 .nav-link {
-  position: relative;
-  transition: color 200ms ease;
+  color: var(--color-ink-2);
+  transition: color 180ms ease;
 }
-.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0.625rem;
-  right: 0.625rem;
-  bottom: 0.3rem;
-  height: 1px;
-  background: rgba(217, 168, 92, 0.85);
-  opacity: 0;
-  transform: scaleX(0.2);
-  transform-origin: left;
-  transition: opacity 240ms ease, transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.nav-link:hover::after,
-.nav-link:focus-visible::after,
-.nav-link[aria-current="page"]::after {
-  opacity: 1;
-  transform: scaleX(1);
-}
-.nav-link:hover,
-.nav-link:focus-visible {
-  color: #F0C880;
-}
+.nav-link:hover, .nav-link[aria-current="page"] { color: var(--color-ink); }
 
-/* ─── Scrollbar ────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0A101D;
-}
-::-webkit-scrollbar-thumb {
-  background: #24304A;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #33415F;
-}
+/* Hairline row — the list primitive */
+.row { border-top: 1px solid var(--color-line); }
+.row:last-child { border-bottom: 1px solid var(--color-line); }
 
-/* ─── Selection ────────────────────────────────────── */
-::selection {
-  background: rgba(217, 168, 92, 0.28);
-  color: #FDF6EA;
+/* ─── Inputs ───────────────────────────────────────── */
+.field {
+  height: 2.75rem;
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  padding: 0 1.1rem;
+  color: var(--color-ink);
+  font-size: 0.9375rem;
+  transition: border-color 200ms ease;
 }
+.field::placeholder { color: var(--color-ink-3); }
+.field:focus { outline: none; border-color: var(--color-ink); }
+.field[aria-invalid="true"] { border-color: var(--color-bad); }
 
-/* ─── Star twinkle (SkyField) ──────────────────────── */
-@keyframes twinkle {
-  0%, 100% { opacity: var(--star-opacity, 0.12); }
-  50% { opacity: 0.55; }
-}
-.star {
-  --star-opacity: 0.12;
-  animation: twinkle var(--twinkle-duration, 6s) ease-in-out infinite;
-  animation-delay: var(--twinkle-delay, 0s);
-}
+/* ─── Scrollbar / selection ────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #262626; border-radius: 3px; }
+::selection { background: rgba(243, 228, 195, 0.28); color: #fff; }
 
-/* ─── Soft pulsing dot — "live/offline" indicators ─── */
-@keyframes soft-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.9); }
-}
-.pulse-dot { animation: soft-pulse 2.4s ease-in-out infinite; }
-
-/* ─── Looping exposure progress (MockLiveView) ─────── */
-@keyframes exposure-loop {
-  0% { width: 0%; }
-  85% { width: 100%; }
-  100% { width: 100%; }
-}
-.exposure-loop {
-  animation: exposure-loop 6s ease-in-out infinite;
-}
-
-/* ─── Sonner toaster styling ───────────────────────── */
+/* ─── Sonner ───────────────────────────────────────── */
 [data-sonner-toaster] [data-sonner-toast] {
-  background: #0E1526 !important;
-  border: 1px solid rgba(143, 165, 201, 0.18) !important;
-  color: rgba(237, 241, 250, 0.95) !important;
-  border-radius: 4px !important;
+  background: #0a0a0a !important;
+  border: 1px solid rgba(244, 243, 239, 0.16) !important;
+  color: #f4f3ef !important;
+  border-radius: 8px !important;
 }
-[data-sonner-toaster] [data-sonner-toast][data-type="success"] {
-  border-color: rgba(95, 191, 168, 0.45) !important;
-}
-[data-sonner-toaster] [data-sonner-toast][data-type="error"] {
-  border-color: rgba(228, 88, 78, 0.5) !important;
-}
+[data-sonner-toaster] [data-sonner-toast][data-type="success"] { border-color: rgba(127, 201, 169, 0.5) !important; }
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] { border-color: rgba(224, 107, 98, 0.5) !important; }
 
-/* ─── Reduced motion: all animation disabled cleanly ── */
+/* ─── Monochrome logo wall ─────────────────────────── */
+.logo-mono {
+  filter: grayscale(1) brightness(0) invert(1);
+  opacity: 0.82;
+  transition: opacity 200ms ease;
+}
+a:hover .logo-mono { opacity: 1; }
+
+/* ─── Soft pulse for "offline" dot ─────────────────── */
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.pulse-dot { animation: soft-pulse 2.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  .pulse-dot { animation: none; }
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="191" height="18" viewBox="0 0 191 18" fill="none">
+  <g id="id-UNISTELLAR" clip-path="url(#clip0_1396_5364)">
+    <path id="Vector" d="M10.4213 11.8084C10.4213 13.9271 8.70754 15.586 6.51856 15.586C4.32957 15.586 2.61578 13.9271 2.61578 11.8084V0.234375H0V11.8084C0 15.2208 2.92378 17.9977 6.51636 17.9977C10.1089 17.9977 13.0327 15.2208 13.0327 11.8084V0.234375H10.4191V11.8084H10.4213Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+    <path id="Vector_2" d="M34.1423 11.8787L22.709 0.1875V17.7638H25.3226V6.16721L36.7559 17.8584V0.234833H34.1423V11.8787Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+    <path id="Vector_3" d="M49.2386 0.234375H46.625V17.7633H49.2386V0.234375Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+    <path id="Vector_4" d="M64.8016 7.46957C63.1318 6.70774 61.5544 5.98873 61.5544 4.39294C61.5544 3.13524 62.5532 2.22239 63.926 2.22239C65.0766 2.22239 65.928 2.83095 66.3086 3.90834L68.6185 2.88956C67.8507 1.12246 66.016 0 63.8534 0C60.9758 0 58.965 1.84598 58.965 4.4876C58.965 7.31856 61.1782 8.3148 63.3188 9.27949C65.1184 10.0909 66.819 10.8572 66.819 12.7077C66.819 14.3892 65.521 15.6108 63.7302 15.6108C62.177 15.6108 60.9274 14.743 60.3928 13.3231L58.041 14.3328C58.8836 16.5372 61.1672 17.9977 63.8292 17.9977C67.1292 17.9977 69.4325 15.8407 69.4325 12.7528C69.4325 9.66491 66.973 8.45905 64.8016 7.46957Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+    <path id="Vector_5" d="M76.4863 2.64835H81.3747V17.7633H83.9883V2.64835H88.8546V0.234375H76.4863V2.64835Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+    <path id="Vector_6" d="M97.4414 17.7633H108.697V15.3493H100.055V10.2058H107.709V7.79185H100.055V2.64835H108.697V0.234375H97.4414V17.7633Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+    <path id="Vector_7" d="M120.563 0.234375H117.951V17.7633H127.726V15.3493H120.563V0.234375Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+    <path id="Vector_8" d="M138.705 0.234375H136.092V17.7633H145.866V15.3493H138.705V0.234375Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+    <path id="Vector_9" d="M185.897 10.8054L186.269 10.6701C188.443 9.87675 189.793 7.94286 189.793 5.6213C189.793 2.55143 187.354 0.234375 184.115 0.234375H177.326V17.7633H179.94V2.64835H183.869C185.88 2.64835 187.18 3.81589 187.18 5.6213C187.18 7.42671 185.911 8.61905 183.869 8.61905H181.843L187.143 17.7633H190.123L185.895 10.8054H185.897Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+    <path id="Vector_10" d="M153.303 17.7633H156.257L161.46 5.60775L166.661 17.7633H169.616L161.46 0.157715L153.303 17.7633Z" fill="white" style="fill:white;fill:white;fill-opacity:1;"></path>
+  </g>
+  <defs>
+    <clipPath id="clip0_1396_5364">
+      <rect width="190.125" height="18" fill="white" style="fill:white;fill:white;fill-opacity:1;"></rect>
+    </clipPath>
+  </defs>
+</svg>

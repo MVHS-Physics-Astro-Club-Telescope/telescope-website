@@ -1,133 +1,76 @@
 import Link from "next/link";
 
-function InstagramIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-    </svg>
-  );
-}
-
-function MailIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-      <polyline points="22,6 12,13 2,6" />
-    </svg>
-  );
-}
-
-const footerLinks = [
-  { label: "Mission", href: "/#about" },
-  { label: "Observatory", href: "/#observatory" },
-  { label: "Crew", href: "/#team" },
-  { label: "Instrument", href: "/#specs" },
-  { label: "Observing log", href: "/#timeline" },
+const links = [
+  { label: "Crew", href: "/#crew" },
   { label: "Support", href: "/#support" },
   { label: "Sponsors", href: "/sponsors" },
-  { label: "Parts list", href: "/parts" },
+  { label: "Parts", href: "/parts" },
+  { label: "Observe", href: "/observe" },
+  { label: "Request", href: "/request" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-chart/15 bg-void">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
-          {/* Plate colophon */}
-          <div>
-            <Link href="/" className="inline-block">
-              <span className="font-display text-xl text-starlight">
-                MV <em className="text-chart-bright">Astronomy</em>
-              </span>
+    <footer className="border-t border-line">
+      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
+        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-sm">
+            <Link href="/" className="font-display text-[1.35rem] text-ink">
+              MV Astronomy
             </Link>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-chart-bright/60">
-              An independent, student-run physics and astronomy project in
-              Mountain View, California, building an autonomous telescope for
-              free community star parties.
-            </p>
-            <p className="eyebrow mt-6 !text-[0.625rem]">
-              37.3894° N · 122.0819° W · ELEV 32 M
+            <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-2">
+              An independent, student-run project in Mountain View, California,
+              building an autonomous telescope for free community star parties.
             </p>
           </div>
 
-          {/* Index */}
-          <div>
-            <h4 className="eyebrow mb-5">Chart index</h4>
-            <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
-              {footerLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-chart-bright/60 transition-colors duration-200 hover:text-brass-bright"
-                  >
-                    {link.label}
+          <div className="flex flex-col gap-8 sm:flex-row sm:gap-16">
+            <ul className="space-y-2.5">
+              {links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="nav-link text-[0.9375rem]">
+                    {l.label}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="eyebrow mb-5">Transmissions</h4>
-            <div className="space-y-3">
-              <a
-                href="mailto:mvhsphysicsastroclub@gmail.com"
-                className="flex items-center gap-3 text-sm text-chart-bright/60 transition-colors duration-200 hover:text-brass-bright"
-              >
-                <MailIcon />
-                mvhsphysicsastroclub@gmail.com
-              </a>
-              <a
-                href="https://instagram.com/mvhs_physics_astro_club"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-sm text-chart-bright/60 transition-colors duration-200 hover:text-brass-bright"
-              >
-                <InstagramIcon />
-                @mvhs_physics_astro_club
-              </a>
-            </div>
+            <ul className="space-y-2.5">
+              <li>
+                <a href="mailto:mvhsphysicsastroclub@gmail.com" className="nav-link text-[0.9375rem]">
+                  mvhsphysicsastroclub@gmail.com
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://instagram.com/mvhs_physics_astro_club"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav-link text-[0.9375rem]"
+                >
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/MVHS-Physics-Astro-Club-Telescope"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav-link text-[0.9375rem]"
+                >
+                  GitHub
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-12 border-t border-chart/10 pt-8">
-          <p className="max-w-3xl text-xs leading-relaxed text-chart-bright/45">
-            MV Astronomy is an independent student project. It is not
-            affiliated with, endorsed by, or sponsored by Mountain View High
-            School or the Mountain View&ndash;Los Altos Union High School
-            District.
+        <div className="mt-14 border-t border-line pt-6 text-[0.8125rem] leading-relaxed text-ink-3">
+          <p className="max-w-2xl">
+            MV Astronomy is an independent student project. It is not affiliated
+            with, endorsed by, or sponsored by Mountain View High School or the
+            Mountain View&ndash;Los Altos Union High School District.
           </p>
-          <div className="mt-7 flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <p className="text-sm text-chart-bright/50">
-              &copy; {new Date().getFullYear()}{" "}MV Physics &amp;
-              Astronomy Club. All rights reserved.
-            </p>
-            <p className="font-mono text-[0.625rem] uppercase tracking-[0.18em] text-chart-bright/40">
-              Mountain View, CA
-            </p>
-          </div>
+          <p className="mt-4">&copy; {new Date().getFullYear()} MV Astronomy</p>
         </div>
       </div>
     </footer>

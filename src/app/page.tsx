@@ -1,23 +1,13 @@
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import PublicObservatory from "@/components/PublicObservatory";
-import Team from "@/components/Team";
-import Specs from "@/components/Specs";
-import Timeline from "@/components/Timeline";
-import FundraisingProgress from "@/components/FundraisingProgress";
-import Sponsorship from "@/components/Sponsorship";
+import TelescopeStory from "@/components/telescope/TelescopeStory";
+import Crew from "@/components/Crew";
+import Support from "@/components/Support";
 
 export default function Home() {
   return (
     <>
-      <Hero />
-      <About />
-      <PublicObservatory />
-      <Team />
-      <Specs />
-      <Timeline />
-      <FundraisingProgress />
-      <Sponsorship />
+      <TelescopeStory />
+      <Crew />
+      <Support />
     </>
   );
 }

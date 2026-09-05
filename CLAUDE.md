@@ -1,38 +1,38 @@
 # Telescope Website — Project Context
 
 ## What Is This?
-MV Physics and Astronomy Club telescope website. Static site showcasing team, equipment specs, build timeline, and sponsorship information.
+MV Astronomy's website: an independent student project in Mountain View building a 10-inch autonomous Dobsonian. Five pages: a scroll-driven 3D story of the real telescope on `/`, then `/sponsors`, `/parts`, `/observe`, `/request`.
 
-The project is presented as an **independent student project** — not affiliated with, endorsed by, or sponsored by Mountain View High School or the MVLA district. Public-facing copy says "MV", never "MVHS". The only permitted "mvhs" strings are live external identifiers that cannot be renamed from this repo: the contact email, the Instagram handle, the GitHub org path, and the SendCutSend credit code.
+The project is presented as an **independent student project** — not affiliated with, endorsed by, or sponsored by Mountain View High School or the MVLA district. Public-facing copy says "MV", never "MVHS". The only permitted "mvhs" strings are live external identifiers that cannot be renamed from this repo: the contact email, the Instagram handle, the GitHub org path, and the SendCutSend credit code. `tests/e2e/disclaimers.spec.ts` enforces this and the roles note under the crew grid.
 
 ## Tech Stack
-- Next.js 16.2.2, React 19.2.4, TypeScript
-- Tailwind CSS v4
-- shadcn/ui components
+- Next.js 16.2.2, React 19.2.4, TypeScript, Tailwind CSS v4
+- three / @react-three/fiber / @react-three/drei for the home-page telescope
+- @gltf-transform (dev) for the model pipeline in `scripts/build-telescope-glb.mjs`
 - Vercel deployment
+
+## Design
+One black room, one instrument, one warm light on it. Instrument Serif for display, Instrument Sans for copy, IBM Plex Mono only for numbers. No cards, no chart lines, no gradients beyond the single glow behind the telescope. Tokens and the few shared classes (`.label`, `.btn`, `.field`, `.row`, `.link`) live in `src/app/globals.css`.
+
+## Key Files
+- `src/app/*/page.tsx` — the five pages
+- `src/components/telescope/` — canvas, materials, choreography, anchors
+- `src/components/` — Navbar, Footer, Crew, Support, PartsTable, EmailSignup, MockTargetPicker, TonightAtMV, OfflineStatus
+- `src/data/` — team, sponsors, parts, targets
+- `public/models/telescope.glb` — built, never hand-edited; see README for the pipeline
 
 ## GitHub
 - Repo: MVHS-Physics-Astro-Club-Telescope/telescope-website
-- Branch: main
-
-## Key Files
-- `app/` — Next.js pages and layout
-- `components/` — UI components (Navbar, Hero, Team, Specs, PartsTable, Timeline, Sponsorship, Footer)
-- `next.config.ts` — has `ignoreBuildErrors: true` (should be removed)
+- Branch: main (protected; solo merges need `--admin`)
 
 ## Deployment
-- Vercel deployment
+- Vercel from `main` → https://www.mvhsastro.org
 - Git author email MUST be `soccerdude1812@gmail.com`
 
 ## Dev Commands
-- `npm run dev` — start dev server
-- `npm run build` — production build
-- `npm run lint` — ESLint
+- `npm run dev` / `npm run build` / `npm run lint` / `npm run test:e2e`
 
-## Known Issues
-- Remove `ignoreBuildErrors: true` in next.config.ts before production
-
-## Critical Rules
-- Mobile-first responsive design
-- Use shadcn/ui components — never inline styles
-- All components in `components/ui/`
+## Rules
+- Mobile-first; check the home story on a phone viewport after any camera or copy change.
+- Keep `src/data/team.ts` `leadershipNote` in sync with the roster; both are public statements.
+- Read `lessons/lessons.md` before touching scroll, 3D, Playwright, or Onshape export code.
