@@ -108,3 +108,10 @@
 **Root cause:** Treated scroll-linked camera travel like autoplay animation. It is user-driven; the setting is meant to remove motion the user did not initiate.
 **Fix:** The camera always follows scroll; under reduced motion it tracks 1:1 (no easing), the LED flicker holds steady, and framer-motion's `reducedMotion="user"` still makes the copy appear without transitions.
 **Prevention:** Before verifying "works for me", run one capture with `page.emulateMedia({ reducedMotion: "reduce" })` — and when someone says a page is broken, check their `matchMedia` flags first.
+
+## [2026-09-05][stale-next-start] `pkill -f "next start"` does not kill `next start`
+
+**Mistake:** Rebuilt `.next` while an old `next start` (process name `next-server`) was still bound to :3037; the new server failed with EADDRINUSE, the old one served a rebuilt directory, `/` returned 500, and two home-page e2e tests "timed out" and looked like a renderer crash.
+**Root cause:** The server process's command line no longer contains "next start", so the pkill pattern misses it.
+**Fix:** Stop servers by port: `lsof -ti :3037 | xargs kill`, and check `start.log` for `EADDRINUSE` before trusting a run.
+**Prevention:** Any e2e failure that appears only on the heavy page: first `curl -s -o /dev/null -w "%{http_code}" http://localhost:3037/`.
