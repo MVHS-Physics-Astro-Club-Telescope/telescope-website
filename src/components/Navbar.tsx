@@ -54,7 +54,7 @@ export default function Navbar() {
             );
           })}
           <li>
-            <a href="mailto:mvhsphysicsastroclub@gmail.com" className="btn h-9 px-4 text-[0.875rem]">
+            <a href="mailto:contact@mvhsastro.org" className="btn h-9 px-4 text-[0.875rem]">
               Contact
             </a>
           </li>
@@ -98,7 +98,7 @@ export default function Navbar() {
             </li>
           ))}
           <li className="pt-4 pb-2">
-            <a href="mailto:mvhsphysicsastroclub@gmail.com" className="btn">
+            <a href="mailto:contact@mvhsastro.org" className="btn">
               Contact
             </a>
           </li>
