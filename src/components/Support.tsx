@@ -29,7 +29,7 @@ export default function Support() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
-              href="mailto:mvhsphysicsastroclub@gmail.com?subject=Telescope%20sponsorship"
+              href="mailto:contact@mvhsastro.org?subject=Telescope%20sponsorship"
               className="btn btn-solid"
             >
               Become a sponsor

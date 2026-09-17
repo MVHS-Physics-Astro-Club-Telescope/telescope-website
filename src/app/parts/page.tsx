@@ -20,7 +20,7 @@ export default function PartsPage() {
       </h1>
       <p className="prose-tight mt-5 text-lg">
         The complete bill of materials. Links are for reference; if you want to
-        donate a part, <a href="mailto:mvhsphysicsastroclub@gmail.com?subject=Part%20donation" className="link">email us first</a> so
+        donate a part, <a href="mailto:contact@mvhsastro.org?subject=Part%20donation" className="link">email us first</a> so
         we can confirm the spec.
       </p>
 

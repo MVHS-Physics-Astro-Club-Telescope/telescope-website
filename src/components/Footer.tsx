@@ -36,8 +36,8 @@ export default function Footer() {
             </ul>
             <ul className="space-y-2.5">
               <li>
-                <a href="mailto:mvhsphysicsastroclub@gmail.com" className="nav-link text-[0.9375rem]">
-                  mvhsphysicsastroclub@gmail.com
+                <a href="mailto:contact@mvhsastro.org" className="nav-link text-[0.9375rem]">
+                  contact@mvhsastro.org
                 </a>
               </li>
               <li>

@@ -92,7 +92,7 @@ export default function SponsorsPage() {
           is engraved on the instrument and listed here for good.
         </p>
         <a
-          href="mailto:mvhsphysicsastroclub@gmail.com?subject=Telescope%20sponsorship"
+          href="mailto:contact@mvhsastro.org?subject=Telescope%20sponsorship"
           className="btn btn-solid mt-7"
         >
           Get in touch

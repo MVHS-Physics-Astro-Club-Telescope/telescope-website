@@ -22,7 +22,7 @@ test.describe("Public disclaimers", () => {
       await page.goto(path);
       const body = (await page.locator("body").innerText()).replace(
         // live external identifiers that cannot be renamed from this repo
-        /mvhsphysicsastroclub@gmail\.com|@?mvhs_physics_astro_club|MVHSTELE500/g,
+        /@?mvhs_physics_astro_club|MVHSTELE500/g,
         "",
       );
       expect(body).not.toMatch(/MVHS/);
