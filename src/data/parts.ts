@@ -1,4 +1,7 @@
-export type PartStatus = "Donated" | "Ordered" | "Needed" | "Claimed";
+// "Acquired" = bought with project funds and physically in hand. Distinct from
+// "Donated" on purpose: the public page counts Donated into a sponsor-credit tile,
+// so a self-bought part must never land there. See lessons.md [2026-08-20].
+export type PartStatus = "Donated" | "Acquired" | "Ordered" | "Needed" | "Claimed";
 export type PartCategory =
   | "Optics"
   | "Structure"
@@ -647,13 +650,32 @@ export const parts: Part[] = [
     donatedBy: "ToupTek Astro",
   },
   {
+    name: "Guide Scope",
+    category: "Camera",
+    specification: "30–50mm guidescope + mounting rings",
+    quantity: 1,
+    estimatedCost: "$70–100",
+    status: "Needed",
+    notes: "Optical path for the GPM462C (decided 2026-09-19 over an off-axis guider: an OAG would eat ~10–16mm of back-focus and only 8.00mm of margin exists). Mounts to a printed pad on the UTA ring.",
+  },
+  {
+    name: "Guidescope Pad",
+    fab: "3D Print",
+    category: "Structure",
+    specification: "Flat pad on the UTA ring for the guidescope rings (ASA)",
+    quantity: 1,
+    estimatedCost: "$0",
+    status: "Claimed",
+    notes: "Not yet modelled. Same job as the finder pad: flatten the r168.40 curve and give the guidescope rings a square 2-bolt seat.",
+  },
+  {
     name: "ToupTek GPM462C Guide Camera",
     category: "Camera",
     specification: "2.1MP Sony IMX462 CMOS, USB 2.0, planetary/guiding",
     quantity: 1,
     estimatedCost: "Donated",
     status: "Donated",
-    notes: "Autoguider for closed-loop tracking correction",
+    notes: "Autoguider for closed-loop tracking correction. 1.25\" body, ~37×72mm, 70g, USB-C, ST4 port. Rides in the guidescope, NOT in the main imaging train.",
     donatedBy: "ToupTek Astro",
   },
   {
@@ -693,7 +715,7 @@ export const parts: Part[] = [
     specification: "Celestron StarPointer #51630 red-dot + wedge bracket",
     quantity: 1,
     estimatedCost: "$15–20",
-    status: "Needed",
+    status: "Acquired",
     notes: "In hand with its brackets. Vixen-style dovetail foot; the wedge bracket bolts down with 2 screws. CAD owes it a flat pad on the ring with a matching 2-hole pattern — measure the spacing off the physical bracket.",
     purchaseUrl: "https://www.bhphotovideo.com/c/product/202036-REG/Celestron_51630_Star_Pointer_Finderscope.html",
   },
@@ -723,7 +745,7 @@ export const parts: Part[] = [
     specification: "480mm 12V strip (SVBONY SV192)",
     quantity: 1,
     estimatedCost: "$25",
-    status: "Needed",
+    status: "Acquired",
     notes: "In hand. Wraps the secondary holder; 12V — runs off a Pegasus PPBA dew channel (2× PWM, 5A each). No mount required.",
     purchaseUrl: "https://www.amazon.com/SVBONY-Heater-Warmer-Telescope-Diameter/dp/B08YJBCLT8",
   },
@@ -781,6 +803,7 @@ export function getPartsByCategory(category: PartCategory): Part[] {
 export function getStatusCounts(): Record<PartStatus, number> {
   const counts: Record<PartStatus, number> = {
     Donated: 0,
+    Acquired: 0,
     Ordered: 0,
     Needed: 0,
     Claimed: 0,
