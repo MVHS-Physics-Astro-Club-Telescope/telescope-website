@@ -11,6 +11,7 @@ import {
 
 const statusColor: Record<PartStatus, string> = {
   Donated: "text-ok",
+  Acquired: "text-ok",
   Claimed: "text-ok",
   Ordered: "text-ink-2",
   Needed: "text-ink-3",

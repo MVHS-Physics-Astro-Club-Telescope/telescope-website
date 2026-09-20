@@ -1,4 +1,7 @@
-export type PartStatus = "Donated" | "Ordered" | "Needed" | "Claimed";
+// "Acquired" = bought with project funds and physically in hand. Distinct from
+// "Donated" on purpose: the public page counts Donated into a sponsor-credit tile,
+// so a self-bought part must never land there. See lessons.md [2026-08-20].
+export type PartStatus = "Donated" | "Acquired" | "Ordered" | "Needed" | "Claimed";
 export type PartCategory =
   | "Optics"
   | "Structure"
@@ -63,12 +66,12 @@ export const parts: Part[] = [
     name: "Focuser",
     image: "/cad/parts/focuser-gso.png",
     category: "Optics",
-    specification: '1.25" Crayford single-speed (GSO)',
+    specification: '2" Crayford single-speed (GSO) + Type-3 flat base plate',
     quantity: 1,
-    estimatedCost: "$95",
+    estimatedCost: "$115 + $6",
     status: "Needed",
-    notes: "Donated ToupTek AAF motor provides motorized fine focus",
-    purchaseUrl: "https://agenaastro.com/gso-crayford-focuser-reflector-telescope-single-speed-1-25.html",
+    notes: 'The 1.25" unit is NOT compatible: its base is curved for a 176mm tube and GSO sells no flat plate for it. The 2" takes the published Type-3 flat plate (92x92x8, 76x76 bolts, 78.5 bore) and matches the ATR585C M48 train. cad/uta_v5.py models "2in".',
+    purchaseUrl: "https://agenaastro.com/gso-2-crayford-focuser-for-reflector-telescopes-single-speed.html",
   },
   {
     name: "Flocking Material",
@@ -165,11 +168,11 @@ export const parts: Part[] = [
     fab: "3D Print",
     image: "/cad/parts/focuser-board.png",
     category: "Structure",
-    specification: "110×96×8 board, Ø58 focuser bore (ASA)",
+    specification: "Printed pad + flange, Ø78.5 drawtube bore, 76×76 bolts (ASA)",
     quantity: 1,
     estimatedCost: "$0",
     status: "Claimed",
-    notes: "Carries the GSO focuser on the UTA ring",
+    notes: 'Carries the GSO 2" focuser on the UTA top ring (RING-TOP-F). Supersedes the v2/v4 board (110×96×8, Ø58) which was sized for the 1.25" focuser and is quarantined DO-NOT-PRINT. Geometry is focuser_mount("2in") in cad/uta_v5.py; pad radius is derived from the focuser rack range so focus is reachable by construction.',
   },
 
   {
@@ -647,13 +650,32 @@ export const parts: Part[] = [
     donatedBy: "ToupTek Astro",
   },
   {
+    name: "Guide Scope",
+    category: "Camera",
+    specification: "30–50mm guidescope + mounting rings",
+    quantity: 1,
+    estimatedCost: "$70–100",
+    status: "Needed",
+    notes: "Optical path for the GPM462C (decided 2026-09-19 over an off-axis guider: an OAG would eat ~10–16mm of back-focus and only 8.00mm of margin exists). Mounts to a printed pad on the UTA ring.",
+  },
+  {
+    name: "Guidescope Pad",
+    fab: "3D Print",
+    category: "Structure",
+    specification: "Flat pad on the UTA ring for the guidescope rings (ASA)",
+    quantity: 1,
+    estimatedCost: "$0",
+    status: "Claimed",
+    notes: "Not yet modelled. Same job as the finder pad: flatten the r168.40 curve and give the guidescope rings a square 2-bolt seat.",
+  },
+  {
     name: "ToupTek GPM462C Guide Camera",
     category: "Camera",
     specification: "2.1MP Sony IMX462 CMOS, USB 2.0, planetary/guiding",
     quantity: 1,
     estimatedCost: "Donated",
     status: "Donated",
-    notes: "Autoguider for closed-loop tracking correction",
+    notes: "Autoguider for closed-loop tracking correction. 1.25\" body, ~37×72mm, 70g, USB-C, ST4 port. Rides in the guidescope, NOT in the main imaging train.",
     donatedBy: "ToupTek Astro",
   },
   {
@@ -690,11 +712,12 @@ export const parts: Part[] = [
   {
     name: "Finder Scope",
     category: "Accessories",
-    specification: "Red-dot or 6×30 optical",
+    specification: "Celestron StarPointer #51630 red-dot + wedge bracket",
     quantity: 1,
     estimatedCost: "$15–20",
-    status: "Needed",
-    purchaseUrl: "https://www.amazon.com/SVBONY-Pointer-Celestron-Astronomical-Telescopes/dp/B072VGFTN5",
+    status: "Acquired",
+    notes: "In hand with its brackets. Vixen-style dovetail foot; the wedge bracket bolts down with 2 screws. CAD owes it a flat pad on the ring with a matching 2-hole pattern — measure the spacing off the physical bracket.",
+    purchaseUrl: "https://www.bhphotovideo.com/c/product/202036-REG/Celestron_51630_Star_Pointer_Finderscope.html",
   },
   {
     name: "Light Shroud",
@@ -722,8 +745,8 @@ export const parts: Part[] = [
     specification: "480mm 12V strip (SVBONY SV192)",
     quantity: 1,
     estimatedCost: "$25",
-    status: "Needed",
-    notes: "Prevents dew on secondary; 12V — runs off Pegasus PPBA dew output",
+    status: "Acquired",
+    notes: "In hand. Wraps the secondary holder; 12V — runs off a Pegasus PPBA dew channel (2× PWM, 5A each). No mount required.",
     purchaseUrl: "https://www.amazon.com/SVBONY-Heater-Warmer-Telescope-Diameter/dp/B08YJBCLT8",
   },
   {
@@ -780,6 +803,7 @@ export function getPartsByCategory(category: PartCategory): Part[] {
 export function getStatusCounts(): Record<PartStatus, number> {
   const counts: Record<PartStatus, number> = {
     Donated: 0,
+    Acquired: 0,
     Ordered: 0,
     Needed: 0,
     Claimed: 0,
