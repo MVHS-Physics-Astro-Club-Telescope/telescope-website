@@ -15,6 +15,11 @@ export interface Sponsor {
   contribution: string;
   /** Direct cash received. In-kind support is never counted here. */
   cashValue: number;
+  /**
+   * Estimated retail value of donated equipment, credit or services. Left
+   * unset when no value is on record.
+   */
+  inKindValue?: number;
 }
 
 /**
@@ -22,9 +27,20 @@ export interface Sponsor {
  * usable credit. Reconciled 2026-09-05 against the club's donor ledger
  * ("Sponsors Who Gave Money or Parts", compiled 2026-08-24 from the club
  * inbox). Ordered by group, then by what they gave.
+ *
+ * In-kind values (2026-10-21) are the ledger's estimated values; the primary
+ * mirror is priced at a comparable GSO 10" parabolic primary (Agena Astro,
+ * $440). The anonymous $2,500 grant was confirmed by the project lead on
+ * 2026-10-21; the donor asked not to be named on the site.
  */
 export const sponsors: Sponsor[] = [
   // ── Cash ──────────────────────────────────────────────────────────────
+  {
+    name: "Anonymous",
+    type: "Cash",
+    contribution: "$2,500 grant",
+    cashValue: 2500,
+  },
   {
     name: "Tri-Valley Stargazers",
     url: "https://trivalleystargazers.org",
@@ -57,6 +73,7 @@ export const sponsors: Sponsor[] = [
     type: "Equipment",
     contribution: "254 mm f/4.48 parabolic primary mirror",
     cashValue: 0,
+    inKindValue: 440,
   },
   {
     name: "ToupTek Astro",
@@ -65,6 +82,7 @@ export const sponsors: Sponsor[] = [
     type: "Equipment",
     contribution: "ATR585C cooled camera, GPM462C guide camera, AAF autofocuser",
     cashValue: 0,
+    inKindValue: 579,
   },
   {
     name: "Unistellar",
@@ -73,6 +91,7 @@ export const sponsors: Sponsor[] = [
     type: "Equipment",
     contribution: "eQuinox 2 smart telescope for outreach",
     cashValue: 0,
+    inKindValue: 2899,
   },
   {
     name: "Pegasus Astro",
@@ -81,6 +100,7 @@ export const sponsors: Sponsor[] = [
     type: "Equipment",
     contribution: "Pocket Powerbox Advance Gen 2",
     cashValue: 0,
+    inKindValue: 460,
   },
   {
     name: "DWARFLAB",
@@ -89,6 +109,7 @@ export const sponsors: Sponsor[] = [
     type: "Equipment",
     contribution: "DWARF mini smart telescope for outreach",
     cashValue: 0,
+    inKindValue: 399,
   },
   {
     name: "Celestron",
@@ -97,6 +118,7 @@ export const sponsors: Sponsor[] = [
     type: "Equipment",
     contribution: "X-Cel LX 25 mm and 12 mm eyepieces",
     cashValue: 0,
+    inKindValue: 219.9,
   },
   {
     name: "Thames & Kosmos",
@@ -105,6 +127,7 @@ export const sponsors: Sponsor[] = [
     type: "Equipment",
     contribution: "Plasma ball and planetarium projector for outreach",
     cashValue: 0,
+    inKindValue: 64.9,
   },
 
   // ── Fabrication & materials ───────────────────────────────────────────
@@ -115,6 +138,7 @@ export const sponsors: Sponsor[] = [
     type: "Fabrication",
     contribution: "$500 laser-cutting credit",
     cashValue: 0,
+    inKindValue: 500,
   },
   {
     name: "PCBWay",
@@ -131,6 +155,7 @@ export const sponsors: Sponsor[] = [
     type: "Materials",
     contribution: "Membership and $50 materials credit",
     cashValue: 0,
+    inKindValue: 50,
   },
 
   // ── Services ──────────────────────────────────────────────────────────
@@ -149,6 +174,7 @@ export const sponsors: Sponsor[] = [
     type: "Service",
     contribution: "Vineyard tour and tasting, fundraiser prize",
     cashValue: 0,
+    inKindValue: 650,
   },
 ];
 
@@ -162,6 +188,15 @@ export const sponsorGroups: { type: SponsorType; heading: string }[] = [
 
 export function getTotalCashRaised(): number {
   return sponsors.reduce((sum, s) => sum + s.cashValue, 0);
+}
+
+export function getTotalInKindValue(): number {
+  return sponsors.reduce((sum, s) => sum + (s.inKindValue ?? 0), 0);
+}
+
+/** Cash plus the estimated value of everything donated, in whole dollars. */
+export function getTotalSupport(): number {
+  return Math.floor(getTotalCashRaised() + getTotalInKindValue());
 }
 
 export function getSponsorsByType(type: SponsorType): Sponsor[] {
