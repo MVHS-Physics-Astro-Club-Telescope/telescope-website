@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getBudgetRange } from "@/data/parts";
-import { getTotalCashRaised, sponsors } from "@/data/sponsors";
+import { getTotalCashRaised, getTotalSupport } from "@/data/sponsors";
 
 const perks = [
   "Your name engraved on the telescope",
@@ -12,7 +12,7 @@ const perks = [
 export default function Support() {
   const { low, high } = getBudgetRange();
   const raised = getTotalCashRaised();
-  const inKind = sponsors.filter((s) => s.type !== "Cash").length;
+  const support = getTotalSupport();
 
   return (
     <section id="support" className="scroll-mt-16 border-t border-line">
@@ -41,24 +41,30 @@ export default function Support() {
         </div>
 
         <div>
-          <dl className="grid grid-cols-3 gap-6">
-            <div>
-              <dt className="label">Cash raised</dt>
+          <dl className="grid grid-cols-3 grid-rows-[auto_auto] gap-x-6">
+            <div className="row-span-2 grid grid-rows-subgrid">
+              <dt className="label self-end">Total support</dt>
+              <dd className="font-display mt-2 text-3xl text-ink tabular-nums">
+                ${support.toLocaleString()}
+              </dd>
+            </div>
+            <div className="row-span-2 grid grid-rows-subgrid">
+              <dt className="label self-end">Cash raised</dt>
               <dd className="font-display mt-2 text-3xl text-ink tabular-nums">
                 ${raised.toLocaleString()}
               </dd>
             </div>
-            <div>
-              <dt className="label">In-kind sponsors</dt>
-              <dd className="font-display mt-2 text-3xl text-ink tabular-nums">{inKind}</dd>
-            </div>
-            <div>
-              <dt className="label">Parts budget</dt>
+            <div className="row-span-2 grid grid-rows-subgrid">
+              <dt className="label self-end">Parts budget</dt>
               <dd className="font-display mt-2 text-3xl text-ink tabular-nums">
                 ${low.toLocaleString()}&ndash;{high.toLocaleString()}
               </dd>
             </div>
           </dl>
+          <p className="mt-4 text-[0.8125rem] leading-relaxed text-ink-3">
+            Total support is cash plus donated equipment, credit, and services
+            at estimated retail value.
+          </p>
 
           <ul className="mt-10">
             {perks.map((p) => (

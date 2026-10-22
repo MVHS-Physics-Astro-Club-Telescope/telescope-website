@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   getSponsorsByType,
   getTotalCashRaised,
+  getTotalSupport,
   sponsorGroups,
   sponsors,
   type Sponsor,
@@ -52,6 +53,7 @@ function SponsorRow({ sponsor }: { sponsor: Sponsor }) {
 
 export default function SponsorsPage() {
   const raised = getTotalCashRaised();
+  const support = getTotalSupport();
   const groups = sponsorGroups
     .map((g) => ({ ...g, items: getSponsorsByType(g.type) }))
     .filter((g) => g.items.length > 0);
@@ -63,9 +65,10 @@ export default function SponsorsPage() {
         {sponsors.length} sponsors behind the light.
       </h1>
       <p className="prose-tight mt-5 text-lg">
-        ${raised.toLocaleString()} in cash, the primary mirror, the cameras,
-        the power system, and the fabrication credit that turns drawings into
-        parts.
+        ${support.toLocaleString()} in support so far:
+        ${raised.toLocaleString()} in cash, plus the primary mirror, the
+        cameras, the power system, and the fabrication credit that turns
+        drawings into parts.
       </p>
 
       <div className="mt-16 space-y-14">
