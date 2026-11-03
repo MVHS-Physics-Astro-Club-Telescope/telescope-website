@@ -132,6 +132,7 @@ export const team: TeamMember[] = [
     name: "Edison Liu",
     role: "Outreach",
     tier: "member",
+    image: "/team/edison.jpg",
   },
   {
     name: "Maya Rinn",
