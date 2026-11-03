@@ -7,7 +7,9 @@ export interface TeamMember {
 }
 
 /**
- * Roster as of 2026-09-05. Order is leads first, then members.
+ * Roster as of 2026-11-02. Order is leads first, then members.
+ * Eeshan is the sole Electronics & Software lead; Neel is an electronics
+ * member (lead title removed 2026-11-02 at Eeshan's instruction).
  * Roles are a public statement of who holds what on this project —
  * keep `leadershipNote` below in sync when they change.
  */
@@ -31,12 +33,6 @@ export const team: TeamMember[] = [
     image: "/team/david.jpg",
   },
   {
-    name: "Neel Chhatrala",
-    role: "Electronics Lead",
-    tier: "lead",
-    image: "/team/neel.jpg",
-  },
-  {
     name: "Aryan Khanna",
     role: "Physics Calculation Lead",
     tier: "lead",
@@ -47,6 +43,12 @@ export const team: TeamMember[] = [
     role: "Outreach Lead",
     tier: "lead",
     image: "/team/tristan.jpg",
+  },
+  {
+    name: "Neel Chhatrala",
+    role: "Electronics",
+    tier: "member",
+    image: "/team/neel.jpg",
   },
   {
     name: "Ishaan Sakariya",
@@ -69,6 +71,6 @@ export const team: TeamMember[] = [
 export const leadershipNote =
   "This project has no president. Its leads are Eeshan Khandelwal " +
   "(Electronics & Software), Vidu Senadheera and David Cho (Mechanical), " +
-  "Neel Chhatrala (Electronics), Aryan Khanna (Physics Calculations), and " +
-  "Tristan Schaefer (Outreach). Ishaan Sakariya and Dominic Reouk are " +
-  "mechanical members.";
+  "Aryan Khanna (Physics Calculations), and Tristan Schaefer (Outreach). " +
+  "Neel Chhatrala is an electronics member, and Ishaan Sakariya and " +
+  "Dominic Reouk are mechanical members.";
