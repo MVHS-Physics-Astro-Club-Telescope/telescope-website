@@ -35,7 +35,9 @@ test.describe("Public disclaimers", () => {
     await expect(note).toBeVisible();
     await expect(note).toContainText(/Vidu Senadheera and David Cho \(Mechanical\)/);
     await expect(note).toContainText(/Eeshan Khandelwal \(Electronics & Software\)/);
-    await expect(note).toContainText(/Neel Chhatrala \(Electronics\)/);
+    // Eeshan is the sole Electronics & Software lead; Neel is an electronics member.
+    await expect(note).not.toContainText(/Neel Chhatrala \(Electronics\)/);
+    await expect(note).toContainText(/Neel Chhatrala is an electronics member/);
     await expect(note).toContainText(/Aryan Khanna \(Physics Calculations\)/);
     await expect(note).toContainText(/Tristan Schaefer \(Outreach\)/);
     await expect(note).toContainText(/Ishaan Sakariya and Dominic Reouk are mechanical members/);
@@ -48,7 +50,7 @@ test.describe("Public disclaimers", () => {
       ["Vidu Senadheera", "Co-Mechanical Lead"],
       ["David Cho", "Co-Mechanical Lead"],
       ["Eeshan Khandelwal", "Electronics & Software Lead"],
-      ["Neel Chhatrala", "Electronics Lead"],
+      ["Neel Chhatrala", "Electronics"],
       ["Aryan Khanna", "Physics Calculation Lead"],
       ["Tristan Schaefer", "Outreach Lead"],
       ["Ishaan Sakariya", "Mechanical"],
@@ -60,6 +62,7 @@ test.describe("Public disclaimers", () => {
       await expect(card.getByText(role, { exact: true })).toBeVisible();
     }
     await expect(crew.locator("img[alt='Dominic Reouk']")).toBeVisible();
+    await expect(crew.getByText("Electronics Lead", { exact: true })).toHaveCount(0);
   });
 
   test("sponsor perks do not claim tax-deductibility", async ({ page }) => {

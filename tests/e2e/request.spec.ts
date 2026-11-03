@@ -11,17 +11,22 @@ test.describe("/request — target request preview", () => {
     await expect(page.getByRole("heading", { level: 1, name: /Tell it what to capture/i })).toBeVisible();
   });
 
-  test("states plainly that the queue is not open yet", async ({ page }) => {
+  test("states plainly that the telescope is down and requests are paused", async ({ page }) => {
     const status = page.getByRole("status").first();
     await expect(status).toBeVisible();
-    await expect(status).toContainText(/Coming soon/i);
-    await expect(status).toContainText(/request queue/i);
+    await expect(status).toContainText(/The telescope is down right now/i);
+    await expect(status).toContainText(/Requests are paused/i);
+  });
+
+  test("never says the telescope is still unbuilt or waiting on first light", async ({ page }) => {
+    const body = await page.locator("body").innerText();
+    expect(body).not.toMatch(/first light|coming soon|goes online|not built|yet to/i);
   });
 
   test("submit button is locked with an explanatory tooltip", async ({ page }) => {
     const submit = page.getByRole("button", { name: /Submit request/i });
     await expect(submit).toHaveAttribute("aria-disabled", "true");
-    await expect(submit).toHaveAttribute("title", /Submissions open when telescope goes online/i);
+    await expect(submit).toHaveAttribute("title", /Requests are paused while the telescope is down/i);
   });
 
   test("filter chips render and respond to clicks", async ({ page }) => {
