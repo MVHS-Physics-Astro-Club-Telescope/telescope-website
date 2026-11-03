@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion, MotionConfig } from "framer-motion";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
+import { crewCountWord } from "@/data/team";
 import { SCREENS, STORY_HEIGHT } from "./spec";
 
 const TelescopeCanvas = dynamic(() => import("./TelescopeCanvas"), { ssr: false });
@@ -123,7 +124,7 @@ export default function TelescopeStory() {
                 transition={{ duration: 0.9, delay: 0.55, ease }}
                 className="prose-tight mt-5 text-[1.0625rem] sm:text-lg"
               >
-                A 10-inch Dobsonian designed and built from scratch by eight
+                A 10-inch Dobsonian designed and built from scratch by {crewCountWord}{" "}
                 students in Mountain View, California.
               </motion.p>
               <motion.p

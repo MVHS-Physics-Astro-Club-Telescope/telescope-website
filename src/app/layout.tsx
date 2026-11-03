@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { crewCountWord } from "@/data/team";
 
 const body = Instrument_Sans({
   variable: "--font-body",
@@ -26,8 +27,7 @@ const display = Instrument_Serif({
   display: "swap",
 });
 
-const description =
-  "A 10-inch telescope that aims itself, designed and built by eight high-school students in Mountain View, California.";
+const description = `A 10-inch telescope that aims itself, designed and built by ${crewCountWord} high-school students in Mountain View, California.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.mvhsastro.org"),
