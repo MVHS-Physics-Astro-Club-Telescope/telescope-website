@@ -6,7 +6,7 @@ import OfflineStatus from "@/components/OfflineStatus";
 export const metadata: Metadata = {
   title: "Request a target",
   description:
-    "Tell the MV Astronomy telescope what to photograph. Pick a target, get the image by email. Opens at first light.",
+    "Tell the MV Astronomy telescope what to photograph. Pick a target, get the image by email. The telescope is down right now.",
 };
 
 export default function RequestPage() {
@@ -21,7 +21,7 @@ export default function RequestPage() {
         next clear night it is above the horizon, then emails you the image.
         Anything brighter than about magnitude 12 is fair game.
       </p>
-      <OfflineStatus what="The request queue" />
+      <OfflineStatus detail="Requests are paused until it's back up." />
 
       <div className="mt-16 max-w-2xl">
         <MockTargetPicker />
@@ -30,8 +30,8 @@ export default function RequestPage() {
       <div className="mt-24 border-t border-line pt-16">
         <EmailSignup
           source="request"
-          title="Notify me when requests open"
-          description="One email when the queue goes live. You tell us the target, we point the telescope."
+          title="Notify me when it's back up"
+          description="One email when the telescope is back up and taking requests. You tell us the target, we point the telescope."
         />
       </div>
     </div>

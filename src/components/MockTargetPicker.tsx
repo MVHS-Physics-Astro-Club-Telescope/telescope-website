@@ -34,7 +34,7 @@ function matchesChip(t: Target, chip: ChipKey): boolean {
 /**
  * Preview of the request flow. A command palette (⌘K) over the curated
  * catalog, filter chips, an email field, and a submit button that stays
- * locked until the telescope is online.
+ * locked while the telescope is down.
  */
 export default function MockTargetPicker() {
   const [open, setOpen] = useState(false);
@@ -231,8 +231,8 @@ export default function MockTargetPicker() {
                 <button
                   type="button"
                   aria-disabled="true"
-                  aria-label="Submit request — submissions open at first light"
-                  title="Submissions open when telescope goes online"
+                  aria-label="Submit request, paused while the telescope is down"
+                  title="Requests are paused while the telescope is down"
                   onClick={(e) => e.preventDefault()}
                   onFocus={() => setTooltipOpen(true)}
                   onBlur={() => setTooltipOpen(false)}
@@ -245,11 +245,11 @@ export default function MockTargetPicker() {
               }
             />
             <TooltipContent side="top" className="rounded-md border border-line bg-[#0a0a0a] px-3 py-1.5 text-[0.8125rem] text-ink">
-              Locks open at first light
+              Paused while the telescope is down
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <p className="text-[0.875rem] text-ink-3">Submissions open when the telescope goes online.</p>
+        <p className="text-[0.875rem] text-ink-3">Requests reopen when the telescope is back up.</p>
       </div>
 
       {/* Palette */}

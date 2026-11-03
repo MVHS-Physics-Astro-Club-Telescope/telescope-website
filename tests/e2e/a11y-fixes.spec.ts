@@ -81,7 +81,7 @@ test.describe("/request — bundled a11y audit fix regressions", () => {
     await expect(submit).toHaveAttribute("aria-disabled", "true");
     await submit.focus();
     // Tooltip popup is rendered in a portal — just look for its text anywhere.
-    await expect(page.getByText(/Locks open at first light/i)).toBeVisible();
+    await expect(page.getByText(/Paused while the telescope is down/i)).toBeVisible();
   });
 
   test("invalid email shows aria-invalid + inline error on blur, valid email clears it", async ({

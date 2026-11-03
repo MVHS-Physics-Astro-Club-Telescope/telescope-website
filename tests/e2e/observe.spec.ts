@@ -10,11 +10,16 @@ test.describe("/observe — live view preview", () => {
     await expect(page.getByRole("heading", { level: 1, name: /Watch it work/i })).toBeVisible();
   });
 
-  test("states plainly that the live view is not online yet", async ({ page }) => {
+  test("states plainly that the telescope is down and the live view is off", async ({ page }) => {
     const status = page.getByRole("status").first();
     await expect(status).toBeVisible();
-    await expect(status).toContainText(/Coming soon/i);
-    await expect(status).toContainText(/first light/i);
+    await expect(status).toContainText(/The telescope is down right now/i);
+    await expect(status).toContainText(/live view is off/i);
+  });
+
+  test("never says the telescope is still unbuilt or waiting on first light", async ({ page }) => {
+    const body = await page.locator("body").innerText();
+    expect(body).not.toMatch(/first light|coming soon|goes online|not built|yet to/i);
   });
 
   test("shows tonight's sky conditions", async ({ page }) => {

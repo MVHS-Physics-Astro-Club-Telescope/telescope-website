@@ -7,7 +7,7 @@ import TonightAtMV, { TonightAtMVSkeleton } from "@/components/TonightAtMV";
 export const metadata: Metadata = {
   title: "Live View",
   description:
-    "Watch the MV Astronomy telescope point at the sky in real time. The live view opens at first light.",
+    "Watch the MV Astronomy telescope point at the sky in real time. The telescope is down right now.",
 };
 
 const feed = [
@@ -27,7 +27,7 @@ export default function ObservePage() {
         Where the telescope is pointed, what it is exposing, and what the sky
         is doing, streamed from the observatory.
       </p>
-      <OfflineStatus what="The live view" />
+      <OfflineStatus detail="The live view is off until it's back up." />
 
       <div className="mt-20 grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20">
         <section aria-labelledby="tonight">
@@ -57,8 +57,8 @@ export default function ObservePage() {
       <div className="mt-24 border-t border-line pt-16">
         <EmailSignup
           source="observe"
-          title="Notify me when it's live"
-          description="One email, the night the telescope captures first light. Nothing else."
+          title="Notify me when it's back up"
+          description="One email when the telescope is back up and the live view is on. Nothing else."
         />
       </div>
     </div>
