@@ -133,6 +133,21 @@ export const team: TeamMember[] = [
     role: "Outreach",
     tier: "member",
   },
+  {
+    name: "Maya Rinn",
+    role: "PR",
+    tier: "member",
+  },
+  {
+    name: "Laura S.",
+    role: "PR",
+    tier: "member",
+  },
+  {
+    name: "Anaaya Mashru",
+    role: "PR",
+    tier: "member",
+  },
 ];
 
 const ONES = [
@@ -165,12 +180,14 @@ const MEMBER_GROUPS: [role: string, word: string][] = [
   ["Mechanical", "mechanical"],
   ["Software", "software"],
   ["Outreach", "outreach"],
+  ["PR", "PR"],
 ];
 
 /** "X and Y are electronics members; Z is a software member; and ..." */
 const memberClauses = MEMBER_GROUPS.map(([role, word]) => {
   const names = team.filter((m) => m.tier === "member" && m.role === role).map((m) => m.name);
   if (names.length === 0) return null;
+  // "an electronics/outreach member", "a mechanical/software/PR member"
   const article = /^[aeiou]/.test(word) ? "an" : "a";
   return names.length === 1
     ? `${names[0]} is ${article} ${word} member`
