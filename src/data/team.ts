@@ -7,8 +7,8 @@ export interface TeamMember {
 }
 
 /**
- * Roster as of 2026-11-02 (Ibrahim Hasan and Sophie Weng added once they
- * sent photos). Order is leads first, then members.
+ * Roster as of 2026-11-02 (Ibrahim Hasan, Sophie Weng and Lenar Khusiainov
+ * added once they sent photos). Order is leads first, then members.
  * Eeshan is the sole Electronics & Software lead; Neel is an electronics
  * member (lead title removed 2026-11-02 at Eeshan's instruction).
  * Roles are a public statement of who holds what on this project —
@@ -58,6 +58,12 @@ export const team: TeamMember[] = [
     image: "/team/ibrahim.jpg",
   },
   {
+    name: "Lenar Khusiainov",
+    role: "Electronics",
+    tier: "member",
+    image: "/team/lenar.jpg",
+  },
+  {
     name: "Ishaan Sakariya",
     role: "Mechanical",
     tier: "member",
@@ -84,7 +90,7 @@ const NUMBER_WORDS = [
 ];
 
 /**
- * How many students the site says built the telescope, as a word ("ten").
+ * How many students the site says built the telescope, as a word ("eleven").
  * Derived from the roster so the crew heading, the home story and the site
  * description can never disagree with the grid.
  */
@@ -98,6 +104,6 @@ export const leadershipNote =
   "This project has no president. Its leads are Eeshan Khandelwal " +
   "(Electronics & Software), Vidu Senadheera and David Cho (Mechanical), " +
   "Aryan Khanna (Physics Calculations), and Tristan Schaefer (Outreach). " +
-  "Neel Chhatrala and Ibrahim Hasan are electronics members, Ishaan " +
-  "Sakariya and Dominic Reouk are mechanical members, and Sophie Weng is " +
-  "an outreach member.";
+  "Neel Chhatrala, Ibrahim Hasan and Lenar Khusiainov are electronics " +
+  "members, Ishaan Sakariya and Dominic Reouk are mechanical members, and " +
+  "Sophie Weng is an outreach member.";
