@@ -84,7 +84,7 @@ test.describe("Public disclaimers", () => {
       await expect(card.getByText(name, { exact: true })).toBeVisible();
       await expect(card.getByText(role, { exact: true })).toBeVisible();
     }
-    for (const name of ["Dominic Reouk", "Ibrahim Hasan", "Sophie Weng", "Lenar Khusiainov"]) {
+    for (const name of ["Dominic Reouk", "Ibrahim Hasan", "Sophie Weng", "Lenar Khusiainov", "Edison Liu"]) {
       const img = crew.locator(`img[alt='${name}']`);
       await img.scrollIntoViewIfNeeded();
       await expect(img).toBeVisible();
@@ -93,9 +93,9 @@ test.describe("Public disclaimers", () => {
     }
     await expect(crew.locator("li")).toHaveCount(24);
     // members who have not sent a photo yet get the default avatar, not an empty tile
-    await expect(crew.locator("img")).toHaveCount(11);
-    await expect(crew.locator("[data-avatar='default']")).toHaveCount(13);
-    for (const name of ["Sebastian Lawrence", "Yarin Baum", "Edison Liu", "Laura S."]) {
+    await expect(crew.locator("img")).toHaveCount(12);
+    await expect(crew.locator("[data-avatar='default']")).toHaveCount(12);
+    for (const name of ["Sebastian Lawrence", "Yarin Baum", "Laura S."]) {
       await expect(crew.locator("li", { hasText: name }).locator("[data-avatar='default']")).toHaveCount(1);
     }
     // every count of the crew on the site matches the grid
