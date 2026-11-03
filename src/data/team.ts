@@ -7,12 +7,14 @@ export interface TeamMember {
 }
 
 /**
- * Roster as of 2026-11-02 (Ibrahim Hasan, Sophie Weng and Lenar Khusiainov
- * added once they sent photos). Order is leads first, then members.
+ * Roster as of 2026-11-02. Leads first, then members grouped by discipline.
+ * Every recruit from the fall 2026 new-member form is listed (Eeshan,
+ * 2026-11-02); `image` is optional and anyone without one shows the default
+ * avatar until they send a photo.
  * Eeshan is the sole Electronics & Software lead; Neel is an electronics
  * member (lead title removed 2026-11-02 at Eeshan's instruction).
- * Roles are a public statement of who holds what on this project —
- * keep `leadershipNote` below in sync when they change.
+ * Roles are a public statement of who holds what on this project; the
+ * member half of `leadershipNote` below is generated from this list.
  */
 export const team: TeamMember[] = [
   {
@@ -64,6 +66,11 @@ export const team: TeamMember[] = [
     image: "/team/lenar.jpg",
   },
   {
+    name: "Sebastian Lawrence",
+    role: "Electronics",
+    tier: "member",
+  },
+  {
     name: "Ishaan Sakariya",
     role: "Mechanical",
     tier: "member",
@@ -76,34 +83,109 @@ export const team: TeamMember[] = [
     image: "/team/dominic.jpg",
   },
   {
+    name: "Aadi Kesari",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Isaac Rhee",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Ming-Yang Jiang",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Nathaniel Krasic",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Omar Ansari",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Omer Har Gil",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Yarin Baum",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Yuvan Shankar",
+    role: "Software",
+    tier: "member",
+  },
+  {
     name: "Sophie Weng",
     role: "Outreach",
     tier: "member",
     image: "/team/sophie.jpg",
   },
+  {
+    name: "Edison Liu",
+    role: "Outreach",
+    tier: "member",
+  },
 ];
 
-const NUMBER_WORDS = [
+const ONES = [
   "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
   "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
-  "seventeen", "eighteen", "nineteen", "twenty",
+  "seventeen", "eighteen", "nineteen",
 ];
+const TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+
+function numberWord(n: number): string {
+  if (n < 20) return ONES[n];
+  if (n < 100) return TENS[Math.floor(n / 10)] + (n % 10 ? `-${ONES[n % 10]}` : "");
+  return String(n);
+}
 
 /**
- * How many students the site says built the telescope, as a word ("eleven").
- * Derived from the roster so the crew heading, the home story and the site
- * description can never disagree with the grid.
+ * How many students the site says built the telescope, as words
+ * ("twenty-one"). Derived from the roster so the crew heading, the home story
+ * and the site description can never disagree with the grid.
  */
-export const crewCountWord: string = NUMBER_WORDS[team.length] ?? String(team.length);
+export const crewCountWord: string = numberWord(team.length);
+
+/** "A", "A and B", "A, B and C" */
+function listNames(names: string[]): string {
+  return names.length < 2 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
+}
+
+const MEMBER_GROUPS: [role: string, word: string][] = [
+  ["Electronics", "electronics"],
+  ["Mechanical", "mechanical"],
+  ["Software", "software"],
+  ["Outreach", "outreach"],
+];
+
+/** "X and Y are electronics members; Z is a software member; and ..." */
+const memberClauses = MEMBER_GROUPS.map(([role, word]) => {
+  const names = team.filter((m) => m.tier === "member" && m.role === role).map((m) => m.name);
+  if (names.length === 0) return null;
+  const article = /^[aeiou]/.test(word) ? "an" : "a";
+  return names.length === 1
+    ? `${names[0]} is ${article} ${word} member`
+    : `${listNames(names)} are ${word} members`;
+}).filter((c): c is string => c !== null);
 
 /**
  * Rendered under the crew grid. A public statement of who holds which
- * role on this project — keep in sync with the roster above.
+ * role on this project. The leads sentence is written by hand; the members
+ * sentence is built from the roster so it cannot drift from the grid.
  */
 export const leadershipNote =
   "This project has no president. Its leads are Eeshan Khandelwal " +
   "(Electronics & Software), Vidu Senadheera and David Cho (Mechanical), " +
   "Aryan Khanna (Physics Calculations), and Tristan Schaefer (Outreach). " +
-  "Neel Chhatrala, Ibrahim Hasan and Lenar Khusiainov are electronics " +
-  "members, Ishaan Sakariya and Dominic Reouk are mechanical members, and " +
-  "Sophie Weng is an outreach member.";
+  (memberClauses.length > 1
+    ? `${memberClauses.slice(0, -1).join("; ")}; and ${memberClauses.at(-1)}.`
+    : `${memberClauses.join("")}.`);

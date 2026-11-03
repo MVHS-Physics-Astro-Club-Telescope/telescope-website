@@ -24,7 +24,18 @@ export default function Crew() {
                     decoding="async"
                     className="h-full w-full object-cover grayscale-[0.35] transition-[filter] duration-500 hover:grayscale-0"
                   />
-                ) : null}
+                ) : (
+                  // Default avatar until this member sends a photo.
+                  <svg
+                    data-avatar="default"
+                    viewBox="0 0 80 100"
+                    aria-hidden="true"
+                    className="h-full w-full text-ink/[0.09]"
+                  >
+                    <circle cx="40" cy="42" r="14" fill="currentColor" />
+                    <path d="M14 100c0-21 11.6-34 26-34s26 13 26 34z" fill="currentColor" />
+                  </svg>
+                )}
               </div>
               <p className="mt-3.5 text-[0.9375rem] text-ink">{m.name}</p>
               <p className="mt-0.5 text-[0.875rem] text-ink-3">{m.role}</p>
