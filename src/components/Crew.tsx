@@ -1,4 +1,4 @@
-import { leadershipNote, team } from "@/data/team";
+import { crewCountWord, leadershipNote, team } from "@/data/team";
 
 export default function Crew() {
   return (
@@ -7,7 +7,7 @@ export default function Crew() {
         <div className="max-w-xl">
           <p className="label">Crew</p>
           <h2 className="font-display mt-3 text-[clamp(1.9rem,4vw,3rem)] text-ink">
-            Eight students. Every discipline.
+            {crewCountWord[0].toUpperCase() + crewCountWord.slice(1)} students. Every discipline.
           </h2>
         </div>
 

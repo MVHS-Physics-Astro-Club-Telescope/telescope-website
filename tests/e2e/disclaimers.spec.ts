@@ -37,13 +37,14 @@ test.describe("Public disclaimers", () => {
     await expect(note).toContainText(/Eeshan Khandelwal \(Electronics & Software\)/);
     // Eeshan is the sole Electronics & Software lead; Neel is an electronics member.
     await expect(note).not.toContainText(/Neel Chhatrala \(Electronics\)/);
-    await expect(note).toContainText(/Neel Chhatrala is an electronics member/);
+    await expect(note).toContainText(/Neel Chhatrala and Ibrahim Hasan are electronics members/);
     await expect(note).toContainText(/Aryan Khanna \(Physics Calculations\)/);
     await expect(note).toContainText(/Tristan Schaefer \(Outreach\)/);
     await expect(note).toContainText(/Ishaan Sakariya and Dominic Reouk are mechanical members/);
+    await expect(note).toContainText(/Sophie Weng is an outreach member/);
   });
 
-  test("crew grid lists all eight members with their roles", async ({ page }) => {
+  test("crew grid lists all ten members with their roles", async ({ page }) => {
     await page.goto("/#crew");
     const crew = page.locator("#crew");
     const roster: [string, string][] = [
@@ -51,6 +52,8 @@ test.describe("Public disclaimers", () => {
       ["David Cho", "Co-Mechanical Lead"],
       ["Eeshan Khandelwal", "Electronics & Software Lead"],
       ["Neel Chhatrala", "Electronics"],
+      ["Ibrahim Hasan", "Electronics"],
+      ["Sophie Weng", "Outreach"],
       ["Aryan Khanna", "Physics Calculation Lead"],
       ["Tristan Schaefer", "Outreach Lead"],
       ["Ishaan Sakariya", "Mechanical"],
@@ -61,8 +64,26 @@ test.describe("Public disclaimers", () => {
       await expect(card.getByText(name, { exact: true })).toBeVisible();
       await expect(card.getByText(role, { exact: true })).toBeVisible();
     }
-    await expect(crew.locator("img[alt='Dominic Reouk']")).toBeVisible();
+    for (const name of ["Dominic Reouk", "Ibrahim Hasan", "Sophie Weng"]) {
+      const img = crew.locator(`img[alt='${name}']`);
+      await img.scrollIntoViewIfNeeded();
+      await expect(img).toBeVisible();
+      // the photo actually loaded, not a broken image
+      expect(await img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
+    }
+    await expect(crew.locator("li")).toHaveCount(10);
+    // every count of the crew on the site matches the grid
+    await expect(crew.getByRole("heading", { level: 2 })).toHaveText(/^Ten students\./);
     await expect(crew.getByText("Electronics Lead", { exact: true })).toHaveCount(0);
+  });
+
+  test("home story and site description count the same crew as the grid", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByText(/designed and built from scratch by ten\s+students/i)).toBeVisible();
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      /built by ten high-school students/,
+    );
   });
 
   test("sponsor perks do not claim tax-deductibility", async ({ page }) => {
