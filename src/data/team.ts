@@ -7,7 +7,7 @@ export interface TeamMember {
 }
 
 /**
- * Roster as of 2026-11-02. Leads first, then members grouped by discipline.
+ * Roster as of 2026-11-09. Leads first, then members grouped by discipline.
  * Every recruit from the fall 2026 new-member form is listed (Eeshan,
  * 2026-11-02); `image` is optional and anyone without one shows the default
  * avatar until they send a photo.
@@ -66,6 +66,26 @@ export const team: TeamMember[] = [
     image: "/team/lenar.jpg",
   },
   {
+    name: "Boen Chen",
+    role: "Electronics",
+    tier: "member",
+  },
+  {
+    name: "Brandon Calder",
+    role: "Electronics",
+    tier: "member",
+  },
+  {
+    name: "Devan Kaushal",
+    role: "Electronics",
+    tier: "member",
+  },
+  {
+    name: "Nikhil Moorti",
+    role: "Electronics",
+    tier: "member",
+  },
+  {
     name: "Sebastian Lawrence",
     role: "Electronics",
     tier: "member",
@@ -88,7 +108,32 @@ export const team: TeamMember[] = [
     tier: "member",
   },
   {
+    name: "Adit Nalumasu",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Emory Rodgers",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Harrison Wang",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Ian Tucek",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
     name: "Isaac Rhee",
+    role: "Mechanical",
+    tier: "member",
+  },
+  {
+    name: "Khai Gardner",
     role: "Mechanical",
     tier: "member",
   },

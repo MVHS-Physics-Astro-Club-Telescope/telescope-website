@@ -38,19 +38,19 @@ test.describe("Public disclaimers", () => {
     // Eeshan is the sole Electronics & Software lead; Neel is an electronics member.
     await expect(note).not.toContainText(/Neel Chhatrala \(Electronics\)/);
     await expect(note).toContainText(
-      /Neel Chhatrala, Ibrahim Hasan, Lenar Khusiainov and Sebastian Lawrence are electronics members;/,
+      /Neel Chhatrala, Ibrahim Hasan, Lenar Khusiainov, Boen Chen, Brandon Calder, Devan Kaushal, Nikhil Moorti and Sebastian Lawrence are electronics members;/,
     );
     await expect(note).toContainText(/Aryan Khanna \(Physics Calculations\)/);
     await expect(note).toContainText(/Tristan Schaefer \(Outreach\)/);
     await expect(note).toContainText(
-      /Ishaan Sakariya, Dominic Reouk, Aadi Kesari, Isaac Rhee, Ming-Yang Jiang, Nathaniel Krasic, Omar Ansari, Omer Har Gil and Yarin Baum are mechanical members;/,
+      /Ishaan Sakariya, Dominic Reouk, Aadi Kesari, Adit Nalumasu, Emory Rodgers, Harrison Wang, Ian Tucek, Isaac Rhee, Khai Gardner, Ming-Yang Jiang, Nathaniel Krasic, Omar Ansari, Omer Har Gil and Yarin Baum are mechanical members;/,
     );
     await expect(note).toContainText(/Yuvan Shankar is a software member;/);
     await expect(note).toContainText(/Sophie Weng and Edison Liu are outreach members;/);
     await expect(note).toContainText(/and Maya Rinn, Laura S\. and Anaaya Mashru are PR members\.$/);
   });
 
-  test("crew grid lists all twenty-four members with their roles", async ({ page }) => {
+  test("crew grid lists all thirty-three members with their roles", async ({ page }) => {
     await page.goto("/#crew");
     const crew = page.locator("#crew");
     const roster: [string, string][] = [
@@ -78,6 +78,15 @@ test.describe("Public disclaimers", () => {
       ["Tristan Schaefer", "Outreach Lead"],
       ["Ishaan Sakariya", "Mechanical"],
       ["Dominic Reouk", "Mechanical"],
+      ["Boen Chen", "Electronics"],
+      ["Brandon Calder", "Electronics"],
+      ["Devan Kaushal", "Electronics"],
+      ["Nikhil Moorti", "Electronics"],
+      ["Adit Nalumasu", "Mechanical"],
+      ["Emory Rodgers", "Mechanical"],
+      ["Harrison Wang", "Mechanical"],
+      ["Ian Tucek", "Mechanical"],
+      ["Khai Gardner", "Mechanical"],
     ];
     for (const [name, role] of roster) {
       const card = crew.locator("li", { hasText: name });
@@ -91,24 +100,38 @@ test.describe("Public disclaimers", () => {
       // the photo actually loaded, not a broken image
       expect(await img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
     }
-    await expect(crew.locator("li")).toHaveCount(24);
+    await expect(crew.locator("li")).toHaveCount(33);
     // members who have not sent a photo yet get the default avatar, not an empty tile
     await expect(crew.locator("img")).toHaveCount(12);
-    await expect(crew.locator("[data-avatar='default']")).toHaveCount(12);
-    for (const name of ["Sebastian Lawrence", "Yarin Baum", "Laura S."]) {
+    await expect(crew.locator("[data-avatar='default']")).toHaveCount(21);
+    for (const name of [
+      "Sebastian Lawrence",
+      "Yarin Baum",
+      "Laura S.",
+      // November 2026 recruits, no photo yet
+      "Boen Chen",
+      "Brandon Calder",
+      "Devan Kaushal",
+      "Nikhil Moorti",
+      "Adit Nalumasu",
+      "Emory Rodgers",
+      "Harrison Wang",
+      "Ian Tucek",
+      "Khai Gardner",
+    ]) {
       await expect(crew.locator("li", { hasText: name }).locator("[data-avatar='default']")).toHaveCount(1);
     }
     // every count of the crew on the site matches the grid
-    await expect(crew.getByRole("heading", { level: 2 })).toHaveText(/^Twenty-four students\./);
+    await expect(crew.getByRole("heading", { level: 2 })).toHaveText(/^Thirty-three students\./);
     await expect(crew.getByText("Electronics Lead", { exact: true })).toHaveCount(0);
   });
 
   test("home story and site description count the same crew as the grid", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText(/designed and built from scratch by twenty-four\s+students/i)).toBeVisible();
+    await expect(page.getByText(/designed and built from scratch by thirty-three\s+students/i)).toBeVisible();
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
       "content",
-      /built by twenty-four high-school students/,
+      /built by thirty-three high-school students/,
     );
   });
 
