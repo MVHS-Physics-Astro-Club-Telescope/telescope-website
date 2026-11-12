@@ -86,11 +86,6 @@ export const team: TeamMember[] = [
     tier: "member",
   },
   {
-    name: "Sebastian Lawrence",
-    role: "Electronics",
-    tier: "member",
-  },
-  {
     name: "Ishaan Sakariya",
     role: "Mechanical",
     tier: "member",
