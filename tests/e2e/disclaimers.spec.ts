@@ -38,7 +38,7 @@ test.describe("Public disclaimers", () => {
     // Eeshan is the sole Electronics & Software lead; Neel is an electronics member.
     await expect(note).not.toContainText(/Neel Chhatrala \(Electronics\)/);
     await expect(note).toContainText(
-      /Neel Chhatrala, Ibrahim Hasan, Lenar Khusiainov, Boen Chen, Brandon Calder, Devan Kaushal, Nikhil Moorti and Sebastian Lawrence are electronics members;/,
+      /Neel Chhatrala, Ibrahim Hasan, Lenar Khusiainov, Boen Chen, Brandon Calder, Devan Kaushal and Nikhil Moorti are electronics members;/,
     );
     await expect(note).toContainText(/Aryan Khanna \(Physics Calculations\)/);
     await expect(note).toContainText(/Tristan Schaefer \(Outreach\)/);
@@ -50,7 +50,7 @@ test.describe("Public disclaimers", () => {
     await expect(note).toContainText(/and Maya Rinn, Laura S\. and Anaaya Mashru are PR members\.$/);
   });
 
-  test("crew grid lists all thirty-three members with their roles", async ({ page }) => {
+  test("crew grid lists all thirty-two members with their roles", async ({ page }) => {
     await page.goto("/#crew");
     const crew = page.locator("#crew");
     const roster: [string, string][] = [
@@ -60,7 +60,6 @@ test.describe("Public disclaimers", () => {
       ["Neel Chhatrala", "Electronics"],
       ["Ibrahim Hasan", "Electronics"],
       ["Lenar Khusiainov", "Electronics"],
-      ["Sebastian Lawrence", "Electronics"],
       ["Aadi Kesari", "Mechanical"],
       ["Isaac Rhee", "Mechanical"],
       ["Ming-Yang Jiang", "Mechanical"],
@@ -100,12 +99,11 @@ test.describe("Public disclaimers", () => {
       // the photo actually loaded, not a broken image
       expect(await img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
     }
-    await expect(crew.locator("li")).toHaveCount(33);
+    await expect(crew.locator("li")).toHaveCount(32);
     // members who have not sent a photo yet get the default avatar, not an empty tile
     await expect(crew.locator("img")).toHaveCount(12);
-    await expect(crew.locator("[data-avatar='default']")).toHaveCount(21);
+    await expect(crew.locator("[data-avatar='default']")).toHaveCount(20);
     for (const name of [
-      "Sebastian Lawrence",
       "Yarin Baum",
       "Laura S.",
       // November 2026 recruits, no photo yet
@@ -122,16 +120,16 @@ test.describe("Public disclaimers", () => {
       await expect(crew.locator("li", { hasText: name }).locator("[data-avatar='default']")).toHaveCount(1);
     }
     // every count of the crew on the site matches the grid
-    await expect(crew.getByRole("heading", { level: 2 })).toHaveText(/^Thirty-three students\./);
+    await expect(crew.getByRole("heading", { level: 2 })).toHaveText(/^Thirty-two students\./);
     await expect(crew.getByText("Electronics Lead", { exact: true })).toHaveCount(0);
   });
 
   test("home story and site description count the same crew as the grid", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText(/designed and built from scratch by thirty-three\s+students/i)).toBeVisible();
+    await expect(page.getByText(/designed and built from scratch by thirty-two\s+students/i)).toBeVisible();
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
       "content",
-      /built by thirty-three high-school students/,
+      /built by thirty-two high-school students/,
     );
   });
 
