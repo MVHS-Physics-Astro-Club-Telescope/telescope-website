@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { gotoHydrated } from "./helpers";
 
 test.describe("/request — target request preview", () => {

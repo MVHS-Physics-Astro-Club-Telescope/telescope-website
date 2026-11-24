@@ -240,3 +240,135 @@ a:hover .logo-mono { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
   .pulse-dot { animation: none; }
 }
+
+/* ─── Schematics viewer ────────────────────────────── */
+/* Enters with the site's restrained scale + fade; under reduced motion it only fades. */
+.schem-backdrop {
+  transition: opacity 360ms ease;
+}
+.schem-backdrop[data-starting-style],
+.schem-backdrop[data-ending-style] {
+  opacity: 0;
+}
+.schem-backdrop[data-ending-style] {
+  transition-duration: 200ms;
+}
+
+.schem-popup {
+  transition:
+    opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 460ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.schem-popup[data-starting-style] {
+  opacity: 0;
+  transform: translateY(10px) scale(0.985);
+}
+.schem-popup[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.99);
+  transition-duration: 160ms;
+  transition-timing-function: ease;
+}
+
+/* The one warm light: it comes up behind the drawing as the viewer opens. */
+.schem-glow {
+  background: radial-gradient(
+    ellipse 58% 62% at 50% 50%,
+    rgba(243, 228, 195, 0.085),
+    rgba(243, 228, 195, 0.03) 45%,
+    transparent 78%
+  );
+  animation: schem-fade 1400ms cubic-bezier(0.16, 1, 0.3, 1) 160ms both;
+}
+.schem-sheets {
+  animation: schem-fade 700ms ease 220ms both;
+}
+@keyframes schem-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Sheets crossfade; a hidden sheet leaves the tab order and the hit-testing. */
+.schem-panel {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 0s linear 200ms;
+}
+.schem-panel[data-active="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 260ms ease, visibility 0s;
+}
+.schem-caption {
+  animation: schem-fade 260ms ease both;
+}
+/* Narrow screens scroll the tab row; fade the edge that has more tabs. */
+.schem-tabs[data-fade="start"] {
+  mask-image: linear-gradient(to right, transparent, #000 32px);
+}
+.schem-tabs[data-fade="end"] {
+  mask-image: linear-gradient(to left, transparent, #000 32px);
+}
+.schem-tabs[data-fade="both"] {
+  mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+}
+
+/*
+ * Portrait phones: the viewer is a sheet up from the bottom edge, as tall as
+ * its content, with the dimmed site above it. The stage takes the drawing's
+ * shape plus a little air, with the zoom controls on their own strip under
+ * it, so headline, sheet, controls, tabs, caption and link read as one
+ * column. The stage is sized by the tallest sheet (--schem-ratio, height /
+ * width) and the caption keeps room for three lines, so flipping sheets never
+ * moves the tabs under a thumb; on a short screen the stage gives way first.
+ */
+@media (max-width: 639px) and (orientation: portrait) {
+  .schem-frame {
+    align-items: flex-end;
+  }
+  .schem-popup {
+    height: auto;
+    max-height: 100dvh;
+    border-top: 1px solid var(--color-line);
+    border-radius: 14px 14px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  /* A sheet rises from the edge it rests on, and goes back the same way. */
+  .schem-popup[data-starting-style],
+  .schem-popup[data-ending-style] {
+    transform: translateY(48px);
+  }
+  .schem-caption {
+    min-height: 3lh;
+  }
+  .schem-stage {
+    --schem-air: 20px;
+    --schem-controls: 60px;
+    flex: 0 1 auto;
+    height: max(
+      260px,
+      calc((100vw - 4px) * var(--schem-ratio) + 2 * var(--schem-air) + var(--schem-controls))
+    );
+    min-height: 220px;
+  }
+  .schem-viewport,
+  .schem-glow {
+    bottom: var(--schem-controls);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .schem-popup,
+  .schem-popup[data-ending-style] {
+    transition: opacity 220ms ease;
+  }
+  .schem-popup[data-starting-style],
+  .schem-popup[data-ending-style] {
+    transform: none;
+  }
+  .schem-glow,
+  .schem-sheets {
+    animation-duration: 300ms;
+    animation-delay: 0ms;
+  }
+}
