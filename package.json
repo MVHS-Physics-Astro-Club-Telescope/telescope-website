@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "export:schematics": "node scripts/export-schematics.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
