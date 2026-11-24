@@ -7,25 +7,34 @@
  *   npm run export:schematics -- ~/Projects/telescope/electrical 0491df8
  *
  * 1. `git archive` the KiCad project at <commit> into a temp dir, so the
- *    checkout's branch and working tree are never touched.
+ *    checkout's branch and working tree are never touched. Apply the
+ *    SOURCE_EDITS to that copy.
  * 2. `kicad-cli sch export svg` with the built-in default theme (pinned, so a
  *    personal colour theme can't leak in), no drawing sheet, no background,
  *    and visible hop-overs where wires cross without connecting.
- * 3. Re-theme and shrink each sheet: every KiCad default colour maps to a
+ * 3. Check every string KiCad plotted, before anything is dropped: no hidden
+ *    field (descriptions, footprints, title-block comments) may be drawn, and
+ *    once the STRIP text is gone nothing may mention MVHS or an owner.
+ * 4. Re-theme and shrink each sheet: every KiCad default colour maps to a
  *    role (wire, symbol, text, note...) and that role to a solid colour
  *    pre-mixed over the site's black, so overlapping strokes never double up.
  *    Unknown colours, visible <text>, or unexpected transforms abort the run
  *    instead of slipping through un-themed.
- * 4. Drop the invisible search text and the team-process text listed in
+ * 5. Drop the invisible search text and the team-process text listed in
  *    STRIP (sheet owners, editing rules), de-duplicate items KiCad plots
  *    twice (box symbols' field text), join segments into polylines, round to
  *    0.01 mm, write relative path data, crop to the drawing.
- * 5. Write public/schematics/<slug>.svg and src/data/schematics-export.json,
- *    only once every sheet has passed its checks.
+ * 6. Write public/schematics/<slug>.svg, src/data/schematics-export.json and
+ *    src/data/schematics-text.json, only once every sheet has passed.
+ *
+ * The published SVGs draw text as strokes, with no <text> left, so a string
+ * search on them proves nothing. schematics-text.json records what each sheet
+ * says (and the hash of the file it describes) for the e2e tests to check.
  *
  * Needs git, tar and kicad-cli 10 (KICAD_CLI overrides the binary path).
  */
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -34,6 +43,8 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = path.join(ROOT, "public", "schematics");
 const DATA_FILE = path.join(ROOT, "src", "data", "schematics-export.json");
+/** Not imported by the site; only the e2e tests read it. */
+const TEXT_FILE = path.join(ROOT, "src", "data", "schematics-text.json");
 const PROJECT_DIR = "mv-telescope-hat";
 const ROOT_SHEET = "mv-telescope-hat";
 const REPO_URL = "https://github.com/MVHS-Physics-Astro-Club-Telescope/telescope-electrical";
@@ -46,14 +57,30 @@ const SHEETS = [
   { slug: "power", kicadName: "Power and drivers" },
 ];
 
-/**
- * Team-process text that stays in the KiCad project but not on the public
- * site: who owns which sheet, and the rules for editing them. Each rule must
- * match exactly `distinct` different strings, and nothing that still reads
- * like an owner or process note may be left on the sheet, so a re-export after
- * the wording changes stops instead of quietly publishing it. Engineering
- * notes are not listed and stay.
+/*
+ * Team-process text stays in the KiCad project but not on the public site:
+ * who owns which sheet, and the rules for editing them. Engineering notes are
+ * not listed and stay. Two tools, both exact, so a re-export after the
+ * wording changes stops instead of quietly publishing it:
+ *
+ * - SOURCE_EDITS rewrite the temp copy before plotting, for process text that
+ *   shares a line with an engineering note. Each `from` must occur exactly
+ *   once in its file.
+ * - STRIP drops whole plotted text items. Each rule must match exactly
+ *   `distinct` different strings.
+ *
+ * Then nothing plotted on any sheet may match NEVER_PUBLISHED, nor the
+ * sheet's own `leftovers`.
  */
+const SOURCE_EDITS = [
+  {
+    file: "hat_signals.kicad_sch",
+    what: "owner in the HAT signals title note",
+    from: '(text "HAT SIGNALS (owner: Ibrahim)\\n',
+    to: '(text "HAT SIGNALS\\n',
+  },
+];
+
 const STRIP = {
   overview: {
     rules: [
@@ -62,9 +89,21 @@ const STRIP = {
       { what: "owners note, line 3", match: (t) => t.startsWith("Every change goes through a pull request"), distinct: 1 },
       { what: "sheet Owner fields", match: (t) => t.startsWith("Owner: "), distinct: 3 },
     ],
-    leftovers: /\bowners?\b|pull request|\bERC\b|your own sheet/i,
+    leftovers: /pull request|\bERC\b|your own sheet/i,
   },
 };
+
+/** Never drawn on a published sheet: the school's name, or who owns what. */
+const NEVER_PUBLISHED = /mvhs|\bowners?\b/i;
+
+/**
+ * Fields that stay off the published sheets: every hidden one, except these
+ * two, which may legitimately repeat drawn text (a power symbol's hidden
+ * reference or value)...
+ */
+const HIDDEN_FIELDS_ALLOWED_ON_SHEET = new Set(["Reference", "Value"]);
+/** ...and these even when shown: descriptions carry notes to the team. */
+const FIELDS_NEVER_ON_SHEET = new Set(["Description"]);
 
 /* ─── Palette ──────────────────────────────────────────────
  * Site tokens (src/app/globals.css): ink #f4f3ef, glow #f3e4c3, bg #000.
@@ -142,6 +181,15 @@ function parseXml(src) {
   return root;
 }
 
+const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
+function decodeXml(s) {
+  return s.replace(/&(#x[\da-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (_, e) =>
+    e[0] === "#"
+      ? String.fromCodePoint(e[1].toLowerCase() === "x" ? parseInt(e.slice(2), 16) : Number(e.slice(1)))
+      : ENTITIES[e.toLowerCase()],
+  );
+}
+
 function parseStyle(s = "") {
   const out = {};
   for (const decl of s.split(";")) {
@@ -208,13 +256,17 @@ function circlePath({ cx, cy, r }) {
 /* ─── Collect drawables per role ─────────────────────────────────────── */
 function collectItems(svgRoot, sheet) {
   const items = [];
+  /** Every string KiCad plotted: stroked text, and the invisible search copies. */
+  const plotted = [];
   const stats = { hiddenText: 0 };
   const walk = (node, style, transformed) => {
     for (const child of node.children) {
       const { tag, attrs } = child;
       if (tag === "#text" || tag === "title" || tag === "desc") continue;
       if (tag === "text") {
-        if (attrs.opacity !== "0") throw new Error(`${sheet}: visible <text> "${child.children[0]?.text}"`);
+        const content = decodeXml(child.children.map((t) => t.text ?? "").join(""));
+        if (attrs.opacity !== "0") throw new Error(`${sheet}: visible <text> "${content}"`);
+        plotted.push(content);
         stats.hiddenText++;
         continue;
       }
@@ -226,6 +278,7 @@ function collectItems(svgRoot, sheet) {
           const text = { geometry: [], style: merged, isText: true, text: "" };
           collectStrokedText(child, text);
           items.push(text);
+          plotted.push(text.text);
           continue;
         }
         walk(child, merged, transformed || t);
@@ -245,14 +298,14 @@ function collectItems(svgRoot, sheet) {
   };
   const collectStrokedText = (g, text) => {
     for (const c of g.children) {
-      if (c.tag === "desc") { text.text = c.children.map((t) => t.text ?? "").join(""); continue; }
+      if (c.tag === "desc") { text.text = decodeXml(c.children.map((t) => t.text ?? "").join("")); continue; }
       if (c.tag === "#text") continue;
       if (c.tag !== "path") throw new Error(`${sheet}: <${c.tag}> inside stroked text`);
       text.geometry.push(...parsePath(c.attrs.d));
     }
   };
   walk(svgRoot, {}, false);
-  return { items, stats };
+  return { items, plotted, stats };
 }
 
 /** Drops the STRIP text for one sheet; throws if the expected strings aren't all there. */
@@ -275,13 +328,110 @@ function stripTeamText(items, sheet) {
       );
     }
   });
-  const left = kept.filter((item) => item.isText && spec.leftovers.test(item.text));
+  return { kept, stripped: found.flatMap((s) => [...s]) };
+}
+
+/**
+ * Checks the raw plotted strings of one sheet (stroked text and the search
+ * copies, before either is dropped): no hidden field drawn, and nothing left
+ * that mentions MVHS or an owner once the STRIP text is gone.
+ */
+function checkPlottedText(plotted, stripped, sheet, hiddenFields) {
+  const drawnHidden = [];
+  for (const text of plotted) {
+    for (const line of text.split("\n")) {
+      const field = hiddenFields.get(line);
+      if (field) drawnHidden.push(`"${line}" (${field})`);
+    }
+  }
+  if (drawnHidden.length) {
+    throw new Error(`${sheet}: fields that stay off the sheets are drawn: ${[...new Set(drawnHidden)].join(", ")}`);
+  }
+  const gone = new Set(stripped);
+  const extra = STRIP[sheet]?.leftovers;
+  const left = plotted.filter((t) => !gone.has(t) && (NEVER_PUBLISHED.test(t) || extra?.test(t)));
   if (left.length) {
     throw new Error(
-      `${sheet}: team-process text left after stripping: ${left.map((t) => `"${t.text}"`).join(", ")}; update STRIP`,
+      `${sheet}: team-process or school text would be published: ${[...new Set(left)].map((t) => `"${t}"`).join(", ")}; ` +
+        "update SOURCE_EDITS or STRIP",
     );
   }
-  return { kept, stripped: found.flatMap((s) => [...s]) };
+}
+
+/** Reads a KiCad s-expression string starting at the opening quote; returns [value, index after it]. */
+function readSexpString(src, i) {
+  if (src[i] !== '"') throw new Error(`expected a string at offset ${i}`);
+  let out = "";
+  i++;
+  while (src[i] !== '"') {
+    if (i >= src.length) throw new Error("unterminated string");
+    if (src[i] === "\\") {
+      out += src[i + 1] === "n" ? "\n" : src[i + 1];
+      i += 2;
+    } else out += src[i++];
+  }
+  return [out, i + 1];
+}
+
+/**
+ * Every line of every field that must stay off the sheets (symbol fields
+ * marked `(hide yes)`, descriptions, and the title-block comments, which only
+ * the excluded drawing sheet would show), mapped to where it comes from.
+ */
+function hiddenFieldText(projectDir) {
+  const lines = new Map();
+  for (const file of fs.readdirSync(projectDir).filter((f) => f.endsWith(".kicad_sch")).sort()) {
+    const src = fs.readFileSync(path.join(projectDir, file), "utf8");
+    const re = /\((property|comment \d+) "/g;
+    let m;
+    while ((m = re.exec(src))) {
+      let i = m.index + m[0].length - 1;
+      let name, value;
+      if (m[1] === "property") {
+        [name, i] = readSexpString(src, i);
+        while (src[i] === " ") i++;
+        [value, i] = readSexpString(src, i);
+      } else {
+        name = `title block ${m[1]}`;
+        [value, i] = readSexpString(src, i);
+      }
+      // The rest of this field's list, up to its closing paren.
+      let depth = 1;
+      const start = i;
+      while (depth > 0) {
+        if (i >= src.length) throw new Error(`${file}: unbalanced field "${name}"`);
+        if (src[i] === '"') { i = readSexpString(src, i)[1]; continue; }
+        if (src[i] === "(") depth++;
+        else if (src[i] === ")") depth--;
+        i++;
+      }
+      re.lastIndex = i;
+      const offSheet =
+        m[1] !== "property" ||
+        FIELDS_NEVER_ON_SHEET.has(name) ||
+        (/\(hide yes\)/.test(src.slice(start, i)) && !HIDDEN_FIELDS_ALLOWED_ON_SHEET.has(name));
+      if (!offSheet) continue;
+      for (const line of value.split("\n")) {
+        if (line.trim() && line !== "~" && !lines.has(line)) lines.set(line, `${file} ${name}`);
+      }
+    }
+  }
+  return lines;
+}
+
+function applySourceEdits(projectDir) {
+  for (const e of SOURCE_EDITS) {
+    const file = path.join(projectDir, e.file);
+    const src = fs.readFileSync(file, "utf8");
+    const count = src.split(e.from).length - 1;
+    if (count !== 1) {
+      throw new Error(
+        `${e.file}: expected the ${e.what} (${JSON.stringify(e.from)}) once, found it ${count} times; ` +
+          "update SOURCE_EDITS in scripts/export-schematics.mjs",
+      );
+    }
+    fs.writeFileSync(file, src.replace(e.from, e.to));
+  }
 }
 
 function styleOf(item, sheet) {
@@ -373,13 +523,15 @@ function pathData(subpaths, join) {
 }
 
 /* ─── One sheet ──────────────────────────────────────────────────────── */
-function transformSheet(rawSvg, sheet) {
-  if (/mvhs/i.test(rawSvg)) console.warn(`  note: raw ${sheet} export mentions MVHS (checked again after theming)`);
+function transformSheet(rawSvg, sheet, hiddenFields) {
   const doc = parseXml(rawSvg);
   const svg = doc.children.find((c) => c.tag === "svg");
   const collected = collectItems(svg, sheet);
   const { stats } = collected;
   const { kept: items, stripped } = stripTeamText(collected.items, sheet);
+  checkPlottedText(collected.plotted, stripped, sheet, hiddenFields);
+  /** What the published sheet says, for schematics-text.json. */
+  const text = [...new Set(items.filter((i) => i.isText && i.geometry.length).map((i) => i.text))].sort();
 
   const buckets = new Map();
   const seen = new Set();
@@ -445,7 +597,6 @@ function transformSheet(rawSvg, sheet) {
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${w} ${h}" width="${pxW}" height="${pxH}" fill="none" stroke-linecap="round" stroke-linejoin="round">` +
     elements.join("") +
     `</svg>\n`;
-  if (/mvhs/i.test(out)) throw new Error(`${sheet}: "MVHS" in the themed SVG`);
   return {
     svg: out,
     width: vb[2] / 100,
@@ -454,6 +605,7 @@ function transformSheet(rawSvg, sheet) {
     duplicateOther,
     hiddenText: stats.hiddenText,
     stripped,
+    text,
   };
 }
 
@@ -501,7 +653,10 @@ function main() {
     const tar = path.join(tmp, "src.tar");
     run("git", ["-C", repo, "archive", "--format=tar", "-o", tar, sha, PROJECT_DIR]);
     run("tar", ["-xf", tar, "-C", tmp]);
-    setHopOverSize(path.join(tmp, PROJECT_DIR, `${ROOT_SHEET}.kicad_pro`));
+    const project = path.join(tmp, PROJECT_DIR);
+    setHopOverSize(path.join(project, `${ROOT_SHEET}.kicad_pro`));
+    applySourceEdits(project);
+    const hiddenFields = hiddenFieldText(project);
 
     const cli = kicadCli();
     const kicadVersion = run(cli, ["version"]).trim();
@@ -513,7 +668,7 @@ function main() {
       "--no-background-color",
       "--draw-hop-over",
       "-o", rawDir,
-      path.join(tmp, PROJECT_DIR, `${ROOT_SHEET}.kicad_sch`),
+      path.join(project, `${ROOT_SHEET}.kicad_sch`),
     ]);
 
     const produced = fs.readdirSync(rawDir).filter((f) => f.endsWith(".svg")).sort();
@@ -526,12 +681,14 @@ function main() {
     const results = SHEETS.map((s) => {
       const file = s.kicadName ? `${ROOT_SHEET}-${s.kicadName}.svg` : `${ROOT_SHEET}.svg`;
       const raw = fs.readFileSync(path.join(rawDir, file), "utf8");
-      return { s, raw, r: transformSheet(raw, s.slug) };
+      return { s, raw, r: transformSheet(raw, s.slug, hiddenFields) };
     });
 
     fs.mkdirSync(OUT_DIR, { recursive: true });
     const sheets = [];
+    const sheetText = [];
     const kb = (n) => `${(n / 1024).toFixed(0)} KB`;
+    for (const e of SOURCE_EDITS) console.log(`edited ${e.file}: ${e.what}`);
     for (const { s, raw, r } of results) {
       fs.writeFileSync(path.join(OUT_DIR, `${s.slug}.svg`), r.svg);
       console.log(
@@ -542,6 +699,7 @@ function main() {
       );
       for (const t of r.stripped) console.log(`${"".padEnd(12)} removed team text: ${t}`);
       sheets.push({ slug: s.slug, src: `/schematics/${s.slug}.svg`, width: r.width, height: r.height });
+      sheetText.push({ slug: s.slug, sha256: createHash("sha256").update(r.svg).digest("hex"), text: r.text });
     }
 
     const data = {
@@ -552,6 +710,14 @@ function main() {
       sheets,
     };
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2) + "\n");
+    const textData = {
+      $comment:
+        "Generated by scripts/export-schematics.mjs. Do not edit by hand. The text drawn on each published sheet " +
+        "(the SVGs draw it as strokes) and the hash of that SVG, for tests/e2e/schematics.spec.ts. Not loaded by the site.",
+      commit: sha,
+      sheets: sheetText,
+    };
+    fs.writeFileSync(TEXT_FILE, JSON.stringify(textData, null, 2) + "\n");
     console.log(`source ${REPO_URL}/tree/${sha.slice(0, 7)} (kicad-cli ${kicadVersion})`);
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });
