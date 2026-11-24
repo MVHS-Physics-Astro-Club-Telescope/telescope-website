@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { SCHEMATIC_SHEETS, SCHEMATICS_COMMIT, SCHEMATICS_REPO, type SchematicSheet } from "@/data/schematics";
@@ -11,6 +11,10 @@ import { loadSheet, useSheet } from "./sheet-store";
 const SHEETS = SCHEMATIC_SHEETS;
 const LAST = SHEETS.length - 1;
 const KEY_PAN = 120;
+/** Height / width of the tallest sheet; sizes the stage on portrait phones (globals.css). */
+const STAGE_RATIO: CSSProperties = {
+  ["--schem-ratio" as string]: Math.max(...SHEETS.map((s) => s.height / s.width)).toFixed(4),
+};
 
 /** Start fetching a sheet before the viewer opens (the intro waits on sheet 0). */
 export function preloadSheet(index: number): Promise<void> {
@@ -204,7 +208,7 @@ export default function SchematicsDialog({
     >
       <Dialog.Portal>
         <Dialog.Backdrop className="schem-backdrop fixed inset-0 z-[60] bg-black/80" />
-        <Dialog.Viewport className="fixed inset-0 z-[61] flex items-center justify-center sm:p-8">
+        <Dialog.Viewport className="schem-frame fixed inset-0 z-[61] flex items-center justify-center sm:p-8">
           <Dialog.Popup
             ref={popupRef}
             initialFocus={popupRef}
@@ -233,7 +237,7 @@ export default function SchematicsDialog({
               </Dialog.Close>
             </header>
 
-            <div className="schem-stage relative mt-4 min-h-0 flex-1 border-y border-line sm:mt-6">
+            <div className="schem-stage relative mt-4 min-h-0 flex-1 border-y border-line sm:mt-6" style={STAGE_RATIO}>
               <div aria-hidden="true" className="schem-glow pointer-events-none absolute inset-0" />
               <div className="schem-sheets absolute inset-0">
                 {SHEETS.map((s, i) => (

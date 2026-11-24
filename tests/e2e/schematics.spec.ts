@@ -166,30 +166,92 @@ test.describe("Schematics announcement", () => {
   });
 });
 
+/** Every frame's computed transform on the popup for its first 600 ms. */
+async function popupTransformsOnOpen(page: Page): Promise<string[]> {
+  await page.addInitScript(() => {
+    const w = window as unknown as { __transforms: string[] };
+    w.__transforms = [];
+    const watch = () => {
+      const el = document.querySelector('[role="dialog"]');
+      if (!el) return requestAnimationFrame(watch);
+      const start = performance.now();
+      const sample = () => {
+        w.__transforms.push(getComputedStyle(el).transform);
+        if (performance.now() - start < 600) requestAnimationFrame(sample);
+      };
+      sample();
+    };
+    requestAnimationFrame(watch);
+  });
+  await firstVisit(page);
+  await page.waitForTimeout(700);
+  return page.evaluate(() => (window as unknown as { __transforms: string[] }).__transforms);
+}
+
 test.describe("Schematics announcement, reduced motion", () => {
   // `reducedMotion` is a context option, not a top-level `use` one.
   test.use({ contextOptions: { reducedMotion: "reduce" } });
 
   test("fades in without scaling or sliding", async ({ page }) => {
-    await page.addInitScript(() => {
-      const w = window as unknown as { __transforms: string[] };
-      w.__transforms = [];
-      const watch = () => {
-        const el = document.querySelector('[role="dialog"]');
-        if (!el) return requestAnimationFrame(watch);
-        const start = performance.now();
-        const sample = () => {
-          w.__transforms.push(getComputedStyle(el).transform);
-          if (performance.now() - start < 600) requestAnimationFrame(sample);
-        };
-        sample();
-      };
-      requestAnimationFrame(watch);
-    });
-    await firstVisit(page);
-    await page.waitForTimeout(700);
-    const transforms = await page.evaluate(() => (window as unknown as { __transforms: string[] }).__transforms);
+    const transforms = await popupTransformsOnOpen(page);
     expect(transforms.length).toBeGreaterThan(5);
     expect(new Set(transforms)).toEqual(new Set(["none"]));
+  });
+});
+
+test.describe("Schematics announcement on a portrait phone", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
+
+  const box = async (page: Page, selector: string) => (await activePanel(page).locator(selector).boundingBox())!;
+
+  test("the stage hugs the sheet and the column fits the screen", async ({ page }) => {
+    await markSeen(page);
+    await page.goto("/#schematics");
+    await expect(dialog(page)).toBeVisible({ timeout: 10_000 });
+    // Measure once the sheet has finished rising into place.
+    await expect.poll(() => dialog(page).evaluate((el) => getComputedStyle(el).transform)).toBe("none");
+    const tabsTop: number[] = [];
+    for (const i of [0, 3]) {
+      if (i) await dialog(page).getByRole("tab", { name: SCHEMATIC_SHEETS[i].title, exact: true }).click();
+      await expectSheet(page, i);
+      const viewport = await box(page, "[data-zoomed]");
+      const drawing = await box(page, '[role="img"]');
+      // The sheet fills the width, and the air around it stays modest (it was ~350 px).
+      expect(drawing.width).toBeGreaterThan(370);
+      expect(viewport.height - drawing.height).toBeLessThan(150);
+      expect(viewport.height).toBeLessThan(844 * 0.45);
+      tabsTop.push((await dialog(page).getByRole("tablist").boundingBox())!.y);
+    }
+    // Flipping sheets doesn't move the tabs under a thumb.
+    expect(tabsTop[1]).toBeCloseTo(tabsTop[0], 0);
+    const github = (await dialog(page).getByRole("link", { name: /See it on GitHub/ }).boundingBox())!;
+    expect(github.y + github.height).toBeLessThanOrEqual(844);
+  });
+
+  test("double-tap zooms in and the fit button brings it back", async ({ page }) => {
+    await markSeen(page);
+    await page.goto("/#schematics");
+    await expect(dialog(page)).toBeVisible({ timeout: 10_000 });
+    await expectSheet(page, 0);
+    const viewport = activePanel(page).locator("[data-zoomed]");
+    const b = (await viewport.boundingBox())!;
+    const x = b.x + b.width / 2;
+    const y = b.y + b.height / 2;
+    await page.touchscreen.tap(x, y);
+    await page.waitForTimeout(80);
+    await page.touchscreen.tap(x, y);
+    await expect(viewport).toHaveAttribute("data-zoomed", "true");
+    await dialog(page).getByRole("button", { name: "Fit the sheet" }).click();
+    await expect(viewport).toHaveAttribute("data-zoomed", "false");
+  });
+
+  test.describe("with reduced motion", () => {
+    test.use({ contextOptions: { reducedMotion: "reduce" } });
+
+    test("the sheet fades in without rising", async ({ page }) => {
+      const transforms = await popupTransformsOnOpen(page);
+      expect(transforms.length).toBeGreaterThan(5);
+      expect(new Set(transforms)).toEqual(new Set(["none"]));
+    });
   });
 });

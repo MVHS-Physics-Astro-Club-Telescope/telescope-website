@@ -117,7 +117,7 @@ export default function SheetViewer({
       <div
         ref={viewportRef}
         data-zoomed={!zoom.atFit}
-        className="absolute inset-0 cursor-zoom-in touch-none overflow-hidden select-none data-[zoomed=true]:cursor-grab data-[zoomed=true]:active:cursor-grabbing"
+        className="schem-viewport absolute inset-0 cursor-zoom-in touch-none overflow-hidden select-none data-[zoomed=true]:cursor-grab data-[zoomed=true]:active:cursor-grabbing"
       >
         <div ref={contentRef} className="absolute top-0 left-0 origin-top-left">
           <Drawing markup={markup} label={`${sheet.title} schematic. ${sheet.caption}`} />

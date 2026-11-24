@@ -313,6 +313,50 @@ a:hover .logo-mono { opacity: 1; }
   mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
 }
 
+/*
+ * Portrait phones: the viewer is a sheet up from the bottom edge, as tall as
+ * its content, with the dimmed site above it. The stage takes the drawing's
+ * shape plus a little air, with the zoom controls on their own strip under
+ * it, so headline, sheet, controls, tabs, caption and link read as one
+ * column. The stage is sized by the tallest sheet (--schem-ratio, height /
+ * width) and the caption keeps room for three lines, so flipping sheets never
+ * moves the tabs under a thumb; on a short screen the stage gives way first.
+ */
+@media (max-width: 639px) and (orientation: portrait) {
+  .schem-frame {
+    align-items: flex-end;
+  }
+  .schem-popup {
+    height: auto;
+    max-height: 100dvh;
+    border-top: 1px solid var(--color-line);
+    border-radius: 14px 14px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  /* A sheet rises from the edge it rests on, and goes back the same way. */
+  .schem-popup[data-starting-style],
+  .schem-popup[data-ending-style] {
+    transform: translateY(48px);
+  }
+  .schem-caption {
+    min-height: 3lh;
+  }
+  .schem-stage {
+    --schem-air: 20px;
+    --schem-controls: 60px;
+    flex: 0 1 auto;
+    height: max(
+      260px,
+      calc((100vw - 4px) * var(--schem-ratio) + 2 * var(--schem-air) + var(--schem-controls))
+    );
+    min-height: 220px;
+  }
+  .schem-viewport,
+  .schem-glow {
+    bottom: var(--schem-controls);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .schem-popup,
   .schem-popup[data-ending-style] {
