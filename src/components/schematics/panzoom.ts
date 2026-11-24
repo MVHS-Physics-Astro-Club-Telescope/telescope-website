@@ -65,6 +65,8 @@ export function createPanZoom(o: PanZoomOptions): PanZoom {
   let w = 0; // drawing size at fit, px
   let h = 0;
   let v: View = { s: 1, x: 0, y: 0 };
+  /** Where the running animateTo is heading, so a repeated press builds on it. */
+  let pending: View | null = null;
   let raf = 0;
   let settleTimer = 0;
   let lastState = "";
@@ -116,10 +118,10 @@ export function createPanZoom(o: PanZoomOptions): PanZoom {
     return raw;
   }
 
-  /** The view at scale `s` that keeps the drawing point under `p` in place. */
-  function zoomAt(p: Point, s: number): View {
-    const cx = (p.x - v.x) / v.s;
-    const cy = (p.y - v.y) / v.s;
+  /** The view at scale `s` that keeps the drawing point under `p` (in view `from`) in place. */
+  function zoomAt(p: Point, s: number, from: View = v): View {
+    const cx = (p.x - from.x) / from.s;
+    const cy = (p.y - from.y) / from.s;
     return { s, x: p.x - cx * s, y: p.y - cy * s };
   }
 
@@ -157,6 +159,7 @@ export function createPanZoom(o: PanZoomOptions): PanZoom {
   function stop() {
     if (raf) cancelAnimationFrame(raf);
     raf = 0;
+    pending = null;
   }
 
   function animateTo(target: View, duration = ZOOM_MS) {
@@ -167,6 +170,7 @@ export function createPanZoom(o: PanZoomOptions): PanZoom {
       idle();
       return;
     }
+    pending = end;
     const start = v;
     const ds = start.s - end.s;
     const zooming = Math.abs(ds) > 1e-6;
@@ -183,6 +187,7 @@ export function createPanZoom(o: PanZoomOptions): PanZoom {
       if (p >= 1) {
         render(end);
         raf = 0;
+        pending = null;
         idle();
         return;
       }
@@ -350,8 +355,11 @@ export function createPanZoom(o: PanZoomOptions): PanZoom {
     // Trackpad pinch arrives as ctrl+wheel with small deltas.
     const k = e.ctrlKey ? 0.01 : 0.0022;
     const s = Math.min(Math.max(v.s * Math.exp(-dy * k), 1), maxScale());
-    rect = null;
+    // Mid-drag the rect from pointerdown still holds; otherwise measure afresh.
+    if (!pointers.size) rect = null;
     render(clamp(zoomAt(local(e), s)));
+    // A drag or pinch in progress carries on from the zoomed view, not its old start.
+    if (pointers.size) begin();
     idle();
   }
 
@@ -390,20 +398,24 @@ export function createPanZoom(o: PanZoomOptions): PanZoom {
   ro.observe(vp);
   layout();
 
+  // Buttons and keys build on where a running animation is heading, so each
+  // press moves a full step however fast they come.
   return {
     zoomBy(factor) {
       o.onInteract();
-      const s = Math.min(Math.max(v.s * factor, 1), maxScale());
-      animateTo(zoomAt({ x: vw / 2, y: vh / 2 }, s));
+      const from = pending ?? v;
+      const s = Math.min(Math.max(from.s * factor, 1), maxScale());
+      animateTo(zoomAt({ x: vw / 2, y: vh / 2 }, s, from));
     },
     panBy(dx, dy) {
       o.onInteract();
-      animateTo({ s: v.s, x: v.x + dx, y: v.y + dy }, 180);
+      const from = pending ?? v;
+      animateTo({ s: from.s, x: from.x + dx, y: from.y + dy }, 180);
     },
     reset(animate = true) {
       animateTo({ s: 1, x: 0, y: 0 }, animate ? ZOOM_MS : 0);
     },
-    isZoomed: () => v.s > 1.001,
+    isZoomed: () => (pending ?? v).s > 1.001,
     destroy() {
       stop();
       window.clearTimeout(settleTimer);
