@@ -29,6 +29,9 @@ To change the instrument, edit `spec.ts` or the component and check the beats wi
 | `src/data/sponsors.ts` | Sponsor ledger; cash totals are computed from it |
 | `src/data/parts.ts` | BOM; prices and links verified against vendor pages 2026-08-09 |
 | `src/data/targets.ts` | Curated catalog for the request preview |
+| `src/data/schematics.ts` | The four HAT schematic sheets in the home-page viewer: titles and captions here, drawings in `public/schematics/` |
+
+The schematic drawings are exported from the `telescope-electrical` KiCad project and re-themed as warm line-work on black. To refresh them after the schematic changes, check out that repo and run `npm run export:schematics -- <path-to-telescope-electrical> <commit>`; it reads the commit with `git archive` (your checkout and its branch are left alone), needs KiCad 10's `kicad-cli` (set `KICAD_CLI` if it is not in `~/Applications/KiCad`), and rewrites `public/schematics/*.svg` plus `src/data/schematics-export.json`. It stops on any colour or element it doesn't recognise, and on any "MVHS" string. To show the announcement to every visitor again, bump the version in `SCHEMATICS_SEEN_KEY` (`src/components/schematics/announcement.ts`).
 
 Donor truth lives in three places (club Gmail, `parts.ts` `donatedBy`, `sponsors.ts`); cross-check all three before calling the sponsor list complete.
 
