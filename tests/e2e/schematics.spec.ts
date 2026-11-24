@@ -1,6 +1,8 @@
+import { createHash } from "node:crypto";
 import { test, expect, type Page } from "@playwright/test";
 import { SCHEMATICS_SEEN_KEY } from "../../src/components/schematics/announcement";
 import { SCHEMATIC_SHEETS } from "../../src/data/schematics";
+import sheetText from "../../src/data/schematics-text.json";
 
 /**
  * The one-time "schematics are done" announcement on the home page, and the
@@ -38,6 +40,29 @@ async function firstVisit(page: Page) {
   await expect(dialog(page)).toBeVisible({ timeout: FIRST_VISIT_TIMEOUT });
 }
 
+/** Waits out the entrance, so measured boxes are where they stay. */
+async function settledDialog(page: Page) {
+  await expect.poll(() => dialog(page).evaluate((el) => getComputedStyle(el).transform)).toBe("none");
+}
+
+type View = { s: number; x: number; y: number };
+
+/** The active sheet's pan and zoom, read from its transform once it stops changing. */
+async function settledView(page: Page): Promise<View> {
+  const drawing = activePanel(page).locator("[data-zoomed] > div");
+  let last = "";
+  for (;;) {
+    const now = await drawing.evaluate((el) => (el as HTMLElement).style.transform);
+    if (now === last) {
+      const m = now.match(/translate\((-?[\d.]+)px, (-?[\d.]+)px\) scale\(([\d.]+)\)/);
+      if (!m) throw new Error(`unexpected transform "${now}"`);
+      return { x: Number(m[1]), y: Number(m[2]), s: Number(m[3]) };
+    }
+    last = now;
+    await page.waitForTimeout(150);
+  }
+}
+
 test.describe("Schematics announcement", () => {
   test("appears on a first visit with the overview sheet drawn", async ({ page }) => {
     await firstVisit(page);
@@ -70,6 +95,15 @@ test.describe("Schematics announcement", () => {
 
     await page.reload({ waitUntil: "load" });
     // Longer than the whole first-visit wait (idle timeout + delay) after load.
+    await page.waitForTimeout(4_500);
+    await expect(dialog(page)).toHaveCount(0);
+  });
+
+  test("counts as seen once it opens, even if never closed", async ({ page }) => {
+    await firstVisit(page);
+    expect(await seen(page)).toBe("1");
+
+    await page.reload({ waitUntil: "load" });
     await page.waitForTimeout(4_500);
     await expect(dialog(page)).toHaveCount(0);
   });
@@ -119,6 +153,67 @@ test.describe("Schematics announcement", () => {
     await expect(viewport).toHaveAttribute("data-zoomed", "true");
   });
 
+  test("quick zoom clicks each zoom a full step", async ({ page }) => {
+    await firstVisit(page);
+    await settledDialog(page);
+    const zoomIn = dialog(page).getByRole("button", { name: "Zoom in" });
+    await zoomIn.click();
+    const step = (await settledView(page)).s;
+    await dialog(page).getByRole("button", { name: "Fit the sheet" }).click();
+    expect((await settledView(page)).s).toBe(1);
+
+    // The second click lands while the first zoom is still animating.
+    await zoomIn.click();
+    await zoomIn.click();
+    expect((await settledView(page)).s).toBeCloseTo(step * step, 3);
+  });
+
+  test("quick arrow presses each pan a full step", async ({ page }) => {
+    await firstVisit(page);
+    await settledDialog(page);
+    const zoomIn = dialog(page).getByRole("button", { name: "Zoom in" });
+    await zoomIn.click();
+    await settledView(page);
+    await zoomIn.click();
+    const before = await settledView(page);
+    // Room for three steps before the right edge (ArrowRight moves the drawing left).
+    const minX = await activePanel(page)
+      .locator("[data-zoomed]")
+      .evaluate((vp, s) => vp.clientWidth - (vp.firstElementChild as HTMLElement).offsetWidth * s, before.s);
+    expect(before.x - minX).toBeGreaterThan(400);
+
+    // Focus stays on the zoom button, so the keys reach the viewer, not the tabs.
+    for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowRight");
+    const after = await settledView(page);
+    expect(after.s).toBeCloseTo(before.s, 3);
+    expect(after.x - before.x).toBeCloseTo(-360, 0);
+    expect(after.y).toBeCloseTo(before.y, 0);
+  });
+
+  test("wheel zoom in the middle of a drag carries on from the new zoom", async ({ page }) => {
+    await firstVisit(page);
+    await settledDialog(page);
+    await dialog(page).getByRole("button", { name: "Zoom in" }).click();
+    await settledView(page);
+    const box = (await activePanel(page).locator("[data-zoomed]").boundingBox())!;
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x + 40, y, { steps: 4 });
+    await page.mouse.wheel(0, -120);
+    const zoomed = await settledView(page);
+    await page.mouse.move(x + 70, y, { steps: 3 });
+    const dragged = await settledView(page);
+    await page.mouse.up();
+
+    // Same zoom, and the drawing followed the pointer the last 30 px.
+    expect(dragged.s).toBeCloseTo(zoomed.s, 3);
+    expect(dragged.x - zoomed.x).toBeCloseTo(30, 0);
+    expect(dragged.y).toBeCloseTo(zoomed.y, 0);
+  });
+
   test("the deep link reopens it for a returning visitor", async ({ page }) => {
     await markSeen(page);
     await page.goto("/#schematics");
@@ -150,19 +245,30 @@ test.describe("Schematics announcement", () => {
     await expect(dialog(page)).toBeVisible({ timeout: 10_000 });
   });
 
-  test("has no MVHS branding, in the copy or in any sheet", async ({ page, request }) => {
+  test("has no MVHS branding or owner notes, in the copy or on any sheet", async ({ page, request }) => {
     await markSeen(page);
     await page.goto("/#schematics");
     await expect(dialog(page)).toBeVisible({ timeout: 10_000 });
     expect(await dialog(page).innerText()).not.toMatch(/MVHS/i);
 
+    // The sheets draw their text as strokes, with no <text> to search. The
+    // export records what each one says and the hash of the file it wrote, so
+    // check the record and that it describes the file the site serves.
+    expect(sheetText.sheets.map((s) => s.slug)).toEqual(SCHEMATIC_SHEETS.map((s) => s.slug));
     for (const sheet of SCHEMATIC_SHEETS) {
       const res = await request.get(sheet.src);
       expect(res.ok()).toBe(true);
-      const svg = await res.text();
-      expect(svg.startsWith("<svg")).toBe(true);
-      expect(svg).not.toMatch(/MVHS/i);
+      const svg = await res.body();
+      expect(svg.toString("utf8").startsWith("<svg")).toBe(true);
+      expect(svg.toString("utf8")).not.toMatch(/<text\b/);
+      const record = sheetText.sheets.find((s) => s.slug === sheet.slug)!;
+      expect(createHash("sha256").update(svg).digest("hex"), `${sheet.src} is the file in schematics-text.json`).toBe(
+        record.sha256,
+      );
+      expect(record.text.length).toBeGreaterThan(20);
+      for (const line of record.text) expect(line, sheet.slug).not.toMatch(/mvhs|\bowners?\b/i);
     }
+    expect(sheetText.sheets.find((s) => s.slug === "hat-signals")!.text).toContain("HAT SIGNALS");
   });
 });
 
@@ -209,7 +315,7 @@ test.describe("Schematics announcement on a portrait phone", () => {
     await page.goto("/#schematics");
     await expect(dialog(page)).toBeVisible({ timeout: 10_000 });
     // Measure once the sheet has finished rising into place.
-    await expect.poll(() => dialog(page).evaluate((el) => getComputedStyle(el).transform)).toBe("none");
+    await settledDialog(page);
     const tabsTop: number[] = [];
     for (const i of [0, 3]) {
       if (i) await dialog(page).getByRole("tab", { name: SCHEMATIC_SHEETS[i].title, exact: true }).click();
