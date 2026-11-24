@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SchematicsLink from "@/components/schematics/SchematicsLink";
 
 const links = [
   { label: "Crew", href: "/#crew" },
@@ -33,6 +34,9 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <SchematicsLink className="nav-link text-[0.9375rem]">Schematics</SchematicsLink>
+              </li>
             </ul>
             <ul className="space-y-2.5">
               <li>
