@@ -29,7 +29,7 @@ const FIRST_VISIT_DELAY_MS = 1600;
 const SCROLL_QUIET_MS = 700;
 
 /** Survives client-side navigation, for visitors whose storage is blocked. */
-let dismissedThisVisit = false;
+let shownThisVisit = false;
 
 export default function SchematicsIntro() {
   const [mounted, setMounted] = useState(false);
@@ -58,6 +58,10 @@ export default function SchematicsIntro() {
         opening = false;
       }
       if (cancelled) return;
+      // Seen as soon as it opens, so a reload, a navigation or a second tab
+      // before it is closed doesn't announce it again.
+      shownThisVisit = true;
+      rememberSchematicsSeen();
       openRef.current = true;
       setMounted(true);
       setOpen(true);
@@ -75,7 +79,7 @@ export default function SchematicsIntro() {
 
     if (wantsSchematics(window.location)) {
       show();
-    } else if (!dismissedThisVisit && !hasSeenSchematics()) {
+    } else if (!shownThisVisit && !hasSeenSchematics()) {
       const loaded = () =>
         document.readyState === "complete"
           ? Promise.resolve()
@@ -91,7 +95,7 @@ export default function SchematicsIntro() {
         await idle();
         await wait(FIRST_VISIT_DELAY_MS);
         while (!cancelled && performance.now() - lastScroll < SCROLL_QUIET_MS) await wait(SCROLL_QUIET_MS);
-        if (cancelled || dismissedThisVisit || hasSeenSchematics()) return;
+        if (cancelled || shownThisVisit || hasSeenSchematics()) return;
         show();
       })();
     }
@@ -113,8 +117,6 @@ export default function SchematicsIntro() {
         if (next) return;
         openRef.current = false;
         setOpen(false);
-        dismissedThisVisit = true;
-        rememberSchematicsSeen();
         if (wantsSchematics(window.location)) {
           window.history.replaceState(window.history.state, "", urlWithoutSchematics(window.location));
         }
