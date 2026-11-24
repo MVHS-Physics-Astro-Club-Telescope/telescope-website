@@ -16,10 +16,12 @@
  *    pre-mixed over the site's black, so overlapping strokes never double up.
  *    Unknown colours, visible <text>, or unexpected transforms abort the run
  *    instead of slipping through un-themed.
- * 4. Drop the invisible search text, de-duplicate items KiCad plots twice
- *    (box symbols' field text), join segments into polylines, round to
+ * 4. Drop the invisible search text and the team-process text listed in
+ *    STRIP (sheet owners, editing rules), de-duplicate items KiCad plots
+ *    twice (box symbols' field text), join segments into polylines, round to
  *    0.01 mm, write relative path data, crop to the drawing.
- * 5. Write public/schematics/<slug>.svg and src/data/schematics-export.json.
+ * 5. Write public/schematics/<slug>.svg and src/data/schematics-export.json,
+ *    only once every sheet has passed its checks.
  *
  * Needs git, tar and kicad-cli 10 (KICAD_CLI overrides the binary path).
  */
@@ -43,6 +45,26 @@ const SHEETS = [
   { slug: "hat-signals", kicadName: "HAT signals" },
   { slug: "power", kicadName: "Power and drivers" },
 ];
+
+/**
+ * Team-process text that stays in the KiCad project but not on the public
+ * site: who owns which sheet, and the rules for editing them. Each rule must
+ * match exactly `distinct` different strings, and nothing that still reads
+ * like an owner or process note may be left on the sheet, so a re-export after
+ * the wording changes stops instead of quietly publishing it. Engineering
+ * notes are not listed and stay.
+ */
+const STRIP = {
+  overview: {
+    rules: [
+      { what: "owners note, line 1", match: (t) => t.startsWith("OWNERS: "), distinct: 1 },
+      { what: "owners note, line 2", match: (t) => t.startsWith("Edit only your own sheet."), distinct: 1 },
+      { what: "owners note, line 3", match: (t) => t.startsWith("Every change goes through a pull request"), distinct: 1 },
+      { what: "sheet Owner fields", match: (t) => t.startsWith("Owner: "), distinct: 3 },
+    ],
+    leftovers: /\bowners?\b|pull request|\bERC\b|your own sheet/i,
+  },
+};
 
 /* ─── Palette ──────────────────────────────────────────────
  * Site tokens (src/app/globals.css): ink #f4f3ef, glow #f3e4c3, bg #000.
@@ -233,6 +255,35 @@ function collectItems(svgRoot, sheet) {
   return { items, stats };
 }
 
+/** Drops the STRIP text for one sheet; throws if the expected strings aren't all there. */
+function stripTeamText(items, sheet) {
+  const spec = STRIP[sheet];
+  if (!spec) return { kept: items, stripped: [] };
+  const found = spec.rules.map(() => new Set());
+  const kept = [];
+  for (const item of items) {
+    const i = item.isText ? spec.rules.findIndex((r) => r.match(item.text)) : -1;
+    if (i === -1) kept.push(item);
+    else found[i].add(item.text);
+  }
+  spec.rules.forEach((r, i) => {
+    if (found[i].size !== r.distinct) {
+      throw new Error(
+        `${sheet}: expected ${r.distinct} distinct "${r.what}" string(s) to strip, found ${found[i].size}` +
+          (found[i].size ? ` (${[...found[i]].join(" | ")})` : "") +
+          "; update STRIP in scripts/export-schematics.mjs",
+      );
+    }
+  });
+  const left = kept.filter((item) => item.isText && spec.leftovers.test(item.text));
+  if (left.length) {
+    throw new Error(
+      `${sheet}: team-process text left after stripping: ${left.map((t) => `"${t.text}"`).join(", ")}; update STRIP`,
+    );
+  }
+  return { kept, stripped: found.flatMap((s) => [...s]) };
+}
+
 function styleOf(item, sheet) {
   const raw = item.style;
   const color = (v) => (v && v !== "none" ? v.toUpperCase() : null);
@@ -326,7 +377,9 @@ function transformSheet(rawSvg, sheet) {
   if (/mvhs/i.test(rawSvg)) console.warn(`  note: raw ${sheet} export mentions MVHS (checked again after theming)`);
   const doc = parseXml(rawSvg);
   const svg = doc.children.find((c) => c.tag === "svg");
-  const { items, stats } = collectItems(svg, sheet);
+  const collected = collectItems(svg, sheet);
+  const { stats } = collected;
+  const { kept: items, stripped } = stripTeamText(collected.items, sheet);
 
   const buckets = new Map();
   const seen = new Set();
@@ -393,7 +446,15 @@ function transformSheet(rawSvg, sheet) {
     elements.join("") +
     `</svg>\n`;
   if (/mvhs/i.test(out)) throw new Error(`${sheet}: "MVHS" in the themed SVG`);
-  return { svg: out, width: vb[2] / 100, height: vb[3] / 100, duplicateText, duplicateOther, hiddenText: stats.hiddenText };
+  return {
+    svg: out,
+    width: vb[2] / 100,
+    height: vb[3] / 100,
+    duplicateText,
+    duplicateOther,
+    hiddenText: stats.hiddenText,
+    stripped,
+  };
 }
 
 /* ─── Main ───────────────────────────────────────────────────────────── */
@@ -461,21 +522,25 @@ function main() {
       throw new Error(`kicad-cli produced ${produced.join(", ")}; expected ${expected.join(", ")}`);
     }
 
-    fs.mkdirSync(OUT_DIR, { recursive: true });
-    const sheets = [];
-    for (const s of SHEETS) {
+    // Theme every sheet before writing any, so a failed check leaves the old files alone.
+    const results = SHEETS.map((s) => {
       const file = s.kicadName ? `${ROOT_SHEET}-${s.kicadName}.svg` : `${ROOT_SHEET}.svg`;
       const raw = fs.readFileSync(path.join(rawDir, file), "utf8");
-      const r = transformSheet(raw, s.slug);
-      const outPath = path.join(OUT_DIR, `${s.slug}.svg`);
-      fs.writeFileSync(outPath, r.svg);
-      const kb = (n) => `${(n / 1024).toFixed(0)} KB`;
+      return { s, raw, r: transformSheet(raw, s.slug) };
+    });
+
+    fs.mkdirSync(OUT_DIR, { recursive: true });
+    const sheets = [];
+    const kb = (n) => `${(n / 1024).toFixed(0)} KB`;
+    for (const { s, raw, r } of results) {
+      fs.writeFileSync(path.join(OUT_DIR, `${s.slug}.svg`), r.svg);
       console.log(
         `${s.slug.padEnd(12)} ${kb(Buffer.byteLength(raw)).padStart(7)} -> ${kb(Buffer.byteLength(r.svg)).padStart(6)}` +
           `  ${r.width.toFixed(1)} x ${r.height.toFixed(1)} mm` +
           (r.duplicateText ? `  (dropped ${r.duplicateText} duplicate text item${r.duplicateText > 1 ? "s" : ""})` : "") +
           (r.duplicateOther ? `  (dropped ${r.duplicateOther} duplicate shape${r.duplicateOther > 1 ? "s" : ""})` : ""),
       );
+      for (const t of r.stripped) console.log(`${"".padEnd(12)} removed team text: ${t}`);
       sheets.push({ slug: s.slug, src: `/schematics/${s.slug}.svg`, width: r.width, height: r.height });
     }
 
