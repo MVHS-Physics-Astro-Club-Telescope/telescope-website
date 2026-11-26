@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PartsTable from "@/components/PartsTable";
-import { parts, getBudgetRange, getStatusCounts } from "@/data/parts";
+import { parts, getBuildCost, getStillToBuy, getStatusCounts } from "@/data/parts";
 
 export const metadata: Metadata = {
   title: "Parts",
@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 };
 
 export default function PartsPage() {
-  const budget = getBudgetRange();
+  const buildCost = getBuildCost();
+  const toBuy = Math.round(getStillToBuy());
   const counts = getStatusCounts();
 
   return (
@@ -20,30 +21,36 @@ export default function PartsPage() {
       </h1>
       <p className="prose-tight mt-5 text-lg">
         The complete bill of materials. Links are for reference; if you want to
-        donate a part, <a href="mailto:contact@mvhsastro.org?subject=Part%20donation" className="link">email us first</a> so
+        donate a part, <a href="mailto:mvhsphysicsastroclub@gmail.com?subject=Part%20donation" className="link">email us first</a> so
         we can confirm the spec.
       </p>
 
       <dl className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
         <div>
-          <dt className="label">Line items</dt>
-          <dd className="font-display mt-2 text-3xl text-ink tabular-nums">{parts.length}</dd>
+          <dt className="label">Build cost</dt>
+          <dd className="font-display mt-2 text-3xl text-ink tabular-nums">
+            ${buildCost.toLocaleString()}
+          </dd>
         </div>
         <div>
-          <dt className="label">Budget</dt>
+          <dt className="label">Still to buy</dt>
           <dd className="font-display mt-2 text-3xl text-ink tabular-nums">
-            ${budget.low.toLocaleString()}&ndash;{budget.high.toLocaleString()}
+            ${toBuy.toLocaleString()}
           </dd>
+        </div>
+        <div>
+          <dt className="label">Line items</dt>
+          <dd className="font-display mt-2 text-3xl text-ink tabular-nums">{parts.length}</dd>
         </div>
         <div>
           <dt className="label">Donated</dt>
           <dd className="font-display mt-2 text-3xl text-ink tabular-nums">{counts.Donated}</dd>
         </div>
-        <div>
-          <dt className="label">Still needed</dt>
-          <dd className="font-display mt-2 text-3xl text-ink tabular-nums">{counts.Needed}</dd>
-        </div>
       </dl>
+      <p className="mt-4 max-w-2xl text-[0.8125rem] leading-relaxed text-ink-3">
+        Build cost is every part on the telescope at retail, donated or bought.
+        The rocker box and mirror box are not priced yet, so they are not in it.
+      </p>
 
       <div className="mt-16">
         <PartsTable />

@@ -27,7 +27,7 @@ To change the instrument, edit `spec.ts` or the component and check the beats wi
 |---|---|
 | `src/data/team.ts` | Roster and the public roles note under the crew grid |
 | `src/data/sponsors.ts` | Sponsor ledger; cash totals are computed from it |
-| `src/data/parts.ts` | BOM; prices and links verified against vendor pages 2026-08-09 |
+| `src/data/parts.ts` | BOM for the current design, rebuilt 2026-11-25 from the Orders tab of the "MV Astronomy Finance" sheet (each row carries its Orders ID); drives the build cost on `/` and `/parts` |
 | `src/data/targets.ts` | Curated catalog for the request preview |
 | `src/data/schematics.ts` | The four HAT schematic sheets in the home-page viewer: titles and captions here, drawings in `public/schematics/` |
 

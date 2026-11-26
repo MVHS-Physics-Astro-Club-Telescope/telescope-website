@@ -11,18 +11,16 @@ import {
 
 const statusColor: Record<PartStatus, string> = {
   Donated: "text-ok",
-  Claimed: "text-ok",
-  Ordered: "text-ink-2",
+  Bought: "text-ink-2",
   Needed: "text-ink-3",
 };
 
+const usd = (n: number) =>
+  `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
 function Status({ part }: { part: Part }) {
   const text =
-    part.status === "Donated" && part.donatedBy
-      ? `Donated · ${part.donatedBy}`
-      : part.status === "Claimed" && part.fab
-        ? `In-house · ${part.fab}`
-        : part.status;
+    part.status === "Donated" && part.donatedBy ? `Donated · ${part.donatedBy}` : part.status;
   return <span className={`text-[0.8125rem] ${statusColor[part.status]}`}>{text}</span>;
 }
 
@@ -97,11 +95,13 @@ export default function PartsTable() {
                       )}
                     </div>
                   </div>
-                  <p className="text-[0.875rem] text-ink-2">{part.specification}</p>
+                  <p className="text-[0.875rem] text-ink-2">
+                    {part.quantity > 1 && `${part.quantity} × `}
+                    {part.specification}
+                  </p>
+                  {/* the row's line total, not a unit price */}
                   <p className="font-mono text-[0.8125rem] text-ink-2 tabular-nums sm:text-right">
-                    {part.estimatedCost.startsWith("$")
-                      ? `${part.quantity} × ${part.estimatedCost}`
-                      : `${part.quantity} × —`}
+                    {part.status === "Donated" ? "" : part.cost === null ? "—" : usd(part.cost)}
                   </p>
                   <p className="sm:text-right">
                     <Status part={part} />
