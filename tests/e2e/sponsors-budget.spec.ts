@@ -1,6 +1,6 @@
 import { test, expect } from "./fixtures";
-import { getBuildCost, getStillToBuy } from "../../src/data/parts";
-import { getTotalCashRaised } from "../../src/data/sponsors";
+import { getBuildCost, getDonatedPartsValue, getStillToBuy, parts } from "../../src/data/parts";
+import { getTotalCashRaised, sponsors } from "../../src/data/sponsors";
 
 /**
  * The sponsor list and the money figures as reconciled on 2026-11-25 with the
@@ -30,6 +30,19 @@ test.describe("Sponsors and budget", () => {
     // MVLA High School Foundation 2,500 + Tri-Valley Stargazers 500 + Crave Yoga 250
     // + Scott Johnson 250 + Tori Atwell 100, each confirmed on the receiving side.
     expect(getTotalCashRaised()).toBe(3600);
+  });
+
+  test("every donated part names a listed sponsor, so its value reaches the build cost", async () => {
+    const names = new Set(sponsors.map((s) => s.name));
+    for (const p of parts.filter((x) => x.donatedBy)) expect(names, p.name).toContain(p.donatedBy);
+    // Pacific Holographics 440 + ToupTek Astro 579 + Pegasus Astro 460 + Celestron 219.90
+    expect(getDonatedPartsValue()).toBe(1698.9);
+    // the unpriced rows the footnotes name, and no others
+    expect(parts.filter((p) => p.status !== "Donated" && p.cost === null).map((p) => p.orderId).sort()).toEqual([
+      "E-18",
+      "M-01",
+      "U-10",
+    ]);
   });
 
   test("home support tiles show a build cost, not a parts budget", async ({ page }) => {

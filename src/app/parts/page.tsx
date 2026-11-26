@@ -49,7 +49,8 @@ export default function PartsPage() {
       </dl>
       <p className="mt-4 max-w-2xl text-[0.8125rem] leading-relaxed text-ink-3">
         Build cost is every part on the telescope at retail, donated or bought.
-        The rocker box and mirror box are not priced yet, so they are not in it.
+        Rows marked &ldquo;&mdash;&rdquo; (the rocker box, mirror box, spider vanes and
+        current sensor) are not priced yet, so they are not in it.
       </p>
 
       <div className="mt-16">

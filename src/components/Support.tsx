@@ -64,8 +64,8 @@ export default function Support() {
           <p className="mt-4 text-[0.8125rem] leading-relaxed text-ink-3">
             Total support is cash plus donated equipment, credit, and services
             at estimated retail value. Build cost is every part on the
-            telescope at retail, donated or bought; the rocker box and mirror
-            box are not priced yet.
+            telescope at retail, donated or bought; the rocker box, mirror
+            box, spider vanes and current sensor are not priced yet.
           </p>
 
           <ul className="mt-10">
