@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getBudgetRange } from "@/data/parts";
+import { getBuildCost } from "@/data/parts";
 import { getTotalCashRaised, getTotalSupport } from "@/data/sponsors";
 
 const perks = [
@@ -10,7 +10,7 @@ const perks = [
 ];
 
 export default function Support() {
-  const { low, high } = getBudgetRange();
+  const buildCost = getBuildCost();
   const raised = getTotalCashRaised();
   const support = getTotalSupport();
 
@@ -29,7 +29,7 @@ export default function Support() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
-              href="mailto:contact@mvhsastro.org?subject=Telescope%20sponsorship"
+              href="mailto:mvhsphysicsastroclub@gmail.com?subject=Telescope%20sponsorship"
               className="btn btn-solid"
             >
               Become a sponsor
@@ -55,15 +55,17 @@ export default function Support() {
               </dd>
             </div>
             <div className="row-span-2 grid grid-rows-subgrid">
-              <dt className="label self-end">Parts budget</dt>
+              <dt className="label self-end">Build cost</dt>
               <dd className="font-display mt-2 text-3xl text-ink tabular-nums">
-                ${low.toLocaleString()}&ndash;{high.toLocaleString()}
+                ${buildCost.toLocaleString()}
               </dd>
             </div>
           </dl>
           <p className="mt-4 text-[0.8125rem] leading-relaxed text-ink-3">
             Total support is cash plus donated equipment, credit, and services
-            at estimated retail value.
+            at estimated retail value. Build cost is every part on the
+            telescope at retail, donated or bought; the rocker box, mirror
+            box, spider vanes and current sensor are not priced yet.
           </p>
 
           <ul className="mt-10">

@@ -46,11 +46,14 @@ test.describe("Public disclaimers", () => {
       /Ishaan Sakariya, Dominic Reouk, Aadi Kesari, Adit Nalumasu, Emory Rodgers, Harrison Wang, Ian Tucek, Isaac Rhee, Khai Gardner, Ming-Yang Jiang, Nathaniel Krasic, Omar Ansari, Omer Har Gil and Yarin Baum are mechanical members;/,
     );
     await expect(note).toContainText(/Yuvan Shankar is a software member;/);
-    await expect(note).toContainText(/Sophie Weng and Edison Liu are outreach members;/);
-    await expect(note).toContainText(/and Maya Rinn, Laura S\. and Anaaya Mashru are PR members\.$/);
+    // PR was folded into Outreach on 2026-11-25; there is no PR group any more.
+    await expect(note).toContainText(
+      /; and Sophie Weng, Edison Liu, Anaaya Mashru, Julian McMahon, Laura S\. and Maya Rinn are outreach members\.$/,
+    );
+    await expect(note).not.toContainText(/PR member/);
   });
 
-  test("crew grid lists all thirty-two members with their roles", async ({ page }) => {
+  test("crew grid lists all thirty-three members with their roles", async ({ page }) => {
     await page.goto("/#crew");
     const crew = page.locator("#crew");
     const roster: [string, string][] = [
@@ -69,9 +72,10 @@ test.describe("Public disclaimers", () => {
       ["Yarin Baum", "Mechanical"],
       ["Yuvan Shankar", "Software"],
       ["Edison Liu", "Outreach"],
-      ["Maya Rinn", "PR"],
-      ["Laura S.", "PR"],
-      ["Anaaya Mashru", "PR"],
+      ["Maya Rinn", "Outreach"],
+      ["Laura S.", "Outreach"],
+      ["Anaaya Mashru", "Outreach"],
+      ["Julian McMahon", "Outreach"],
       ["Sophie Weng", "Outreach"],
       ["Aryan Khanna", "Physics Calculation Lead"],
       ["Tristan Schaefer", "Outreach Lead"],
@@ -99,13 +103,15 @@ test.describe("Public disclaimers", () => {
       // the photo actually loaded, not a broken image
       expect(await img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
     }
-    await expect(crew.locator("li")).toHaveCount(32);
+    await expect(crew.locator("li")).toHaveCount(33);
     // members who have not sent a photo yet get the default avatar, not an empty tile
     await expect(crew.locator("img")).toHaveCount(12);
-    await expect(crew.locator("[data-avatar='default']")).toHaveCount(20);
+    await expect(crew.locator("[data-avatar='default']")).toHaveCount(21);
+    await expect(crew.getByText("PR", { exact: true })).toHaveCount(0);
     for (const name of [
       "Yarin Baum",
       "Laura S.",
+      "Julian McMahon",
       // November 2026 recruits, no photo yet
       "Boen Chen",
       "Brandon Calder",
@@ -120,16 +126,16 @@ test.describe("Public disclaimers", () => {
       await expect(crew.locator("li", { hasText: name }).locator("[data-avatar='default']")).toHaveCount(1);
     }
     // every count of the crew on the site matches the grid
-    await expect(crew.getByRole("heading", { level: 2 })).toHaveText(/^Thirty-two students\./);
+    await expect(crew.getByRole("heading", { level: 2 })).toHaveText(/^Thirty-three students\./);
     await expect(crew.getByText("Electronics Lead", { exact: true })).toHaveCount(0);
   });
 
   test("home story and site description count the same crew as the grid", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText(/designed and built from scratch by thirty-two\s+students/i)).toBeVisible();
+    await expect(page.getByText(/designed and built from scratch by thirty-three\s+students/i)).toBeVisible();
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
       "content",
-      /built by thirty-two high-school students/,
+      /built by thirty-three high-school students/,
     );
   });
 

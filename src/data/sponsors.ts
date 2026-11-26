@@ -23,22 +23,32 @@ export interface Sponsor {
 }
 
 /**
- * Every organisation that has given the project cash, hardware, or a
- * usable credit. Reconciled 2026-09-05 against the club's donor ledger
- * ("Sponsors Who Gave Money or Parts", compiled 2026-08-24 from the club
- * inbox). Ordered by group, then by what they gave.
+ * Every organisation or person that has actually given the project cash,
+ * hardware, fabrication, or a usable credit. A promise that has not been
+ * delivered yet does not go on this list (PCBWay and Copy Factory came off
+ * on 2026-11-25 for that reason: no boards made, no print job yet).
+ *
+ * Reconciled 2026-11-25 against the sponsor pipeline sheet's Agreed tabs, the
+ * "MV Astronomy Finance" sheet (Money In), the donor ledger ("Sponsors Who
+ * Gave Money or Parts", 2026-08-24) and the club inbox, including the
+ * receiving side of every payment (Venmo notifications). Ordered by group,
+ * then by what they gave.
  *
  * In-kind values (2026-10-21) are the ledger's estimated values; the primary
  * mirror is priced at a comparable GSO 10" parabolic primary (Agena Astro,
- * $440). The anonymous $2,500 grant was confirmed by the project lead on
- * 2026-10-21; the donor asked not to be named on the site.
+ * $440). The $2,500 grant is the MVLA High School Foundation's Innovative
+ * Learning Grant (named on the site at the finance lead's request,
+ * 2026-11-25). OSH Cut sponsored our laser-cut metal order through a discount
+ * code (2026-08-31); its dollar value is not on record, so it adds nothing to
+ * the in-kind total.
  */
 export const sponsors: Sponsor[] = [
   // ── Cash ──────────────────────────────────────────────────────────────
   {
-    name: "Anonymous",
+    name: "MVLA High School Foundation",
+    url: "https://mvlafoundation.org",
     type: "Cash",
-    contribution: "$2,500 grant",
+    contribution: "$2,500 Innovative Learning Grant",
     cashValue: 2500,
   },
   {
@@ -52,6 +62,13 @@ export const sponsors: Sponsor[] = [
     name: "Crave Yoga",
     logo: "/sponsors/crave-yoga.png",
     url: "https://craveyoga-mv.com",
+    type: "Cash",
+    contribution: "$250 donation",
+    cashValue: 250,
+  },
+  {
+    // Personal gift, received by Venmo 2026-11-25.
+    name: "Scott Johnson · Mountain View Rotary Club",
     type: "Cash",
     contribution: "$250 donation",
     cashValue: 250,
@@ -141,11 +158,11 @@ export const sponsors: Sponsor[] = [
     inKindValue: 500,
   },
   {
-    name: "PCBWay",
-    logo: "/sponsors/pcbway.png",
-    url: "https://www.pcbway.com",
+    name: "OSH Cut",
+    logo: "/sponsors/oshcut.svg",
+    url: "https://www.oshcut.com",
     type: "Fabrication",
-    contribution: "PCB fabrication for the control electronics",
+    contribution: "Sponsored laser cutting for our metal parts",
     cashValue: 0,
   },
   {
@@ -159,14 +176,6 @@ export const sponsors: Sponsor[] = [
   },
 
   // ── Services ──────────────────────────────────────────────────────────
-  {
-    name: "Copy Factory",
-    logo: "/sponsors/copy-factory.png",
-    url: "https://www.copyfactory.com",
-    type: "Service",
-    contribution: "Printing for outreach and star parties",
-    cashValue: 0,
-  },
   {
     name: "Thomas Fogarty Winery",
     logo: "/sponsors/fogarty-winery.png",
