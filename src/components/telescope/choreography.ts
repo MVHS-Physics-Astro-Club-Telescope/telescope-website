@@ -1,19 +1,20 @@
 import * as THREE from "three";
-import { ANCHORS, beatProgress, type V3 } from "./spec";
+import { beatProgress } from "./spec";
+import { ANCHORS, TUBE_DIR, type V3 } from "./model";
 
 /**
- * One continuous camera path around and into the instrument, sampled by
- * scroll progress. Position and look-target each ride a Catmull-Rom spline
- * through the waypoints below. `shift` slides camera and target together
- * along the camera's right axis so the instrument sits beside the copy.
+ * One continuous camera path around the instrument, sampled by scroll
+ * progress. Each waypoint orbits a look target: azimuth in degrees about the
+ * vertical (0 = from +z, 90 = from +x), elevation above the target's level,
+ * distance in metres. Position and target each ride a Catmull-Rom spline
+ * through the waypoints. `shift` slides camera and target together along the
+ * camera's right axis so the instrument sits beside the copy.
+ *
+ * Where things are at the observing pose (scene azimuths): the tube points to
+ * 150°, the focuser, camera and the power enclosure face 60°, the altitude
+ * drive sits at 240° and the azimuth drive at 318°.
  */
-type Way = { p: number; pos: V3; look: V3; shift: number };
-
-const whole = ANCHORS.whole;
-const rocker = ANCHORS.rocker;
-const box = ANCHORS.enclosure;
-const chip = ANCHORS.chip;
-const secondary = ANCHORS.secondary;
+type Way = { p: number; look: V3; az: number; el: number; dist: number; shift: number };
 
 export const P = {
   hero: beatProgress(0),
@@ -23,34 +24,46 @@ export const P = {
   out: beatProgress(4),
 };
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+
+const W = ANCHORS.whole;
+const whole: V3 = [W[0], ANCHORS.height * 0.5, W[2]];
+const rocker: V3 = [W[0], 0.42, W[2]];
+const box = ANCHORS.cover;
+const cage = ANCHORS.secondary;
+const camera = ANCHORS.camera;
+// a point a little up the optical axis from the secondary: the cage's open end
+const aperture = add(cage, TUBE_DIR.map((c) => c * 0.08) as V3);
 
 const WAYPOINTS: Way[] = [
-  // hero: three-quarter view from the front right, slightly above
-  { p: P.hero, pos: [2.05, whole[1] + 0.75, 2.7], look: [0, whole[1], 0], shift: -0.5 },
-  // dolly in and drop, same side, so the first scroll reads as a zoom not a spin
-  { p: lerp(P.hero, P.mech, 0.5), pos: [1.85, whole[1] + 0.3, 2.3], look: [0, whole[1] - 0.18, 0], shift: -0.42 },
-  // mechanical: low and close on the rocker, bearings and box, front right
-  { p: P.mech, pos: [1.5, rocker[1] + 0.45, 1.55], look: [0.02, rocker[1] + 0.1, 0], shift: -0.3 },
-  // now travel: around the right side …
-  { p: lerp(P.mech, P.elec, 0.3), pos: [1.95, rocker[1] + 0.4, 0.1], look: [0, rocker[1] + 0.1, 0], shift: -0.1 },
-  // … to the back, facing the control box
-  { p: lerp(P.mech, P.elec, 0.62), pos: [0.9, rocker[1] + 0.5, -1.5], look: [box[0], box[1] + 0.05, box[2]], shift: 0.05 },
-  // close on the box lid
-  { p: lerp(P.mech, P.elec, 0.85), pos: [box[0] + 0.12, box[1] + 0.16, box[2] - 0.48], look: [box[0], box[1], box[2]], shift: 0.03 },
-  // electrical: through the lid, onto the processor; the board's far end recedes under the copy
-  { p: P.elec, pos: [chip[0] + 0.05, chip[1] + 0.062, chip[2] - 0.185], look: [chip[0] - 0.024, chip[1] - 0.006, chip[2]], shift: 0.03 },
-  // back out and up the left side
-  { p: lerp(P.elec, P.opt, 0.35), pos: [-0.9, 0.55, -1.3], look: [-0.05, 0.4, -0.1], shift: 0 },
-  { p: lerp(P.elec, P.opt, 0.68), pos: [-1.75, whole[1] + 0.75, 0.2], look: [-0.05, whole[1] + 0.2, 0], shift: 0 },
-  // optics: high on the left-front, looking down into the cage
-  { p: P.opt, pos: [-0.85, secondary[1] + 0.78, 1.05], look: [0.02, secondary[1] - 0.04, 0.03], shift: -0.16 },
-  // cross the front past the focuser and camera
-  { p: lerp(P.opt, P.out, 0.5), pos: [0.65, secondary[1] + 0.62, 1.25], look: [0.08, secondary[1] + 0.02, 0.08], shift: -0.2 },
-  // outro: the whole instrument again from the front left
-  { p: P.out, pos: [-1.85, whole[1] + 0.75, 2.7], look: [0, whole[1] + 0.03, 0], shift: -0.5 },
+  // hero: three-quarter on the power box side, the tube in profile reaching up and right
+  { p: P.hero, look: whole, az: 108, el: 9, dist: 3.6, shift: -0.55 },
+  // dolly in and drop toward the rocker, so the first scroll reads as a zoom not a spin
+  { p: lerp(P.hero, P.mech, 0.5), look: [whole[0], 0.6, whole[2]], az: 62, el: 7, dist: 3.1, shift: -0.45 },
+  // mechanical: the rocker, the altitude bearing arcs, the azimuth drive and the battery bay
+  { p: P.mech, look: rocker, az: 8, el: 8, dist: 2.6, shift: -0.45 },
+  // swing back round to the power box …
+  { p: lerp(P.mech, P.elec, 0.5), look: [box[0] * 0.6, 0.6, box[2] * 0.6], az: 35, el: 8, dist: 1.9, shift: -0.05 },
+  // electrical: square on the power enclosure, its kill switch and cable glands
+  { p: P.elec, look: box, az: 62, el: 6, dist: 1.55, shift: 0.2 },
+  // rise up the focuser side …
+  { p: lerp(P.elec, P.opt, 0.45), look: camera, az: 80, el: 18, dist: 1.25, shift: 0.05 },
+  // optics: high in front of the open end, down past the camera into the cage
+  { p: P.opt, look: aperture, az: 140, el: 50, dist: 1.7, shift: -0.45 },
+  // outro: the whole instrument again, from the bearing-arc side
+  { p: P.out, look: whole, az: 225, el: 9, dist: 3.7, shift: -0.55 },
 ];
 
-const posCurve = new THREE.CatmullRomCurve3(WAYPOINTS.map((w) => new THREE.Vector3(...w.pos)), false, "centripetal", 0.5);
+function orbit(w: Way, out: THREE.Vector3) {
+  const az = (w.az * Math.PI) / 180, el = (w.el * Math.PI) / 180;
+  return out.set(
+    w.look[0] + w.dist * Math.cos(el) * Math.sin(az),
+    w.look[1] + w.dist * Math.sin(el),
+    w.look[2] + w.dist * Math.cos(el) * Math.cos(az),
+  );
+}
+
+const posCurve = new THREE.CatmullRomCurve3(WAYPOINTS.map((w) => orbit(w, new THREE.Vector3())), false, "centripetal", 0.5);
 const lookCurve = new THREE.CatmullRomCurve3(WAYPOINTS.map((w) => new THREE.Vector3(...w.look)), false, "centripetal", 0.5);
 
 export const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -76,16 +89,4 @@ export function sampleCamera(p: number, outPos: THREE.Vector3, outLook: THREE.Ve
   posCurve.getPoint(u, outPos);
   lookCurve.getPoint(u, outLook);
   return shift;
-}
-
-/** 0 → lid solid, 1 → lid gone: dissolves as the camera closes on the box. */
-export function lidOpen(p: number): number {
-  const a = lerp(P.mech, P.elec, 0.72);
-  const b = lerp(P.mech, P.elec, 0.95);
-  const c = lerp(P.elec, P.opt, 0.12);
-  const d = lerp(P.elec, P.opt, 0.3);
-  if (p < a || p > d) return 0;
-  if (p < b) return smooth((p - a) / (b - a));
-  if (p < c) return 1;
-  return 1 - smooth((p - c) / (d - c));
 }

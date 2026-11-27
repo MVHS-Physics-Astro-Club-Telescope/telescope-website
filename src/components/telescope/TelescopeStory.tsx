@@ -24,9 +24,9 @@ const BEATS: Beat[] = [
   {
     id: "mechanical",
     eyebrow: "Mechanical",
-    title: "Plywood, aluminum, and printed ASA.",
+    title: "Cut from aluminum plate.",
     body:
-      "A truss-tube Dobsonian. The birch mirror box rides on Teflon bearings inside a rocker box, six aluminum poles carry the upper cage, and every bracket is printed in-house. It splits in two and fits in a car.",
+      "A truss-tube Dobsonian. The mirror box is screwed together from aluminum plate and rides on Teflon pads inside an aluminum rocker; six aluminum poles carry the upper cage. It comes apart to travel in a car.",
     side: "left",
   },
   {
@@ -34,7 +34,7 @@ const BEATS: Beat[] = [
     eyebrow: "Electrical",
     title: "Two steppers and a Raspberry Pi.",
     body:
-      "A NEMA 23 drives altitude through a sector gear; a NEMA 17 turns azimuth by belt. A Raspberry Pi 4 runs the scheduler, the safety interlocks, and the camera from 12 V and 24 V rails.",
+      "Two stepper motors aim it in altitude and azimuth. A Raspberry Pi 4 in a weatherproof box runs the scheduler, the safety interlocks, and the camera from a 12 V battery and a 24 V rail.",
     side: "right",
   },
   {

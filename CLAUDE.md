@@ -1,13 +1,13 @@
 # Telescope Website — Project Context
 
 ## What Is This?
-MV Astronomy's website: an independent student project in Mountain View building a 10-inch autonomous Dobsonian. Five pages: a scroll-driven 3D story of an idealised rendering of the telescope on `/`, then `/sponsors`, `/parts`, `/observe`, `/request`.
+MV Astronomy's website: an independent student project in Mountain View building a 10-inch autonomous Dobsonian. Five pages: a scroll-driven 3D story of the telescope's final CAD model on `/`, then `/sponsors`, `/parts`, `/observe`, `/request`.
 
 The project is presented as an **independent student project** — not affiliated with, endorsed by, or sponsored by Mountain View High School or the MVLA district. Public-facing copy says "MV", never "MVHS". The only permitted "mvhs" strings are live external identifiers that cannot be renamed from this repo: the contact email, the Instagram handle, the GitHub org path, and the SendCutSend credit code. `tests/e2e/disclaimers.spec.ts` enforces this and the roles note under the crew grid.
 
 ## Tech Stack
 - Next.js 16.2.2, React 19.2.4, TypeScript, Tailwind CSS v4
-- three / @react-three/fiber / @react-three/drei for the home-page telescope (procedural, not a CAD export; see README)
+- three / @react-three/fiber / @react-three/drei for the home-page telescope (the CAD assembly with real-part decals, built by `~/Projects/telescope/realism`; see README)
 - Vercel deployment
 
 ## Design
@@ -15,7 +15,7 @@ One black room, one instrument, one warm light on it. Instrument Serif for displ
 
 ## Key Files
 - `src/app/*/page.tsx` — the five pages
-- `src/components/telescope/` — IdealTelescope (geometry), spec (dimensions + anchors), materials, choreography, canvas, story
+- `src/components/telescope/` — model (pose, anchors, finishes), choreography, canvas, story, spec (story layout); the GLB is `public/models/telescope.glb`
 - `src/components/` — Navbar, Footer, Crew, Support, PartsTable, EmailSignup, MockTargetPicker, TonightAtMV, OfflineStatus
 - `src/data/` — team, sponsors, parts, targets
 
