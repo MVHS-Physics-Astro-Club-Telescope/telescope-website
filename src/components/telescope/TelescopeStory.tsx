@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Component, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion, MotionConfig } from "framer-motion";
@@ -9,6 +9,20 @@ import { crewCountWord } from "@/data/team";
 import { SCREENS, STORY_HEIGHT } from "./spec";
 
 const TelescopeCanvas = dynamic(() => import("./TelescopeCanvas"), { ssr: false });
+
+/** If the model, its textures or WebGL fail, drop the 3D stage and keep the page: the copy reads fine on black. */
+class StageBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: unknown) {
+    console.error("telescope stage failed to load", error);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -24,9 +38,9 @@ const BEATS: Beat[] = [
   {
     id: "mechanical",
     eyebrow: "Mechanical",
-    title: "Plywood, aluminum, and printed ASA.",
+    title: "Cut from aluminum plate.",
     body:
-      "A truss-tube Dobsonian. The birch mirror box rides on Teflon bearings inside a rocker box, six aluminum poles carry the upper cage, and every bracket is printed in-house. It splits in two and fits in a car.",
+      "A truss-tube Dobsonian. The mirror box is screwed together from aluminum plate and rides on Teflon pads inside an aluminum rocker; six aluminum poles carry the upper cage. It comes apart to travel in a car.",
     side: "left",
   },
   {
@@ -34,7 +48,7 @@ const BEATS: Beat[] = [
     eyebrow: "Electrical",
     title: "Two steppers and a Raspberry Pi.",
     body:
-      "A NEMA 23 drives altitude through a sector gear; a NEMA 17 turns azimuth by belt. A Raspberry Pi 4 runs the scheduler, the safety interlocks, and the camera from 12 V and 24 V rails.",
+      "Two stepper motors aim it in altitude and azimuth. A Raspberry Pi 4 in a weatherproof box runs the scheduler, the safety interlocks, and the camera from a 12 V battery and a 24 V rail.",
     side: "right",
   },
   {
@@ -98,7 +112,11 @@ export default function TelescopeStory() {
       >
         {/* Pinned stage */}
         <div className="sticky top-0 h-svh overflow-hidden">
-          {mounted && <TelescopeCanvas progress={progress} reducedMotion={reduced} />}
+          {mounted && (
+            <StageBoundary>
+              <TelescopeCanvas progress={progress} reducedMotion={reduced} />
+            </StageBoundary>
+          )}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-t from-black via-black/70 to-transparent sm:hidden"

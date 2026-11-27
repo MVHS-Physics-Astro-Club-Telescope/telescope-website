@@ -1,37 +1,48 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, type RefObject } from "react";
+import { Suspense, useMemo, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, useTexture } from "@react-three/drei";
+import { Environment, PerformanceMonitor, useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { createMaterials } from "./materials";
-import { lidOpen, sampleCamera } from "./choreography";
-import IdealTelescope from "./IdealTelescope";
+import { sampleCamera } from "./choreography";
+import { DRACO_PATH, LIFT, MODEL_URL, decalFiles, dressModel } from "./model";
 
 const UP = new THREE.Vector3(0, 1, 0);
-const LID_OPACITY = 0.55;
+const BRUSHED = ["/textures/brushed_nor.jpg", "/textures/brushed_rough.jpg"];
 
-function Stage({ progress }: { progress: RefObject<number> }) {
-  const [normalMap, roughnessMap] = useTexture(["/textures/brushed_nor.jpg", "/textures/brushed_rough.jpg"]);
-  const m = useMemo(() => createMaterials({ normalMap, roughnessMap }), [normalMap, roughnessMap]);
-
-  // The control-box lid dissolves as the camera closes on the electronics.
-  const lid = useRef(m.lid);
-  useEffect(() => {
-    lid.current = m.lid;
-  }, [m]);
-  useFrame(() => {
-    const open = lidOpen(progress.current ?? 0);
-    lid.current.opacity = LID_OPACITY * (1 - open);
-    lid.current.visible = open < 0.999;
+function Telescope() {
+  const { scene } = useGLTF(MODEL_URL, DRACO_PATH);
+  const files = useMemo(() => decalFiles(scene), [scene]);
+  const [brushedNormal, brushedRough] = useTexture(BRUSHED, (ts) => {
+    for (const t of [ts].flat()) {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(3, 3); // one tile per 33 mm of part
+      t.anisotropy = 8;
+    }
   });
+  const decalTextures = useTexture(
+    files.map((f) => `/textures/decals/${f}`),
+    (ts) => {
+      for (const t of [ts].flat()) {
+        // printed labels are sRGB images; glTF UVs count v from the top
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.flipY = false;
+        t.anisotropy = 8;
+      }
+    },
+  );
+  const model = useMemo(() => {
+    const decals = new Map(files.map((f, i) => [f, decalTextures[i]] as const));
+    return dressModel(scene, { brushedNormal, brushedRough, decals });
+  }, [scene, files, decalTextures, brushedNormal, brushedRough]);
 
   return (
     <>
-      <IdealTelescope m={m} />
+      <primitive object={model} position={[0, LIFT, 0]} />
       {/* studio floor: catches the spotlight pool and the shadow */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.0005, 0]} material={m.floor} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.0005, 0]} receiveShadow>
         <circleGeometry args={[7, 128]} />
+        <meshStandardMaterial color="#0e0e0e" roughness={0.94} metalness={0} />
       </mesh>
     </>
   );
@@ -48,12 +59,11 @@ function Rig({ progress, reducedMotion }: { progress: RefObject<number>; reduced
   useFrame((_, dt) => {
     const p = progress.current ?? 0;
     const shift = sampleCamera(p, pos, look);
-    const aspect = size.width / size.height;
+    const aspect = Math.max(size.width, 1) / Math.max(size.height, 1);
     if (aspect < 1.1) {
       // phones: more distance, and aim lower so the subject rides above the copy
       const k = Math.pow(1.1 / aspect, 0.62);
       pos.sub(look).multiplyScalar(k).add(look);
-      // no drop on close-ups (the processor shot) — the copy overlays the board there
       const drop = 0.22 * Math.min(1, Math.max(0, (pos.distanceTo(look) - 0.35) / 1.2));
       look.setY(look.y - drop);
       pos.setY(pos.y - drop);
@@ -77,10 +87,18 @@ function Rig({ progress, reducedMotion }: { progress: RefObject<number>; reduced
   return null;
 }
 
+/** Phones stand the camera further back (see Rig); push the fog back with it so the model isn't dimmed. */
+function Fog() {
+  const { size } = useThree();
+  const aspect = Math.max(size.width, 1) / Math.max(size.height, 1);
+  const k = aspect < 1.1 ? Math.pow(1.1 / aspect, 0.62) : 1;
+  return <fog attach="fog" args={["#000000", 4 * k, 10 * k]} />;
+}
+
 function Lights() {
   const target = useMemo(() => {
     const t = new THREE.Object3D();
-    t.position.set(0, 0.55, 0);
+    t.position.set(0.05, 0.65, 0);
     return t;
   }, []);
   return (
@@ -88,8 +106,8 @@ function Lights() {
       <primitive object={target} />
       {/* the photo-shoot key: one warm spot from high front-right */}
       <spotLight
-        position={[1.6, 4.6, 2.0]}
-        angle={0.36}
+        position={[1.9, 4.6, 2.0]}
+        angle={0.4}
         penumbra={0.75}
         decay={1.6}
         distance={12}
@@ -106,8 +124,6 @@ function Lights() {
       <spotLight position={[-2.6, 3.2, -2.4]} angle={0.5} penumbra={0.9} decay={1.6} distance={12} intensity={45} color="#dbe4ff" target={target} />
       {/* faint fill so shadow sides read */}
       <spotLight position={[-3, 1.4, 2.2]} angle={0.7} penumbra={1} decay={1.6} distance={12} intensity={12} color="#ffffff" target={target} />
-      {/* small lamp behind the rocker so the control box reads when the camera dives in */}
-      <pointLight position={[0.1, 0.45, -0.7]} intensity={2.2} distance={1.6} decay={2} color="#ffffff" />
     </>
   );
 }
@@ -121,18 +137,22 @@ export default function TelescopeCanvas({
   /** prefers-reduced-motion: the camera still follows the scroll, without easing */
   reducedMotion: boolean;
 }) {
+  // The model is ~790k triangles; a device that can't hold the frame rate drops to 1x pixels.
+  const [maxDpr, setMaxDpr] = useState(1.75);
   return (
     <Canvas
-      dpr={[1, 1.75]}
-      camera={{ fov: 30, near: 0.03, far: 40, position: [2, 1.4, 2.75] }}
+      dpr={[1, maxDpr]}
+      camera={{ fov: 30, near: 0.1, far: 40, position: [3, 1.2, 1.2] }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.95 }}
       shadows="percentage"
       frameloop="always"
       style={{ position: "absolute", inset: 0 }}
     >
-      <fog attach="fog" args={["#000000", 3.5, 9]} />
+      <Fog />
       <Suspense fallback={null}>
-        <Stage progress={progress} />
+        <Telescope />
+        {/* inside Suspense: it starts measuring once the model is up, not during the load */}
+        <PerformanceMonitor onDecline={() => setMaxDpr(1)} onIncline={() => setMaxDpr(1.75)} />
         <Lights />
         {/* a real photo studio for reflections, kept dim so the key spot stays the light */}
         <Environment files="/hdr/studio.hdr" environmentIntensity={0.42} />
@@ -141,3 +161,4 @@ export default function TelescopeCanvas({
     </Canvas>
   );
 }
+
