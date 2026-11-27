@@ -161,7 +161,7 @@ export function dressModel(source: THREE.Object3D, maps: Maps): THREE.Object3D {
     if (!cache.has(key)) cache.set(key, makeMaterial(app, vc, maps, missing));
     o.material = cache.get(key)!;
     const decal = app.startsWith("decal:");
-    o.castShadow = !decal;
+    o.castShadow = !decal && !o.material.transparent; // labels and see-through glass cast no shadow
     o.receiveShadow = true;
     if (decal) o.renderOrder = 1;
   });

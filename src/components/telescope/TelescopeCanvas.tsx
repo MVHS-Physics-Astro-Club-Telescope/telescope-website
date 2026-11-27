@@ -8,11 +8,12 @@ import { sampleCamera } from "./choreography";
 import { DRACO_PATH, LIFT, MODEL_URL, decalFiles, dressModel } from "./model";
 
 const UP = new THREE.Vector3(0, 1, 0);
+const BRUSHED = ["/textures/brushed_nor.jpg", "/textures/brushed_rough.jpg"];
 
 function Telescope() {
   const { scene } = useGLTF(MODEL_URL, DRACO_PATH);
   const files = useMemo(() => decalFiles(scene), [scene]);
-  const [brushedNormal, brushedRough] = useTexture(["/textures/brushed_nor.jpg", "/textures/brushed_rough.jpg"], (ts) => {
+  const [brushedNormal, brushedRough] = useTexture(BRUSHED, (ts) => {
     for (const t of [ts].flat()) {
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
       t.repeat.set(3, 3); // one tile per 33 mm of part
@@ -27,7 +28,6 @@ function Telescope() {
         t.colorSpace = THREE.SRGBColorSpace;
         t.flipY = false;
         t.anisotropy = 8;
-        t.needsUpdate = true;
       }
     },
   );
@@ -59,7 +59,7 @@ function Rig({ progress, reducedMotion }: { progress: RefObject<number>; reduced
   useFrame((_, dt) => {
     const p = progress.current ?? 0;
     const shift = sampleCamera(p, pos, look);
-    const aspect = size.width / size.height;
+    const aspect = Math.max(size.width, 1) / Math.max(size.height, 1);
     if (aspect < 1.1) {
       // phones: more distance, and aim lower so the subject rides above the copy
       const k = Math.pow(1.1 / aspect, 0.62);
@@ -85,6 +85,14 @@ function Rig({ progress, reducedMotion }: { progress: RefObject<number>; reduced
     camera.lookAt(curLook);
   });
   return null;
+}
+
+/** Phones stand the camera further back (see Rig); push the fog back with it so the model isn't dimmed. */
+function Fog() {
+  const { size } = useThree();
+  const aspect = Math.max(size.width, 1) / Math.max(size.height, 1);
+  const k = aspect < 1.1 ? Math.pow(1.1 / aspect, 0.62) : 1;
+  return <fog attach="fog" args={["#000000", 4 * k, 10 * k]} />;
 }
 
 function Lights() {
@@ -134,16 +142,17 @@ export default function TelescopeCanvas({
   return (
     <Canvas
       dpr={[1, maxDpr]}
-      camera={{ fov: 30, near: 0.03, far: 40, position: [3, 1.2, 1.2] }}
+      camera={{ fov: 30, near: 0.1, far: 40, position: [3, 1.2, 1.2] }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.95 }}
       shadows="percentage"
       frameloop="always"
       style={{ position: "absolute", inset: 0 }}
     >
-      <PerformanceMonitor onDecline={() => setMaxDpr(1)} />
-      <fog attach="fog" args={["#000000", 4, 10]} />
+      <Fog />
       <Suspense fallback={null}>
         <Telescope />
+        {/* inside Suspense: it starts measuring once the model is up, not during the load */}
+        <PerformanceMonitor onDecline={() => setMaxDpr(1)} onIncline={() => setMaxDpr(1.75)} />
         <Lights />
         {/* a real photo studio for reflections, kept dim so the key spot stays the light */}
         <Environment files="/hdr/studio.hdr" environmentIntensity={0.42} />
@@ -153,4 +162,3 @@ export default function TelescopeCanvas({
   );
 }
 
-useGLTF.preload(MODEL_URL, DRACO_PATH);

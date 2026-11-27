@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Component, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion, MotionConfig } from "framer-motion";
@@ -9,6 +9,20 @@ import { crewCountWord } from "@/data/team";
 import { SCREENS, STORY_HEIGHT } from "./spec";
 
 const TelescopeCanvas = dynamic(() => import("./TelescopeCanvas"), { ssr: false });
+
+/** If the model, its textures or WebGL fail, drop the 3D stage and keep the page: the copy reads fine on black. */
+class StageBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: unknown) {
+    console.error("telescope stage failed to load", error);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -98,7 +112,11 @@ export default function TelescopeStory() {
       >
         {/* Pinned stage */}
         <div className="sticky top-0 h-svh overflow-hidden">
-          {mounted && <TelescopeCanvas progress={progress} reducedMotion={reduced} />}
+          {mounted && (
+            <StageBoundary>
+              <TelescopeCanvas progress={progress} reducedMotion={reduced} />
+            </StageBoundary>
+          )}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-t from-black via-black/70 to-transparent sm:hidden"
